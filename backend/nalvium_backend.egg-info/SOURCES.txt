@@ -1,0 +1,6 @@
+pyproject.toml
+nalvium_backend.egg-info/PKG-INFO
+nalvium_backend.egg-info/SOURCES.txt
+nalvium_backend.egg-info/dependency_links.txt
+nalvium_backend.egg-info/requires.txt
+nalvium_backend.egg-info/top_level.txt
