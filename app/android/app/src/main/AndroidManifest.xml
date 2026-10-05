@@ -1,9 +1,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Requis par AdMob (Android 13+) : identifiant publicitaire, soumis au consentement UMP. -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+    <!-- Filmer un problème : la caméra et le micro ne sont demandés qu'au moment où l'utilisateur choisit « Filmer ». -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
     <application
         android:label="Nalvium"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <!-- ID d'APPLICATION AdMob de TEST (Google). À remplacer par le vrai ID avant publication. Ne jamais commiter le vrai. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

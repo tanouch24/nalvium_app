@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:http/io_client.dart';
 
 import '../config/api_config.dart';
@@ -57,18 +58,31 @@ class ApiClient {
         analysis ? analysisTimeout : timeout,
       );
 
-  Future<dynamic> postFile(String path, {required String field, required String filePath}) => _send(
+  Future<dynamic> postFile(
+    String path, {
+    required String field,
+    required String filePath,
+    String filename = 'photo.jpg',
+    String? contentType,
+    Duration timeout = const Duration(seconds: 45),
+  }) =>
+      _send(
         'POST',
         path,
         (headers) => http.MultipartRequest('POST', config.uri(path))
           ..headers.addAll(headers)
-          ..files.add(_fileSync(field, filePath)),
-        const Duration(seconds: 45),
+          ..files.add(_fileSync(field, filePath, filename, contentType)),
+        timeout,
       );
 
-  http.MultipartFile _fileSync(String field, String path) {
+  http.MultipartFile _fileSync(String field, String path, String filename, String? contentType) {
     final bytes = File(path).readAsBytesSync();
-    return http.MultipartFile.fromBytes(field, bytes, filename: 'photo.jpg');
+    return http.MultipartFile.fromBytes(
+      field,
+      bytes,
+      filename: filename,
+      contentType: contentType == null ? null : MediaType.parse(contentType),
+    );
   }
 
   Future<dynamic> _send(

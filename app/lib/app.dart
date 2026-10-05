@@ -1,21 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'core/router/app_router.dart';
 import 'core/theme/nalvium_theme.dart';
 import 'l10n/app_localizations.dart';
+import 'services/providers.dart';
 
-class NalviumApp extends StatefulWidget {
+class NalviumApp extends ConsumerStatefulWidget {
   const NalviumApp({super.key, this.router});
   final GoRouter? router;
 
   @override
-  State<NalviumApp> createState() => _NalviumAppState();
+  ConsumerState<NalviumApp> createState() => _NalviumAppState();
 }
 
-class _NalviumAppState extends State<NalviumApp> {
+class _NalviumAppState extends ConsumerState<NalviumApp> with WidgetsBindingObserver {
   late final GoRouter _router = widget.router ?? buildRouter();
+  DateTime? _pausedAt;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    // Consentement (UMP) puis SDK publicitaire, après le premier affichage.
+    WidgetsBinding.instance.addPostFrameCallback((_) => ref.read(adsServiceProvider).initialize());
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      _pausedAt = DateTime.now();
+    } else if (state == AppLifecycleState.resumed && _pausedAt != null) {
+      final away = DateTime.now().difference(_pausedAt!);
+      _pausedAt = null;
+      final route = _router.routeInformationProvider.value.uri.path;
+      ref.read(adsServiceProvider).onAppResumed(route: route, backgroundFor: away);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

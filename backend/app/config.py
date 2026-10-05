@@ -34,6 +34,10 @@ class Settings(BaseSettings):
     )
     openai_timeout_s: float = 60.0
     max_upload_bytes: int = 12 * 1024 * 1024
+    # Vidéo (V1) : 15 s max (+1 s de tolérance), 30 Mo en entrée ; stockée en H.264/AAC ≤ 720p, sans métadonnées.
+    max_video_bytes: int = 30 * 1024 * 1024
+    max_video_seconds: float = 16.0
+    video_frames_max: int = 6
 
     media_root: str = "./var/media"
 

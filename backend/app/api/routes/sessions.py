@@ -3,6 +3,7 @@ import time
 import uuid
 
 from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile
+from fastapi.concurrency import run_in_threadpool
 
 from app.ai.provider import AIProviderError, AIProviderNotConfigured
 from app.api.deps import current_user_id, get_session_service
@@ -16,6 +17,7 @@ from app.api.schemas import (
 )
 from app.config import get_settings
 from app.media.pipeline import InvalidImageError, process_photo
+from app.media.video import InvalidVideoError, VideoTooLongError, process_video
 from app.services.session_service import InvalidTurn, NotFound, SessionService, TurnInput
 
 log = logging.getLogger("nalvium.api")
@@ -79,6 +81,46 @@ async def upload_media(
     return MediaOut(id=asset.id, width=asset.width, height=asset.height)
 
 
+@router.post("/sessions/{session_id}/video", response_model=MediaOut, status_code=201)
+async def upload_video(
+    session_id: uuid.UUID,
+    file: UploadFile = File(...),
+    user_id: uuid.UUID = Depends(current_user_id),
+    svc: SessionService = Depends(get_session_service),
+):
+    """Vidéo courte (≤ 15 s) : validée, normalisée, nettoyée de ses métadonnées, stockée en PRIVÉ.
+    Le contenu n'est jamais loggé : seules des métadonnées techniques (durée, taille) le sont."""
+    settings = get_settings()
+    raw = await file.read(settings.max_video_bytes + 1)
+    if len(raw) > settings.max_video_bytes:
+        raise HTTPException(413, "file_too_large")
+    started = time.monotonic()
+    try:
+        svc.get(user_id, session_id)  # propriétaire et session valides AVANT tout traitement coûteux
+        video = await run_in_threadpool(
+            process_video, raw, max_seconds=settings.max_video_seconds, max_frames=settings.video_frames_max
+        )
+        asset = svc.add_video(user_id, session_id, video)
+    except VideoTooLongError as exc:
+        raise HTTPException(422, "video_too_long") from exc
+    except InvalidVideoError as exc:
+        raise HTTPException(422, "invalid_video") from exc
+    except NotFound as exc:
+        raise HTTPException(404, "session_not_found") from exc
+    except InvalidTurn as exc:
+        raise HTTPException(409, str(exc)) from exc
+    log.info(
+        "video uploaded session=%s bytes_in=%d bytes_stored=%d duration=%.1fs size=%dx%d audio=%s frames=%d "
+        "processing=%.1fs private",
+        session_id, len(raw), asset.size_bytes, asset.duration_s or 0, asset.width or 0, asset.height or 0,
+        asset.has_audio, len(video.frames), time.monotonic() - started,
+    )
+    return MediaOut(
+        id=asset.id, width=asset.width, height=asset.height, media_type="video",
+        duration_s=asset.duration_s, has_audio=asset.has_audio,
+    )
+
+
 @router.post("/sessions/{session_id}/turn", response_model=SessionOut)
 async def turn(
     session_id: uuid.UUID,
@@ -121,6 +163,20 @@ def media_content(
 ):
     try:
         data, content_type = svc.read_media(user_id, media_id)
+    except NotFound as exc:
+        raise HTTPException(404, "media_not_found") from exc
+    return Response(data, media_type=content_type, headers={"Cache-Control": "private, max-age=3600"})
+
+
+@router.get("/media/{media_id}/thumbnail")
+def media_thumbnail(
+    media_id: uuid.UUID,
+    user_id: uuid.UUID = Depends(current_user_id),
+    svc: SessionService = Depends(get_session_service),
+):
+    """Image d'aperçu (photo, ou image représentative d'une vidéo). Toujours PRIVÉE : identité requise."""
+    try:
+        data, content_type = svc.read_thumbnail(user_id, media_id)
     except NotFound as exc:
         raise HTTPException(404, "media_not_found") from exc
     return Response(data, media_type=content_type, headers={"Cache-Control": "private, max-age=3600"})

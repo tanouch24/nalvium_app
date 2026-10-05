@@ -24,3 +24,5 @@ app/android/key.properties
 *.jks
 *.keystore
 var/
+# captures de validation visuelle (peuvent contenir des données de test)
+validation/

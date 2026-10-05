@@ -13,15 +13,19 @@ Future<void> startPhotoCapture(BuildContext context, WidgetRef ref) async {
   context.push('/capture/preview', extra: photo.path);
 }
 
-Future<CapturedPhoto?> capturePhoto(BuildContext context, WidgetRef ref) => _capture(context, ref);
+Future<CapturedPhoto?> capturePhoto(BuildContext context, WidgetRef ref) =>
+    _capture(context, ref);
 
 Future<CapturedPhoto?> _capture(BuildContext context, WidgetRef ref) async {
   try {
-    return await ref.read(photoCaptureServiceProvider).takePhoto();
+    final capture = ref.read(photoCaptureServiceProvider);
+    // Le retour de la caméra système ne doit jamais déclencher une pub App Open.
+    return await ref.read(adsServiceProvider).suspendAppOpen(capture.takePhoto);
   } on CameraUnavailableException {
     if (context.mounted) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).cameraError)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context).cameraError)),
+      );
     }
     return null;
   }

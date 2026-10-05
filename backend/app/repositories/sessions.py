@@ -61,7 +61,8 @@ class SessionRepository:
             .options(
                 selectinload(DiagnosticSession.messages).selectinload(SessionMessage.observations),
                 selectinload(DiagnosticSession.messages).selectinload(SessionMessage.hypotheses),
-                selectinload(DiagnosticSession.media),
+                selectinload(DiagnosticSession.media).selectinload(MediaAsset.frames),
+                selectinload(DiagnosticSession.actions),
             )
         )
         return self._db.execute(stmt).scalar_one_or_none()
@@ -72,7 +73,7 @@ class SessionRepository:
         stmt = (
             select(DiagnosticSession)
             .where(DiagnosticSession.user_id == user_id)
-            .options(selectinload(DiagnosticSession.media))
+            .options(selectinload(DiagnosticSession.media), selectinload(DiagnosticSession.messages))
             .order_by(DiagnosticSession.updated_at.desc())
             .limit(limit)
         )

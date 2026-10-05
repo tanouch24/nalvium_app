@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -8,10 +7,15 @@ import 'package:go_router/go_router.dart';
 import '../../core/network/api_exceptions.dart';
 import '../../core/theme/nalvium_colors.dart';
 import '../../core/theme/nalvium_spacing.dart';
+import '../../core/widgets/buttons.dart';
 import '../../core/widgets/error_panel.dart';
 import '../../domain/session.dart';
+import '../../domain/video.dart';
 import '../../l10n/app_localizations.dart';
+import '../../core/widgets/video_poster.dart';
 import '../../services/providers.dart';
+import '../video/video_alternatives.dart';
+import 'analysis_wait.dart';
 
 /// Point d'entrée d'une nouvelle session : une photo OU une description.
 sealed class SessionStart {
@@ -21,6 +25,11 @@ sealed class SessionStart {
 class PhotoStart extends SessionStart {
   const PhotoStart(this.path);
   final String path;
+}
+
+class VideoStart extends SessionStart {
+  const VideoStart(this.clip);
+  final VideoClip clip;
 }
 
 class DescriptionStart extends SessionStart {
@@ -43,9 +52,6 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
   String? _mediaId;
   bool _inputSent = false;
   Object? _error;
-  bool _showSubtitle = false;
-  bool _showSlow = false;
-  final _timers = <Timer>[];
 
   @override
   void initState() {
@@ -53,39 +59,23 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
     _run();
   }
 
-  @override
-  void dispose() {
-    for (final t in _timers) {
-      t.cancel();
-    }
-    super.dispose();
-  }
-
   Future<void> _run() async {
-    for (final t in _timers) {
-      t.cancel();
-    }
-    _timers
-      ..clear()
-      ..add(Timer(const Duration(seconds: 5), () => mounted ? setState(() => _showSubtitle = true) : null))
-      ..add(Timer(const Duration(seconds: 25), () => mounted ? setState(() => _showSlow = true) : null));
-    setState(() {
-      _error = null;
-      _showSubtitle = false;
-      _showSlow = false;
-    });
+    setState(() => _error = null);
     try {
       final repo = ref.read(sessionsRepositoryProvider);
       final start = widget.start;
       _sessionId ??= await repo.createSession();
       if (start is PhotoStart) {
         _mediaId ??= await repo.uploadPhoto(_sessionId!, start.path);
+      } else if (start is VideoStart) {
+        _mediaId ??= await repo.uploadVideo(_sessionId!, start.clip.path);
       }
       // L'entrée n'est envoyée qu'une fois ; ensuite on ne fait que relancer l'analyse.
       final TurnInput? input = _inputSent
           ? null
           : switch (start) {
               PhotoStart() => PhotoTurn(_mediaId!),
+              VideoStart() => VideoTurn(_mediaId!),
               DescriptionStart(:final text) => DescriptionTurn(text),
             };
       try {
@@ -99,9 +89,6 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
       ref.read(sessionsRevisionProvider.notifier).bump();
       context.pushReplacement('/session/$_sessionId');
     } on ApiException catch (e) {
-      for (final t in _timers) {
-        t.cancel();
-      }
       if (mounted) setState(() => _error = e);
     }
   }
@@ -109,55 +96,49 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
     final start = widget.start;
 
     final Widget content = _error != null
-        ? ErrorPanel(
-            error: _error!,
-            onRetry: _error is ApiNotConfigured ? null : _run,
-            secondary: TextButton(
-              key: const Key('back-home'),
-              onPressed: () => context.go('/home'),
-              child: Text(l10n.backHome),
+        ? Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(Space.gutter),
+              child: ErrorPanel(
+                error: _error!,
+                onRetry: _error is ApiNotConfigured ? null : _run,
+                // Une vidéo qui échoue propose une photo ou une description plutôt qu'un cul-de-sac.
+                secondary: start is VideoStart
+                    ? const VideoAlternatives()
+                    : TertiaryButton(
+                        key: const Key('back-home'),
+                        label: l10n.backToHome,
+                        color: NalviumColors.textSecondary,
+                        onPressed: () => context.go('/home'),
+                      ),
+              ),
             ),
           )
-        : Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (start is PhotoStart)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(NalviumSpacing.radius),
-                  child: SizedBox(
-                    height: 220,
-                    width: 220,
-                    child: Image.file(File(start.path), fit: BoxFit.cover, errorBuilder: (_, _, _) => const ColoredBox(color: NalviumColors.greyLight)),
-                  ),
-                ),
-              if (start is PhotoStart) const SizedBox(height: NalviumSpacing.xl),
-              const SizedBox(width: 36, height: 36, child: CircularProgressIndicator(strokeWidth: 3)),
-              const SizedBox(height: NalviumSpacing.lg),
-              Text(l10n.analyzingTitle, key: const Key('analyzing-title'), style: theme.textTheme.headlineMedium, textAlign: TextAlign.center),
-              const SizedBox(height: NalviumSpacing.sm),
-              AnimatedOpacity(
-                opacity: _showSubtitle ? 1 : 0,
-                duration: const Duration(milliseconds: 400),
-                child: Text(_showSlow ? l10n.analyzingSlow : l10n.analyzingSubtitle, style: theme.textTheme.bodyMedium, textAlign: TextAlign.center),
-              ),
-              const SizedBox(height: NalviumSpacing.xl),
-              TextButton(key: const Key('cancel-analysis'), onPressed: () => context.go('/home'), child: Text(l10n.cancel)),
-            ],
+        : AnalysisWait(
+            onCancel: () => context.go('/home'),
+            title: start is DescriptionStart
+                ? l10n.analyzingDescription
+                : start is VideoStart
+                ? l10n.analyzingVideo
+                : null,
+            video: start is VideoStart,
+            subject: start is DescriptionStart ? start.text : null,
+            photo: start is PhotoStart
+                ? Image.file(
+                    File(start.path),
+                    fit: BoxFit.cover,
+                    semanticLabel: l10n.photoSemantics,
+                    errorBuilder: (_, _, _) =>
+                        const ColoredBox(color: NalviumColors.surfaceSubtle),
+                  )
+                : start is VideoStart
+                ? VideoPoster(path: start.clip.path)
+                : null,
           );
 
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(NalviumSpacing.lg),
-            child: content,
-          ),
-        ),
-      ),
-    );
+    return Scaffold(body: SafeArea(child: content));
   }
 }

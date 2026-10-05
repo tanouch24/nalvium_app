@@ -13,31 +13,41 @@ enum NextActionType {
   resolved;
 
   static NextActionType fromWire(String value) => switch (value) {
-        'ASK_QUESTION' => askQuestion,
-        'REQUEST_PHOTO' => requestPhoto,
-        'INSTRUCTION' => instruction,
-        'VERIFICATION' => verification,
-        'SAFETY_STOP' => safetyStop,
-        'RECOMMEND_PROFESSIONAL' => recommendProfessional,
-        'RESOLVED' => resolved,
-        _ => throw FormatException('NextActionType inconnu: $value'),
-      };
+    'ASK_QUESTION' => askQuestion,
+    'REQUEST_PHOTO' => requestPhoto,
+    'INSTRUCTION' => instruction,
+    'VERIFICATION' => verification,
+    'SAFETY_STOP' => safetyStop,
+    'RECOMMEND_PROFESSIONAL' => recommendProfessional,
+    'RESOLVED' => resolved,
+    _ => throw FormatException('NextActionType inconnu: $value'),
+  };
 }
 
-enum VerificationOutcome { resolved, improved, unchanged, worsened, cannotDetermine }
+enum VerificationOutcome {
+  resolved,
+  improved,
+  unchanged,
+  worsened,
+  cannotDetermine,
+}
 
 class NextAction {
-  const NextAction({required this.type, required this.message, this.choices = const []});
+  const NextAction({
+    required this.type,
+    required this.message,
+    this.choices = const [],
+  });
 
   final NextActionType type;
   final String message;
   final List<String> choices;
 
   factory NextAction.fromJson(Map<String, dynamic> json) => NextAction(
-        type: NextActionType.fromWire(json['type'] as String),
-        message: json['message'] as String,
-        choices: List<String>.from(json['choices'] as List? ?? const []),
-      );
+    type: NextActionType.fromWire(json['type'] as String),
+    message: json['message'] as String,
+    choices: List<String>.from(json['choices'] as List? ?? const []),
+  );
 }
 
 class DiagnosticAnalysis {
@@ -60,13 +70,22 @@ class DiagnosticAnalysis {
   /// Un STOP interdit tout guidage DIY, quoi que dise le reste de la réponse.
   bool get isSafetyStop => nextAction.type == NextActionType.safetyStop;
 
-  factory DiagnosticAnalysis.fromJson(Map<String, dynamic> json) => DiagnosticAnalysis(
+  factory DiagnosticAnalysis.fromJson(Map<String, dynamic> json) =>
+      DiagnosticAnalysis(
         riskLevel: RiskLevel.values.byName(json['risk_level'] as String),
         diyAllowed: json['diy_allowed'] as bool,
-        nextAction: NextAction.fromJson(json['next_action'] as Map<String, dynamic>),
-        observations: List<String>.from(json['observations'] as List? ?? const []),
-        missingInformation: List<String>.from(json['missing_information'] as List? ?? const []),
-        requiredItems: List<String>.from(json['required_items'] as List? ?? const []),
+        nextAction: NextAction.fromJson(
+          json['next_action'] as Map<String, dynamic>,
+        ),
+        observations: List<String>.from(
+          json['observations'] as List? ?? const [],
+        ),
+        missingInformation: List<String>.from(
+          json['missing_information'] as List? ?? const [],
+        ),
+        requiredItems: List<String>.from(
+          json['required_items'] as List? ?? const [],
+        ),
       );
 }
 

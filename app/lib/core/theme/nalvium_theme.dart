@@ -1,69 +1,95 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'nalvium_colors.dart';
 import 'nalvium_spacing.dart';
+import 'nalvium_typography.dart';
+
+const _overlay = SystemUiOverlayStyle(
+  statusBarColor: Colors.transparent,
+  statusBarIconBrightness: Brightness.dark,
+  statusBarBrightness: Brightness.light,
+  systemNavigationBarColor: NalviumColors.surface,
+  systemNavigationBarIconBrightness: Brightness.dark,
+);
 
 ThemeData buildNalviumTheme() {
   const scheme = ColorScheme.light(
-    primary: NalviumColors.blue,
+    primary: NalviumColors.primary,
     onPrimary: Colors.white,
     surface: NalviumColors.surface,
-    onSurface: NalviumColors.navy,
+    onSurface: NalviumColors.textPrimary,
     error: NalviumColors.danger,
-    secondary: NalviumColors.blue,
-  );
-
-  const text = TextTheme(
-    headlineLarge: TextStyle(fontSize: 32, height: 1.15, fontWeight: FontWeight.w700, color: NalviumColors.navy, letterSpacing: -0.5),
-    headlineMedium: TextStyle(fontSize: 26, height: 1.2, fontWeight: FontWeight.w700, color: NalviumColors.navy, letterSpacing: -0.3),
-    titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: NalviumColors.navy),
-    titleMedium: TextStyle(fontSize: 17, fontWeight: FontWeight.w600, color: NalviumColors.navy),
-    bodyLarge: TextStyle(fontSize: 17, height: 1.45, color: NalviumColors.navy),
-    bodyMedium: TextStyle(fontSize: 15, height: 1.45, color: NalviumColors.grey),
-    labelLarge: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+    secondary: NalviumColors.primary,
   );
 
   return ThemeData(
     useMaterial3: true,
+    fontFamily: NalviumText.family,
     colorScheme: scheme,
     scaffoldBackgroundColor: NalviumColors.background,
-    textTheme: text,
+    splashFactory: InkRipple.splashFactory,
+    textTheme: const TextTheme(
+      headlineLarge: NalviumText.display,
+      headlineMedium: NalviumText.titleLarge,
+      titleLarge: NalviumText.title,
+      titleMedium: NalviumText.title,
+      bodyLarge: NalviumText.bodyLarge,
+      bodyMedium: NalviumText.body,
+      bodySmall: NalviumText.caption,
+      labelLarge: NalviumText.button,
+    ),
     appBarTheme: const AppBarTheme(
       backgroundColor: NalviumColors.background,
-      foregroundColor: NalviumColors.navy,
+      foregroundColor: NalviumColors.textPrimary,
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: false,
+      systemOverlayStyle: _overlay,
     ),
-    filledButtonTheme: FilledButtonThemeData(
-      style: FilledButton.styleFrom(
-        backgroundColor: NalviumColors.blue,
-        foregroundColor: Colors.white,
-        minimumSize: const Size.fromHeight(60),
-        textStyle: text.labelLarge,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(NalviumSpacing.radius)),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: NalviumColors.surface,
+      hintStyle: NalviumText.body.copyWith(color: NalviumColors.textMuted),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: Space.x5,
+        vertical: Space.x4,
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(Corner.medium),
+        borderSide: const BorderSide(
+          color: NalviumColors.borderSubtle,
+          width: 1.5,
+        ),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(Corner.medium),
+        borderSide: const BorderSide(
+          color: NalviumColors.borderSubtle,
+          width: 1.5,
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(Corner.medium),
+        borderSide: const BorderSide(color: NalviumColors.primary, width: 2),
       ),
     ),
-    outlinedButtonTheme: OutlinedButtonThemeData(
-      style: OutlinedButton.styleFrom(
-        foregroundColor: NalviumColors.navy,
-        minimumSize: const Size.fromHeight(56),
-        textStyle: text.labelLarge,
-        side: const BorderSide(color: NalviumColors.greyLight, width: 1.5),
-        backgroundColor: NalviumColors.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(NalviumSpacing.radius)),
-      ),
+    textSelectionTheme: const TextSelectionThemeData(
+      cursorColor: NalviumColors.primary,
     ),
-    textButtonTheme: TextButtonThemeData(
-      style: TextButton.styleFrom(
-        foregroundColor: NalviumColors.blue,
-        textStyle: text.titleMedium,
-      ),
+    progressIndicatorTheme: const ProgressIndicatorThemeData(
+      color: NalviumColors.primary,
     ),
     snackBarTheme: SnackBarThemeData(
-      backgroundColor: NalviumColors.navy,
+      backgroundColor: NalviumColors.textPrimary,
+      contentTextStyle: NalviumText.body.copyWith(color: Colors.white),
       behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(NalviumSpacing.radiusSmall)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(Corner.small),
+      ),
     ),
   );
 }
+
+/// Style de la barre système (icônes sombres) pour les écrans clairs.
+const nalviumSystemOverlay = _overlay;

@@ -3,16 +3,19 @@ import uuid
 from dataclasses import dataclass
 from datetime import UTC, datetime
 
-from app.db.models import DiagnosticSession, MediaAsset, SessionMessage
+from app.db.models import DiagnosticSession, MediaAsset, SessionMessage, VideoFrame
 from app.domain.diagnosis import (
     DiagnosticAnalysis,
     DiagnosticContext,
     MediaRef,
     NextActionType,
     VerificationOutcome,
+    VideoDiagnosticInput,
+    VideoFrameInput,
 )
 from app.media.pipeline import ProcessedImage
 from app.media.storage import MediaStorage
+from app.media.video import ProcessedVideo
 from app.repositories.sessions import (
     TERMINAL_STATUSES,
     MediaRepository,
@@ -104,6 +107,47 @@ class SessionService:
         )
         return self._media.add(asset)
 
+    def add_video(self, user_id: uuid.UUID, session_id: uuid.UUID, video: ProcessedVideo) -> MediaAsset:
+        """Vidéo PRIVÉE (mp4 nettoyé) + images clés dérivées, rattachées à la session."""
+        session = self.get(user_id, session_id)
+        if session.status in TERMINAL_STATUSES:
+            raise InvalidTurn("session_closed")
+        media_id = uuid.uuid4()
+        key = f"{user_id}/{media_id}.mp4"
+        self._storage.put(key, video.data)
+        asset = MediaAsset(
+            id=media_id,
+            user_id=user_id,
+            session_id=session.id,
+            kind="video",
+            storage_key=key,
+            content_type=video.content_type,
+            size_bytes=len(video.data),
+            width=video.width,
+            height=video.height,
+            duration_s=video.duration_s,
+            has_audio=video.has_audio,
+            exif_stripped=True,
+            visibility="private",
+        )
+        for i, f in enumerate(video.frames):
+            fkey = f"{user_id}/{media_id}_f{i}.jpg"
+            self._storage.put(fkey, f.jpeg)
+            asset.frames.append(VideoFrame(idx=i, t_seconds=f.t, storage_key=fkey))
+        return self._media.add(asset)
+
+    def read_thumbnail(self, user_id: uuid.UUID, media_id: uuid.UUID) -> tuple[bytes, str]:
+        """Photo : l'image elle-même. Vidéo : une image représentative (jamais le fichier vidéo)."""
+        asset = self._media.get_owned(media_id, user_id)
+        if asset is None:
+            raise NotFound
+        if asset.kind == "video":
+            if not asset.frames:
+                raise NotFound
+            mid = asset.frames[len(asset.frames) // 2]
+            return self._storage.get(mid.storage_key), "image/jpeg"
+        return self._storage.get(asset.storage_key), asset.content_type
+
     def read_media(self, user_id: uuid.UUID, media_id: uuid.UUID) -> tuple[bytes, str]:
         asset = self._media.get_owned(media_id, user_id)
         if asset is None:
@@ -155,6 +199,11 @@ class SessionService:
             self._sessions.add_message(
                 session, role="user", kind="photo", text=text, media_id=asset.id
             )
+        elif turn.kind == "video":
+            asset = turn.media_id and self._media.get_owned(turn.media_id, user_id)
+            if not asset or asset.session_id != session.id or asset.kind != "video":
+                raise InvalidTurn("unknown_media")
+            self._sessions.add_message(session, role="user", kind="video", text=text, media_id=asset.id)
         elif turn.kind == "action_result":
             if turn.choice not in ACTION_RESULT_TEXT:
                 raise InvalidTurn("unknown_choice")
@@ -174,7 +223,7 @@ class SessionService:
         user_texts: list[str] = []
         for m in session.messages:
             if m.role == "user":
-                label = {"photo": "[Photo ajoutée]", "action_result": "Réponse à l'étape"}.get(
+                label = {"photo": "[Photo ajoutée]", "video": "[Vidéo ajoutée]", "action_result": "Réponse à l'étape"}.get(
                     m.kind, "Utilisateur"
                 )
                 line = f"{label}: {m.text}" if m.text else label
@@ -191,8 +240,20 @@ class SessionService:
                 history.append(" | ".join(parts))
 
         photos: list[MediaRef] = []
+        videos: list[VideoDiagnosticInput] = []
         for asset in session.media:
-            if asset.kind == "photo":
+            if asset.kind == "video" and asset.frames:
+                videos.append(
+                    VideoDiagnosticInput(
+                        media_id=str(asset.id),
+                        duration_s=asset.duration_s or 0.0,
+                        has_audio=bool(asset.has_audio),
+                        frames=[
+                            VideoFrameInput(t=f.t_seconds, data=self._storage.get(f.storage_key)) for f in asset.frames
+                        ],
+                    )
+                )
+            elif asset.kind == "photo":
                 photos.append(
                     MediaRef(
                         media_id=str(asset.id),
@@ -208,6 +269,7 @@ class SessionService:
         return DiagnosticContext(
             session_id=str(session.id),
             photos=photos,
+            videos=videos,
             description=session.description,
             conversation=user_texts,
             history=history,

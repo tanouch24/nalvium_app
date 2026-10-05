@@ -2,6 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Le micro enregistre le son de votre vidéo (un bruit peut aider à comprendre un problème). Vous pouvez le refuser : la vidéo sera alors sans son.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Nalvium utilise la caméra pour que vous puissiez montrer le problème de votre maison en photo ou en vidéo.</string>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-3940256099942544~1458002511</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Cet identifiant sert uniquement à afficher des publicités plus pertinentes. Vous pouvez refuser.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>

@@ -6,12 +6,17 @@ import '../../core/network/api_exceptions.dart';
 import '../../core/theme/nalvium_colors.dart';
 import '../../core/theme/nalvium_spacing.dart';
 import '../../core/widgets/authed_image.dart';
+import '../../core/widgets/buttons.dart';
 import '../../core/widgets/error_panel.dart';
+import '../../core/widgets/motion.dart';
 import '../../domain/diagnosis.dart';
 import '../../domain/session.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/providers.dart';
+import '../capture/analysis_wait.dart';
 import '../capture/capture_flow.dart';
+import '../history/session_labels.dart';
+import 'context_header.dart';
 import 'views/action_views.dart';
 
 /// Expérience guidée. Le BACKEND est la source de vérité : l'écran se recharge depuis lui
@@ -43,12 +48,18 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
       _error = null;
     });
     try {
-      final state = await ref.read(sessionsRepositoryProvider).getSession(widget.sessionId);
+      final state = await ref
+          .read(sessionsRepositoryProvider)
+          .getSession(widget.sessionId);
       if (!mounted) return;
       if (state.pendingAnalysis) {
         // Un message utilisateur attend une réponse (analyse interrompue) : on la relance.
         _apply(state, busyAfter: true);
-        await _execute(() => ref.read(sessionsRepositoryProvider).sendTurn(widget.sessionId, null));
+        await _execute(
+          () => ref
+              .read(sessionsRepositoryProvider)
+              .sendTurn(widget.sessionId, null),
+        );
       } else {
         _apply(state);
       }
@@ -112,10 +123,17 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
     }
   }
 
-  void _answer(String text) => _execute(() => ref.read(sessionsRepositoryProvider).sendTurn(widget.sessionId, AnswerTurn(text)));
+  void _answer(String text) => _execute(
+    () => ref
+        .read(sessionsRepositoryProvider)
+        .sendTurn(widget.sessionId, AnswerTurn(text)),
+  );
 
-  void _actionResult(ActionChoice c) =>
-      _execute(() => ref.read(sessionsRepositoryProvider).sendTurn(widget.sessionId, ActionResultTurn(c)));
+  void _actionResult(ActionChoice c) => _execute(
+    () => ref
+        .read(sessionsRepositoryProvider)
+        .sendTurn(widget.sessionId, ActionResultTurn(c)),
+  );
 
   Future<void> _takePhoto() async {
     final photo = await capturePhoto(context, ref);
@@ -133,7 +151,10 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final state = _state;
-    final isStop = state?.next?.actionType == NextActionType.safetyStop && !_busy && _error == null;
+    final isStop =
+        state?.next?.actionType == NextActionType.safetyStop &&
+        !_busy &&
+        _error == null;
 
     final actions = SessionActions(
       onAnswer: _answer,
@@ -141,80 +162,58 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
       onTakePhoto: _takePhoto,
       onHome: _home,
       onRepairOptions: () => context.go('/repair'),
+      onSummary: () => context.push('/session/${widget.sessionId}/summary'),
     );
 
     Widget body;
     if (_error != null) {
-      body = _Centered(
-        child: ErrorPanel(
-          error: _error!,
-          onRetry: _retry,
-          secondary: TextButton(key: const Key('back-home'), onPressed: _home, child: Text(l10n.backHome)),
+      body = Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(Space.gutter),
+          child: ErrorPanel(
+            error: _error!,
+            onRetry: _retry,
+            secondary: TertiaryButton(
+              key: const Key('back-home'),
+              label: l10n.backToHome,
+              color: NalviumColors.textSecondary,
+              onPressed: _home,
+            ),
+          ),
         ),
       );
     } else if (_busy || state == null || state.next == null) {
-      body = _Thinking(mediaId: state?.latestMediaId, onCancel: _home);
+      body = AnalysisWait(
+        onCancel: _home,
+        photo: state?.latestMediaId == null
+            ? null
+            : AuthedImage(
+                mediaId: state!.latestMediaId!,
+                semanticLabel: l10n.photoSemantics,
+              ),
+      );
     } else {
       body = _Content(state: state, actions: actions);
     }
 
+    final bg = isStop
+        ? NalviumColors.dangerBackground
+        : NalviumColors.background;
     return Scaffold(
-      backgroundColor: isStop ? const Color(0xFFFDECEC) : null,
+      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: isStop ? const Color(0xFFFDECEC) : null,
-        leading: IconButton(key: const Key('close-session'), icon: const Icon(Icons.close_rounded), tooltip: l10n.close, onPressed: _home),
-        title: Text(l10n.appName, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: NalviumColors.blue, letterSpacing: 2.5, fontWeight: FontWeight.w800)),
+        backgroundColor: bg,
+        leading: IconButton(
+          key: const Key('close-session'),
+          icon: const Icon(Icons.close_rounded),
+          tooltip: l10n.close,
+          constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+          onPressed: _home,
+        ),
       ),
       body: SafeArea(child: body),
     );
   }
-}
-
-class _Centered extends StatelessWidget {
-  const _Centered({required this.child});
-  final Widget child;
-  @override
-  Widget build(BuildContext context) => Center(
-        child: SingleChildScrollView(padding: const EdgeInsets.all(NalviumSpacing.lg), child: child),
-      );
-}
-
-class _Thinking extends StatelessWidget {
-  const _Thinking({this.mediaId, required this.onCancel});
-  final String? mediaId;
-  final VoidCallback onCancel;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return _Centered(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (mediaId != null) ...[
-            _Photo(mediaId: mediaId!, height: 160),
-            const SizedBox(height: NalviumSpacing.lg),
-          ],
-          const SizedBox(width: 32, height: 32, child: CircularProgressIndicator(strokeWidth: 3)),
-          const SizedBox(height: NalviumSpacing.md),
-          Text(l10n.analyzingTitle, key: const Key('analyzing-title'), style: Theme.of(context).textTheme.titleLarge, textAlign: TextAlign.center),
-          const SizedBox(height: NalviumSpacing.md),
-          TextButton(key: const Key('cancel-analysis'), onPressed: onCancel, child: Text(l10n.cancel)),
-        ],
-      ),
-    );
-  }
-}
-
-class _Photo extends StatelessWidget {
-  const _Photo({required this.mediaId, required this.height});
-  final String mediaId;
-  final double height;
-  @override
-  Widget build(BuildContext context) => ClipRRect(
-        borderRadius: BorderRadius.circular(NalviumSpacing.radius),
-        child: SizedBox(height: height, width: double.infinity, child: AuthedImage(mediaId: mediaId)),
-      );
 }
 
 class _Content extends StatelessWidget {
@@ -225,26 +224,97 @@ class _Content extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final step = state.next!;
-    final view = switch (step.actionType) {
-      NextActionType.askQuestion => AskQuestionView(key: ValueKey(step.message), step: step, actions: actions),
-      NextActionType.requestPhoto => RequestPhotoView(step: step, actions: actions),
-      NextActionType.instruction => InstructionView(step: step, actions: actions),
-      NextActionType.verification => VerificationView(step: step, actions: actions),
+    final type = step.actionType;
+    final view = switch (type) {
+      NextActionType.askQuestion => AskQuestionView(
+        key: ValueKey('ask-${state.messageCount}'),
+        step: step,
+        actions: actions,
+      ),
+      NextActionType.requestPhoto => RequestPhotoView(
+        key: ValueKey('photo-${state.messageCount}'),
+        step: step,
+        actions: actions,
+        previousMediaId: state.latestMediaId,
+          previousIsVideo: state.latestMediaIsVideo,
+      ),
+      NextActionType.instruction => InstructionView(
+        key: ValueKey('instr-${state.messageCount}'),
+        step: step,
+        actions: actions,
+      ),
+      NextActionType.verification => VerificationView(
+        key: ValueKey('verif-${state.messageCount}'),
+        step: step,
+        actions: actions,
+      ),
       NextActionType.safetyStop => SafetyStopView(step: step, actions: actions),
-      NextActionType.recommendProfessional => ProfessionalView(step: step, actions: actions),
-      NextActionType.resolved => ResolvedView(step: step, actions: actions),
+      NextActionType.recommendProfessional => ProfessionalView(
+        step: step,
+        actions: actions,
+      ),
+      NextActionType.resolved => ResolvedView(
+        step: step,
+        actions: actions,
+        problemTitle: state.title,
+      ),
     };
-    final showPhoto = state.latestMediaId != null && step.actionType != NextActionType.safetyStop;
+    // Contexte constant (vignette + titre + catégorie). REQUEST_PHOTO montre déjà la photo (paire), RESOLVED
+    // et SAFETY_STOP ont leur propre composition.
+    final showContext = switch (type) {
+      NextActionType.safetyStop ||
+      NextActionType.requestPhoto ||
+      NextActionType.resolved => false,
+      _ => state.latestMediaId != null || (state.title ?? '').trim().isNotEmpty,
+    };
+
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(NalviumSpacing.lg, NalviumSpacing.sm, NalviumSpacing.lg, NalviumSpacing.xl),
+      padding: const EdgeInsets.fromLTRB(
+        Space.gutter,
+        Space.x2,
+        Space.gutter,
+        Space.x8,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (showPhoto) ...[
-            _Photo(mediaId: state.latestMediaId!, height: 190),
-            const SizedBox(height: NalviumSpacing.lg),
+          if (showContext) ...[
+            ContextHeader(
+              isVideo: state.latestMediaIsVideo,
+              mediaId: state.latestMediaId,
+              title: state.title,
+              category: categoryLabel(
+                AppLocalizations.of(context),
+                state.category,
+              ),
+            ),
+            const SizedBox(height: Space.x8),
           ],
-          view,
+          AnimatedSwitcher(
+            duration: motionDuration(
+              context,
+              const Duration(milliseconds: 280),
+            ),
+            switchInCurve: Curves.easeOutCubic,
+            transitionBuilder: (child, animation) => FadeTransition(
+              opacity: animation,
+              child: SlideTransition(
+                position: Tween(
+                  begin: const Offset(0, 0.02),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: child,
+              ),
+            ),
+            layoutBuilder: (current, previous) => Stack(
+              alignment: Alignment.topCenter,
+              children: [...previous, ?current],
+            ),
+            child: KeyedSubtree(
+              key: ValueKey('${type.name}-${state.messageCount}'),
+              child: view,
+            ),
+          ),
         ],
       ),
     );

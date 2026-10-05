@@ -49,6 +49,15 @@ cd app && flutter run --dart-define=NALVIUM_API_URL=http://IP_LAN:8001
 En release, `NALVIUM_API_URL` doit être une URL https publique (localhost, 10.0.2.2 et IP privées sont refusés).
 Identité : UUID aléatoire anonyme par installation (en-tête `X-Nalvium-Install-Id`), sans compte.
 
+## Publicités (AdMob) — IDs de TEST uniquement
+
+- Bannière adaptative permanente sur l'Accueil ; App Open à l'ouverture ; interstitiel avant chaque NOUVEAU
+  diagnostic à partir du n°2 (jamais en session ; une reprise n'est pas un diagnostic) ; délai commun de 60 s.
+- Consentement UMP avant tout chargement de pub. Aucune donnée de diagnostic n'est transmise aux pubs.
+- IDs de test dans `lib/core/ads/ad_config.dart` + ID d'application de test dans `AndroidManifest.xml` / `Info.plist`
+  (à remplacer avant publication ; ne jamais commiter les vrais). `--dart-define=NALVIUM_DISABLE_ADS=true` coupe les pubs.
+- L'image d'accueil est la photo définitive (`app/assets/images/README.md`).
+
 ## Architecture backend (`backend/app`)
 
 - `api/` routes minces, sans logique métier

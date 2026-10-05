@@ -8,7 +8,7 @@ from app.db.models import DiagnosticSession, SessionMessage
 
 
 class TurnRequest(BaseModel):
-    kind: Literal["description", "answer", "photo", "action_result"]
+    kind: Literal["description", "answer", "photo", "video", "action_result"]
     text: str | None = Field(default=None, max_length=2000)
     choice: Literal["done", "cannot", "mismatch"] | None = None
     media_id: uuid.UUID | None = None
@@ -18,6 +18,9 @@ class MediaOut(BaseModel):
     id: uuid.UUID
     width: int | None
     height: int | None
+    media_type: str = "photo"  # photo | video
+    duration_s: float | None = None
+    has_audio: bool | None = None
 
 
 class HypothesisOut(BaseModel):
@@ -51,6 +54,12 @@ class NextOut(BaseModel):
     step_number: int | None = None
 
 
+class ActionOut(BaseModel):
+    step_number: int
+    instruction: str
+    status: str  # pending | done | failed | mismatch
+
+
 class SessionOut(BaseModel):
     id: uuid.UUID
     status: str
@@ -66,6 +75,7 @@ class SessionOut(BaseModel):
     latest_media_id: uuid.UUID | None
     media: list[MediaOut]
     messages: list[MessageOut]
+    actions: list[ActionOut]
     next: NextOut | None
 
 
@@ -78,6 +88,9 @@ class SessionSummary(BaseModel):
     risk_level: str | None
     updated_at: datetime
     first_media_id: uuid.UUID | None
+    subcategory: str | None = None
+    # Dernier message de Nalvium (pour la carte « À reprendre » / l'historique).
+    last_message: str | None = None
 
 
 def _next_out(msg: SessionMessage, step: int | None) -> NextOut:
@@ -113,7 +126,10 @@ def session_out(session: DiagnosticSession) -> SessionOut:
         updated_at=session.updated_at,
         pending_analysis=bool(last and last.role == "user" and session.status == "active"),
         latest_media_id=session.media[-1].id if session.media else None,
-        media=[MediaOut(id=m.id, width=m.width, height=m.height) for m in session.media],
+        media=[
+            MediaOut(id=m.id, width=m.width, height=m.height, media_type=m.kind, duration_s=m.duration_s, has_audio=m.has_audio)
+            for m in session.media
+        ],
         messages=[
             MessageOut(
                 id=m.id,
@@ -126,11 +142,16 @@ def session_out(session: DiagnosticSession) -> SessionOut:
             )
             for m in msgs
         ],
+        actions=[
+            ActionOut(step_number=a.step_number, instruction=a.instruction, status=a.status)
+            for a in session.actions
+        ],
         next=_next_out(last_nalvium, step) if last_nalvium else None,
     )
 
 
 def summary_out(session: DiagnosticSession) -> SessionSummary:
+    last = next((m for m in reversed(session.messages) if m.role == "nalvium"), None)
     return SessionSummary(
         id=session.id,
         status=session.status,
@@ -140,4 +161,6 @@ def summary_out(session: DiagnosticSession) -> SessionSummary:
         risk_level=session.risk_level,
         updated_at=session.updated_at,
         first_media_id=session.media[0].id if session.media else None,
+        subcategory=session.subcategory,
+        last_message=(last.text or None) if last else None,
     )

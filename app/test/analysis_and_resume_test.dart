@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nalvium/core/network/api_exceptions.dart';
+import 'package:nalvium/core/widgets/buttons.dart';
 import 'package:nalvium/domain/diagnosis.dart';
 import 'package:nalvium/domain/session.dart';
 import 'package:nalvium/services/photo_capture_service.dart';
@@ -16,16 +19,60 @@ Future<void> startPhoto(WidgetTester tester, FakeSessionsRepository repo) async 
 }
 
 void main() {
-  testWidgets('attente : "J\'analyse le problème…" sans faux pourcentage', (tester) async {
-    final repo = FakeSessionsRepository(turns: [sessionState()]);
+  testWidgets('ANALYSE : attente honnête (photo, texte Nalvium, phrases d\'attente, aucun faux pourcentage)', (tester) async {
+    final repo = FakeSessionsRepository(turns: [sessionState()])..turnGate = Completer<void>();
     await pumpApp(tester, repo: repo, captures: [CapturedPhoto(tempPhotoPath('x'))]);
     await tester.tap(find.byKey(const Key('take-photo')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('use-photo')));
-    await tester.pump(); // écran d'analyse affiché avant la réponse
+    await tester.pump(const Duration(milliseconds: 200));
+    await tester.pump(const Duration(milliseconds: 400));
     expect(find.text('J\'analyse le problème…'), findsOneWidget);
+    expect(find.byType(Image), findsWidgets); // la photo prise est visible
+    expect(find.text('Je regarde ce qui pourrait provoquer ça.'), findsOneWidget);
     expect(find.byType(LinearProgressIndicator), findsNothing);
     expect(find.textContaining('%'), findsNothing);
+    expect(find.textContaining('IA'), findsNothing); // pas de jargon
+
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pump(const Duration(milliseconds: 600));
+    expect(find.text('J\'observe les éléments visibles.'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pump(const Duration(milliseconds: 600));
+    expect(find.text('Je vérifie ce qui mérite votre attention.'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 15));
+    await tester.pump(const Duration(milliseconds: 600));
+    expect(find.text('Cela prend un peu plus de temps que d\'habitude…'), findsOneWidget);
+
+    repo.turnGate!.complete();
+    await tester.pumpAndSettle();
+    expect(find.text('Question ?'), findsOneWidget);
+  });
+
+  testWidgets('ANALYSE : « Réduire les animations » → aucune animation permanente', (tester) async {
+    final repo = FakeSessionsRepository(turns: [sessionState()])..turnGate = Completer<void>();
+    await pumpApp(tester, repo: repo, captures: [CapturedPhoto(tempPhotoPath('x'))], reduceMotion: true);
+    await tester.tap(find.byKey(const Key('take-photo')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('use-photo')));
+    await tester.pumpAndSettle(); // ne se bloque pas : rien ne pulse
+    expect(find.text('J\'analyse le problème…'), findsOneWidget);
+    repo.turnGate!.complete();
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('ANALYSE : Annuler revient à l\'accueil', (tester) async {
+    final repo = FakeSessionsRepository(turns: [sessionState()])..turnGate = Completer<void>();
+    await pumpApp(tester, repo: repo, captures: [CapturedPhoto(tempPhotoPath('x'))]);
+    await tester.tap(find.byKey(const Key('take-photo')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('use-photo')));
+    await tester.pump(const Duration(milliseconds: 200));
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.tap(find.byKey(const Key('cancel-analysis')));
+    await tester.pumpAndSettle();
+    expect(find.text('Un problème à la maison ?'), findsOneWidget);
+    repo.turnGate!.complete();
     await tester.pumpAndSettle();
   });
 
@@ -81,7 +128,7 @@ void main() {
       await tester.tap(find.byKey(const Key('describe-problem')));
       await tester.pumpAndSettle();
       expect(find.text('Que se passe-t-il ?'), findsOneWidget);
-      expect(tester.widget<FilledButton>(find.byKey(const Key('describe-continue'))).onPressed, isNull);
+      expect(tester.widget<PrimaryButton>(find.byKey(const Key('describe-continue'))).onPressed, isNull);
     });
 
     testWidgets('texte → session → même moteur guidé', (tester) async {
@@ -130,12 +177,14 @@ void main() {
       await pumpApp(tester, repo: repo);
       expect(find.text('À reprendre'), findsOneWidget);
       expect(find.text('Fuite sous l\'évier'), findsOneWidget);
-      expect(find.text('Une étape vous attend'), findsOneWidget);
+      expect(find.textContaining('Fermez le robinet'), findsNothing);
+      expect(find.text('Continuer'), findsOneWidget);
       await tester.ensureVisible(find.byKey(const Key('resume-session')));
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('resume-session')));
       await tester.pumpAndSettle();
       expect(find.text('Fermez le robinet.'), findsOneWidget);
+      expect(find.text('Essayez ceci'), findsOneWidget);
     });
 
     testWidgets('sessions terminées ne sont pas « À reprendre » mais sont dans l\'Historique', (tester) async {
@@ -146,6 +195,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Robinet réparé'), findsOneWidget);
       expect(find.text('Résolu'), findsOneWidget);
+      expect(find.text('Aujourd\'hui'), findsNothing);
     });
 
     testWidgets('historique vide : état vide honnête', (tester) async {

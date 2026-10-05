@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:nalvium/core/network/api_exceptions.dart';
 import 'package:nalvium/data/sessions_repository.dart';
 import 'package:nalvium/domain/diagnosis.dart';
@@ -15,6 +17,9 @@ SessionState sessionState({
   String? title = 'Fuite sous l\'évier',
   String? mediaId,
   int messages = 2,
+  String? category = 'plumbing',
+  List<String> observations = const [],
+  List<Map<String, dynamic>> actions = const [],
 }) {
   final wire = switch (action) {
     NextActionType.askQuestion => 'ASK_QUESTION',
@@ -30,7 +35,9 @@ SessionState sessionState({
     'status': status,
     'current_state': wire,
     'title': title,
-    'category': 'plumbing',
+    'category': category,
+    'updated_at': '2026-10-05T13:45:00+00:00',
+    'actions': actions,
     'risk_level': 'low',
     'pending_analysis': pending,
     'latest_media_id': mediaId,
@@ -40,14 +47,23 @@ SessionState sessionState({
       'message': message,
       'choices': choices,
       'required_items': items,
+      'observations': observations,
       'step_number': step,
       'diy_allowed': true,
     },
   });
 }
 
-SessionSummary summary({String id = 's1', String state = 'ASK_QUESTION', String status = 'active', String? title = 'Fuite sous l\'évier'}) =>
-    SessionSummary(id: id, status: status, currentState: state, title: title, updatedAt: DateTime(2026, 10, 5), firstMediaId: null);
+SessionSummary summary({
+  String id = 's1',
+  String state = 'ASK_QUESTION',
+  String status = 'active',
+  String? title = 'Fuite sous l\'évier',
+  String? lastMessage,
+  String? category = 'plumbing',
+  DateTime? updatedAt,
+}) =>
+    SessionSummary(id: id, status: status, currentState: state, title: title, category: category, updatedAt: updatedAt ?? DateTime.now(), firstMediaId: null, lastMessage: lastMessage);
 
 /// Faux dépôt de TEST : renvoie des résultats prévus par le test (jamais utilisé dans l'app).
 class FakeSessionsRepository implements SessionsRepository {
@@ -63,6 +79,9 @@ class FakeSessionsRepository implements SessionsRepository {
   Object? listError;
   Object? getError;
 
+  /// Si défini, sendTurn attend ce Completer (permet d'observer l'écran d'attente).
+  Completer<void>? turnGate;
+
   @override
   Future<String> createSession() async {
     calls.add('create');
@@ -76,9 +95,16 @@ class FakeSessionsRepository implements SessionsRepository {
   }
 
   @override
+  Future<String> uploadVideo(String sessionId, String filePath) async {
+    calls.add('upload_video');
+    return 'v${calls.where((c) => c == 'upload_video').length}';
+  }
+
+  @override
   Future<SessionState> sendTurn(String sessionId, TurnInput? input) async {
     calls.add('turn');
     inputs.add(input);
+    if (turnGate != null) await turnGate!.future;
     final r = turns.removeAt(0);
     if (r is ApiException) throw r;
     stored = r as SessionState;

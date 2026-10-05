@@ -91,11 +91,30 @@ class MediaRef(BaseModel):
     data: bytes | None = Field(default=None, exclude=True, repr=False)
 
 
+class VideoFrameInput(BaseModel):
+    """Image représentative extraite d'une vidéo, avec son horodatage approximatif (secondes)."""
+
+    t: float
+    data: bytes = Field(exclude=True, repr=False)
+    mime: str = "image/jpeg"
+
+
+class VideoDiagnosticInput(BaseModel):
+    """Contexte vidéo fourni au moteur. Le fournisseur n'accepte pas la vidéo native : il reçoit des images
+    ordonnées dans le temps. L'audio n'est PAS analysé (seule sa présence est indiquée)."""
+
+    media_id: str
+    duration_s: float
+    has_audio: bool
+    frames: list[VideoFrameInput] = Field(default_factory=list)
+
+
 class DiagnosticContext(BaseModel):
     """Ce que reçoit l'IA à chaque tour."""
 
     session_id: str
     photos: list[MediaRef] = Field(default_factory=list)
+    videos: list[VideoDiagnosticInput] = Field(default_factory=list)
     description: str | None = None
     # Textes écrits PAR L'UTILISATEUR uniquement (base du Safety pre-check).
     conversation: list[str] = Field(default_factory=list)

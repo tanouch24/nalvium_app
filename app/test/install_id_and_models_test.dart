@@ -1,12 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nalvium/domain/diagnosis.dart';
 import 'package:nalvium/domain/session.dart';
+import 'package:nalvium/domain/text.dart';
 import 'package:nalvium/features/session/views/action_views.dart';
 import 'package:nalvium/services/install_id_store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 void main() {
+  textCleaningTests();
   group('identité anonyme par installation', () {
     test('premier lancement : UUID aléatoire valide, stocké', () async {
       SharedPreferences.setMockInitialValues({});
@@ -68,6 +70,21 @@ void main() {
       expect(stripStopPrefix('Arrêtez-vous ici. Sortez.'), 'Sortez.');
       expect(stripStopPrefix('arrêtez-vous ici.  Sortez.'), 'Sortez.');
       expect(stripStopPrefix('Sortez tout de suite.'), 'Sortez tout de suite.');
+    });
+  });
+}
+
+void textCleaningTests() {
+  group('cleanText', () {
+    test('trait d\'union insécable → trait d\'union (la police ne le contient pas)', () {
+      expect(cleanText('au‑dessus'), 'au-dessus');
+      expect(cleanText('très bien'), 'très bien');
+      expect(cleanText('a​b'), 'ab');
+    });
+    test('appliqué au message Nalvium reçu', () {
+      final n = NextStep.fromJson({'action_type': 'INSTRUCTION', 'message': 'Tenez au‑dessus', 'choices': ['C’est fait'], 'required_items': ['Gants‑ménagers']});
+      expect(n.message, 'Tenez au-dessus');
+      expect(n.requiredItems, ['Gants-ménagers']);
     });
   });
 }

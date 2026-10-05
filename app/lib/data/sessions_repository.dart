@@ -6,6 +6,7 @@ import '../domain/session.dart';
 abstract interface class SessionsRepository {
   Future<String> createSession();
   Future<String> uploadPhoto(String sessionId, String filePath);
+  Future<String> uploadVideo(String sessionId, String filePath);
 
   /// [input] null = relancer l'analyse d'un message utilisateur resté sans réponse.
   Future<SessionState> sendTurn(String sessionId, TurnInput? input);
@@ -26,6 +27,19 @@ class HttpSessionsRepository implements SessionsRepository {
   @override
   Future<String> uploadPhoto(String sessionId, String filePath) async {
     final json = await _api.postFile('/v1/sessions/$sessionId/media', field: 'file', filePath: filePath);
+    return _map(json)['id'] as String;
+  }
+
+  @override
+  Future<String> uploadVideo(String sessionId, String filePath) async {
+    final json = await _api.postFile(
+      '/v1/sessions/$sessionId/video',
+      field: 'file',
+      filePath: filePath,
+      filename: 'video.mp4',
+      contentType: 'video/mp4',
+      timeout: const Duration(seconds: 120),
+    );
     return _map(json)['id'] as String;
   }
 

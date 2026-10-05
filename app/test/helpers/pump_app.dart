@@ -6,9 +6,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:nalvium/app.dart';
 import 'package:nalvium/core/router/app_router.dart';
 import 'package:nalvium/services/photo_capture_service.dart';
+import 'package:nalvium/domain/video.dart';
 import 'package:nalvium/services/providers.dart';
+import 'package:nalvium/services/video_recorder_service.dart';
 
 import 'fakes.dart';
+import 'package:nalvium/core/ads/ads_service.dart';
 
 class FakePhotoCaptureService implements PhotoCaptureService {
   FakePhotoCaptureService(this.results);
@@ -40,18 +43,110 @@ Future<FakePhotoCaptureService> pumpApp(
   List<Object?> captures = const [null],
   FakeSessionsRepository? repo,
   String location = '/home',
+  Size size = const Size(1080, 3600), // pixels physiques
+  double dpr = 3,
+  double textScale = 1.0,
+  bool reduceMotion = false,
+  bool settle = true,
+  FakeAdsService? ads,
+  FakeVideoRecorder? recorder,
+  int fileSize = 5 * 1024 * 1024,
 }) async {
-  tester.view.physicalSize = const Size(1080, 2800);
-  tester.view.devicePixelRatio = 3;
-  addTearDown(tester.view.reset);
+  tester.view.physicalSize = size;
+  tester.view.devicePixelRatio = dpr;
+  tester.platformDispatcher.textScaleFactorTestValue = textScale;
+  if (reduceMotion) {
+    tester.platformDispatcher.accessibilityFeaturesTestValue = const FakeAccessibilityFeatures(disableAnimations: true);
+  }
+  addTearDown(() {
+    tester.view.reset();
+    tester.platformDispatcher.clearTextScaleFactorTestValue();
+    tester.platformDispatcher.clearAccessibilityFeaturesTestValue();
+  });
   final fake = FakePhotoCaptureService(captures);
   await tester.pumpWidget(ProviderScope(
+    retry: (_, _) => null,
     overrides: [
       photoCaptureServiceProvider.overrideWithValue(fake),
       sessionsRepositoryProvider.overrideWithValue(repo ?? FakeSessionsRepository()),
+      adsServiceProvider.overrideWithValue(ads ?? FakeAdsService()),
+      videoRecorderFactoryProvider.overrideWithValue(() => recorder ?? FakeVideoRecorder()),
+      videoFileSizeProvider.overrideWithValue((_) async => fileSize),
     ],
     child: NalviumApp(router: buildRouter(initialLocation: location)),
   ));
-  await tester.pumpAndSettle();
+  if (settle) {
+    await tester.pumpAndSettle();
+  } else {
+    await tester.pump();
+  }
   return fake;
+}
+
+/// Faux service publicitaire de TEST : enregistre les appels, aucun SDK.
+class FakeAdsService implements AdsService {
+  int newDiagnostics = 0;
+  int suspendCalls = 0;
+  int initializeCalls = 0;
+  final resumes = <String>[];
+
+  @override
+  Future<void> initialize() async => initializeCalls++;
+
+  @override
+  Widget buildHomeBanner() => const SizedBox(key: Key('ad-slot'), height: 60, width: double.infinity);
+
+  @override
+  Future<void> beforeNewDiagnostic() async => newDiagnostics++;
+
+  @override
+  Future<void> onAppResumed({required String route, required Duration backgroundFor}) async => resumes.add(route);
+
+  @override
+  Future<T> suspendAppOpen<T>(Future<T> Function() action) async {
+    suspendCalls++;
+    return action();
+  }
+}
+
+/// Faux enregistreur vidéo de TEST : aucune caméra, comportement piloté par le test.
+class FakeVideoRecorder implements VideoRecorder {
+  FakeVideoRecorder({this.initError, this.audio = true, this.startError, this.path});
+  final VideoException? initError;
+  final VideoException? startError;
+  final String? path;
+  final bool audio;
+  int starts = 0, stops = 0, cancels = 0, switches = 0, initializations = 0;
+  bool disposed = false;
+
+  @override
+  Future<void> initialize() async {
+    initializations++;
+    if (initError != null) throw initError!;
+  }
+
+  @override
+  bool get hasAudio => audio;
+  @override
+  bool get canSwitchCamera => true;
+  @override
+  Future<void> switchCamera() async => switches++;
+  @override
+  Widget buildPreview() => const ColoredBox(key: Key('camera-preview'), color: Color(0xFF223344), child: SizedBox(width: 200, height: 300));
+  @override
+  Future<void> start() async {
+    if (startError != null) throw startError!;
+    starts++;
+  }
+
+  @override
+  Future<String> stop() async {
+    stops++;
+    return path ?? tempPhotoPath('video_fake');
+  }
+
+  @override
+  Future<void> cancel() async => cancels++;
+  @override
+  Future<void> dispose() async => disposed = true;
 }

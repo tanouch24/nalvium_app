@@ -58,6 +58,7 @@ class DiagnosticSession(Base):
     messages: Mapped[list["SessionMessage"]] = relationship(
         back_populates="session", order_by="SessionMessage.seq", cascade="all, delete-orphan"
     )
+    actions: Mapped[list["SessionAction"]] = relationship(order_by="SessionAction.step_number")
 
 
 class MediaAsset(Base):
@@ -76,9 +77,13 @@ class MediaAsset(Base):
     width: Mapped[int | None] = mapped_column(Integer)
     height: Mapped[int | None] = mapped_column(Integer)
     exif_stripped: Mapped[bool] = mapped_column(Boolean, default=True)
+    # Vidéo uniquement (kind = 'video')
+    duration_s: Mapped[float | None] = mapped_column(Float)
+    has_audio: Mapped[bool | None] = mapped_column(Boolean)
     visibility: Mapped[str] = mapped_column(String(16), default="private")
     created_at: Mapped[datetime] = _now()
     session: Mapped[DiagnosticSession | None] = relationship(back_populates="media")
+    frames: Mapped[list["VideoFrame"]] = relationship(order_by="VideoFrame.idx", cascade="all, delete-orphan")
 
 
 class SessionMessage(Base):
@@ -155,3 +160,14 @@ class SessionVerification(Base):
     message_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("session_messages.id", ondelete="CASCADE"))
     outcome: Mapped[str] = mapped_column(String(24))
     created_at: Mapped[datetime] = _now()
+
+
+class VideoFrame(Base):
+    """Image représentative dérivée d'une vidéo privée (ordre + horodatage conservés)."""
+
+    __tablename__ = "video_frames"
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    media_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("media_assets.id", ondelete="CASCADE"), index=True)
+    idx: Mapped[int] = mapped_column(Integer)
+    t_seconds: Mapped[float] = mapped_column(Float)
+    storage_key: Mapped[str] = mapped_column(String(512), unique=True)

@@ -115,3 +115,78 @@ async def test_no_key_means_unavailable_never_a_mock():
 def test_key_present_builds_real_provider():
     prov = build_provider(Settings(ai_provider="openai", openai_api_key="sk-test", _env_file=None))
     assert prov.name == "openai"
+
+
+def test_typographic_glyphs_the_ui_font_cannot_render_are_normalised():
+    out = to_domain(
+        wire(
+            title="Fuite sous l‑évier",
+            next_action=WireNextAction(
+                action_type="INSTRUCTION",
+                message="Tenez le téléphone au‑dessus, centré sur cette zone.\u200b",
+                choices=["C’est fait"],
+            ),
+            required_items=["Gants‐ménagers"],
+        )
+    )
+    assert out.title == "Fuite sous l-évier"
+    assert "‑" not in out.next_action.message and "au-dessus" in out.next_action.message
+    assert " " not in out.next_action.message and "\u200b" not in out.next_action.message
+    assert out.required_items == ["Gants-ménagers"]
+    assert out.next_action.choices == ["C’est fait"]  # l'apostrophe typographique reste (la police la contient)
+
+
+# ───────────────────────────── VIDÉO ─────────────────────────────
+from app.domain.diagnosis import VideoDiagnosticInput, VideoFrameInput
+
+
+def _video(has_audio=True, times=(0.0, 3.0, 6.0, 9.0)):
+    return VideoDiagnosticInput(
+        media_id="v1", duration_s=9.0, has_audio=has_audio,
+        frames=[VideoFrameInput(t=t, data=bytes([int(t)])) for t in times],
+    )
+
+
+def test_video_is_sent_as_ordered_timestamped_frames_not_as_a_video_file():
+    content = build_input(DiagnosticContext(session_id="s", videos=[_video()]))[0]["content"]
+    types = [c["type"] for c in content]
+    assert set(types) == {"input_text", "input_image"}  # aucune entrée « vidéo » ou « audio » native
+    assert types.count("input_image") == 4
+    header = content[0]["text"]
+    assert "4 images extraites de CETTE MÊME vidéo" in header and "ordre chronologique" in header
+    assert "0.0 s, 3.0 s, 6.0 s, 9.0 s" in header
+    labels = [c["text"] for c in content if c["type"] == "input_text"][1:]
+    assert labels == [f"Image extraite de la vidéo, à t = {t:.1f} s :" for t in (0.0, 3.0, 6.0, 9.0)]
+    # chaque libellé précède immédiatement son image, dans l'ordre
+    idx = [i for i, c in enumerate(content) if c["type"] == "input_image"]
+    assert all(content[i - 1]["type"] == "input_text" for i in idx)
+
+
+def test_audio_is_never_claimed_to_be_analysed():
+    with_audio = build_input(DiagnosticContext(session_id="s", videos=[_video(True)]))[0]["content"][0]["text"]
+    assert "PAS l'écouter" in with_audio and "demande à l'utilisateur de le décrire" in with_audio
+    without = build_input(DiagnosticContext(session_id="s", videos=[_video(False)]))[0]["content"][0]["text"]
+    assert "pas de son" in without
+    from app.ai.prompts import SYSTEM_PROMPT
+
+    assert "ne prétends" in SYSTEM_PROMPT and "Tu ne peux pas écouter le son" in SYSTEM_PROMPT
+
+
+def test_only_the_latest_video_is_sent_to_bound_the_images():
+    older, newer = _video(times=(0.0, 5.0)), _video(times=(1.0, 2.0, 3.0))
+    content = build_input(DiagnosticContext(session_id="s", videos=[older, newer]))[0]["content"]
+    assert sum(1 for c in content if c["type"] == "input_image") == 3
+
+
+def test_video_and_photos_can_coexist_with_bounded_total():
+    photos = [MediaRef(media_id=str(i), data=bytes([i])) for i in range(6)]
+    content = build_input(DiagnosticContext(session_id="s", videos=[_video()], photos=photos))[0]["content"]
+    assert sum(1 for c in content if c["type"] == "input_image") == 4 + 4  # 4 images vidéo + 4 photos max
+
+
+@pytest.mark.asyncio
+async def test_video_context_is_passed_through_the_provider_call():
+    prov, responses = provider(wire())
+    await prov.analyze(DiagnosticContext(session_id="s", videos=[_video()]))
+    sent = responses.kwargs["input"][0]["content"]
+    assert sum(1 for c in sent if c["type"] == "input_image") == 4

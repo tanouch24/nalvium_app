@@ -17,7 +17,7 @@ void main() {
 
     await tester.tap(find.byKey(const Key('nav-house')));
     await tester.pumpAndSettle();
-    expect(find.text('Votre maison est vide pour l\'instant'), findsOneWidget);
+    expect(find.text('Votre maison prendra forme ici'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('nav-repair')));
     await tester.pumpAndSettle();
@@ -25,7 +25,7 @@ void main() {
 
     await tester.tap(find.byKey(const Key('nav-community')));
     await tester.pumpAndSettle();
-    expect(find.text('La communauté arrive bientôt'), findsOneWidget);
+    expect(find.text('Les réparations des autres, bientôt ici'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('nav-home')));
     await tester.pumpAndSettle();

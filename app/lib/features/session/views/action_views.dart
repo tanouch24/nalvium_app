@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../core/theme/nalvium_colors.dart';
 import '../../../core/theme/nalvium_spacing.dart';
+import '../../../core/theme/nalvium_typography.dart';
+import '../../../core/widgets/buttons.dart';
+import '../../../core/widgets/authed_image.dart';
+import '../../../core/widgets/choice_tile.dart';
+import '../../../core/widgets/motion.dart';
+import '../../../core/widgets/viewfinder.dart';
 import '../../../domain/session.dart';
 import '../../../l10n/app_localizations.dart';
 
-/// Actions que les vues peuvent déclencher ; l'écran de session les relie au backend.
+/// Actions que les vues déclenchent ; l'écran de session les relie au backend.
 class SessionActions {
   const SessionActions({
     required this.onAnswer,
@@ -13,61 +20,149 @@ class SessionActions {
     required this.onTakePhoto,
     required this.onHome,
     required this.onRepairOptions,
+    required this.onSummary,
   });
   final void Function(String text) onAnswer;
   final void Function(ActionChoice choice) onActionResult;
   final VoidCallback onTakePhoto;
   final VoidCallback onHome;
   final VoidCallback onRepairOptions;
+  final VoidCallback onSummary;
 }
 
 /// « Arrêtez-vous ici. » est déjà le titre de l'écran : on le retire du corps pour ne pas le répéter.
 String stripStopPrefix(String message) {
   final trimmed = message.trim();
   const prefix = 'Arrêtez-vous ici.';
-  return trimmed.toLowerCase().startsWith(prefix.toLowerCase()) ? trimmed.substring(prefix.length).trim() : trimmed;
+  return trimmed.toLowerCase().startsWith(prefix.toLowerCase())
+      ? trimmed.substring(prefix.length).trim()
+      : trimmed;
 }
 
-class NalviumMessage extends StatelessWidget {
-  const NalviumMessage(this.text, {super.key, this.label});
-  final String text;
-  final String? label;
+enum Phase { observation, action, control }
+
+/// Où l'on en est, qualitativement (jamais « étape 2/7 » : on ne connaît pas le nombre d'étapes).
+/// Une pastille discrète : icône + libellé, pour s'orienter sans que ce soit un titre.
+class PhaseLabel extends StatelessWidget {
+  const PhaseLabel(this.phase, {super.key});
+  final Phase phase;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
+    final (IconData icon, String text) = switch (phase) {
+      Phase.observation => (Icons.visibility_outlined, l10n.phaseObservation),
+      Phase.action => (Icons.touch_app_outlined, l10n.phaseAction),
+      Phase.control => (Icons.fact_check_outlined, l10n.phaseControl),
+    };
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: Space.x3, vertical: 5),
+      decoration: BoxDecoration(
+        color: NalviumColors.primarySoft,
+        borderRadius: BorderRadius.circular(Corner.small),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: NalviumColors.primaryText),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              text,
+              key: const Key('phase-label'),
+              style: NalviumText.caption.copyWith(
+                color: NalviumColors.primaryText,
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Structure commune : pastille → état de Nalvium (discret) → HÉROS (la question / l'action).
+/// Le passage d'un action_type à l'autre se lit comme la suite du même diagnostic.
+class _Head extends StatelessWidget {
+  const _Head({
+    required this.phase,
+    required this.title,
+    required this.hero,
+    this.accentBar = false,
+    this.heroSize = 24,
+  });
+  final Phase phase;
+  final String title;
+  final String hero;
+  final bool accentBar;
+  final double heroSize;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Text(
+      hero,
+      key: const Key('nalvium-message'),
+      style: NalviumText.titleLarge.copyWith(
+        fontSize: heroSize,
+        height: 1.32,
+        fontWeight: accentBar ? FontWeight.w600 : FontWeight.w700,
+        letterSpacing: -0.3,
+      ),
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label ?? AppLocalizations.of(context).appName,
-          style: theme.textTheme.labelLarge?.copyWith(color: NalviumColors.blue, letterSpacing: 2, fontSize: 13, fontWeight: FontWeight.w800),
+        PhaseLabel(phase),
+        const SizedBox(height: Space.x4),
+        Semantics(
+          header: true,
+          child: Text(
+            title,
+            key: const Key('guidance-title'),
+            style: NalviumText.title.copyWith(
+              fontSize: 18,
+              color: NalviumColors.textSecondary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ),
-        const SizedBox(height: NalviumSpacing.sm),
-        Text(text, key: const Key('nalvium-message'), style: theme.textTheme.bodyLarge?.copyWith(fontSize: 20, height: 1.4, fontWeight: FontWeight.w500)),
+        const SizedBox(height: Space.x3),
+        if (accentBar)
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(
+                  width: 4,
+                  decoration: BoxDecoration(
+                    color: NalviumColors.primary,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(width: Space.x4),
+                Expanded(child: text),
+              ],
+            ),
+          )
+        else
+          text,
       ],
     );
   }
 }
 
-class _ChoiceButtons extends StatelessWidget {
-  const _ChoiceButtons({required this.choices, required this.onPick});
-  final List<String> choices;
-  final void Function(String) onPick;
+/// Icône d'une réponse connue (neutre : « Oui » n'est pas forcément « bon » selon la question).
+IconData? _iconForAnswer(String label) => switch (label.trim().toLowerCase()) {
+  'oui' => Icons.check_rounded,
+  'un peu' => Icons.contrast_rounded,
+  'non' => Icons.close_rounded,
+  'je ne sais pas' => Icons.help_outline_rounded,
+  _ => null,
+};
 
-  @override
-  Widget build(BuildContext context) => Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          for (final c in choices) ...[
-            OutlinedButton(key: Key('choice-$c'), onPressed: () => onPick(c), child: Text(c)),
-            const SizedBox(height: NalviumSpacing.sm),
-          ],
-        ],
-      );
-}
-
-/// ASK_QUESTION : UNE question, réponses adaptées, réponse libre possible.
+/// ASK_QUESTION : la question est le centre de l'écran, les réponses sont secondaires.
 class AskQuestionView extends StatefulWidget {
   const AskQuestionView({super.key, required this.step, required this.actions});
   final NextStep step;
@@ -87,20 +182,32 @@ class _AskQuestionViewState extends State<AskQuestionView> {
     super.dispose();
   }
 
-  void _submit() {
-    final text = _controller.text.trim();
-    if (text.isNotEmpty) widget.actions.onAnswer(text);
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final choices = widget.step.choices;
+    // Icônes seulement si toutes les réponses en ont une (sinon la liste paraît incohérente).
+    final useIcons =
+        choices.isNotEmpty && choices.every((c) => _iconForAnswer(c) != null);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        NalviumMessage(widget.step.message),
-        const SizedBox(height: NalviumSpacing.lg),
-        if (widget.step.choices.isNotEmpty) _ChoiceButtons(choices: widget.step.choices, onPick: widget.actions.onAnswer),
+        _Head(
+          phase: Phase.observation,
+          title: l10n.titleAsk,
+          hero: widget.step.message,
+          heroSize: 25,
+        ),
+        const SizedBox(height: Space.x8),
+        for (final c in choices) ...[
+          ChoiceTile(
+            key: Key('choice-$c'),
+            label: c,
+            icon: useIcons ? _iconForAnswer(c) : null,
+            onTap: () => widget.actions.onAnswer(c),
+          ),
+          const SizedBox(height: Space.x3),
+        ],
         if (_typing) ...[
           TextField(
             key: const Key('answer-field'),
@@ -111,20 +218,41 @@ class _AskQuestionViewState extends State<AskQuestionView> {
             decoration: InputDecoration(hintText: l10n.typeAnswer),
             onChanged: (_) => setState(() {}),
           ),
-          const SizedBox(height: NalviumSpacing.sm),
-          FilledButton(key: const Key('send-answer'), onPressed: _controller.text.trim().isEmpty ? null : _submit, child: Text(l10n.send)),
+          const SizedBox(height: Space.x3),
+          PrimaryButton(
+            key: const Key('send-answer'),
+            label: l10n.send,
+            onPressed: _controller.text.trim().isEmpty
+                ? null
+                : () => widget.actions.onAnswer(_controller.text.trim()),
+          ),
         ] else
-          TextButton(key: const Key('answer-otherwise'), onPressed: () => setState(() => _typing = true), child: Text(l10n.answerOtherwise)),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TertiaryButton(
+              key: const Key('answer-otherwise'),
+              label: l10n.answerOtherwise,
+              onPressed: () => setState(() => _typing = true),
+            ),
+          ),
       ],
     );
   }
 }
 
-/// REQUEST_PHOTO : dit exactement ce qu'il veut voir.
+/// REQUEST_PHOTO : on voit QUOI photographier — votre photo → la vue demandée.
 class RequestPhotoView extends StatelessWidget {
-  const RequestPhotoView({super.key, required this.step, required this.actions});
+  const RequestPhotoView({
+    super.key,
+    required this.step,
+    required this.actions,
+    this.previousMediaId,
+    this.previousIsVideo = false,
+  });
   final NextStep step;
   final SessionActions actions;
+  final String? previousMediaId;
+  final bool previousIsVideo;
 
   @override
   Widget build(BuildContext context) {
@@ -132,25 +260,136 @@ class RequestPhotoView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        NalviumMessage(step.message),
-        const SizedBox(height: NalviumSpacing.lg),
-        FilledButton.icon(
-          key: const Key('take-requested-photo'),
-          onPressed: actions.onTakePhoto,
-          icon: const Icon(Icons.photo_camera_rounded),
-          label: Text(l10n.takeAPhoto),
+        _Head(
+          phase: Phase.observation,
+          title: l10n.titleRequestPhoto,
+          hero: step.message,
+          heroSize: 22,
         ),
-        TextButton(
+        const SizedBox(height: Space.x6),
+        _PhotoPair(
+          previousMediaId: previousMediaId,
+          previousIsVideo: previousIsVideo,
+          onTake: actions.onTakePhoto,
+        ),
+        const SizedBox(height: Space.x6),
+        PrimaryButton(
+          key: const Key('take-requested-photo'),
+          label: l10n.takeThePhoto,
+          icon: Icons.photo_camera_rounded,
+          onPressed: actions.onTakePhoto,
+        ),
+        const SizedBox(height: Space.x1),
+        TertiaryButton(
           key: const Key('cannot-take-photo'),
+          label: l10n.cannotTakePhoto,
+          color: NalviumColors.textSecondary,
           onPressed: () => actions.onAnswer(l10n.cannotTakePhotoAnswer),
-          child: Text(l10n.cannotTakePhoto),
         ),
       ],
     );
   }
 }
 
-/// INSTRUCTION : UNE seule action à la fois.
+class _PhotoPair extends StatelessWidget {
+  const _PhotoPair({this.previousMediaId, this.previousIsVideo = false, required this.onTake});
+  final String? previousMediaId;
+  final bool previousIsVideo;
+  final VoidCallback onTake;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final target = Semantics(
+      button: true,
+      label: l10n.takeThePhoto,
+      excludeSemantics: true,
+      child: Column(
+        children: [
+          AspectRatio(
+            aspectRatio: 4 / 5,
+            child: Material(
+              color: NalviumColors.primarySoft,
+              borderRadius: BorderRadius.circular(Corner.medium),
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                key: const Key('photo-target'),
+                onTap: onTake,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.all(10),
+                      child: ViewfinderCorners(
+                        color: NalviumColors.primary,
+                        length: 20,
+                        stroke: 3,
+                        radius: 10,
+                      ),
+                    ),
+                    const Center(
+                      child: Icon(
+                        Icons.photo_camera_outlined,
+                        size: 34,
+                        color: NalviumColors.primary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: Space.x2),
+          Text(
+            l10n.photoToTake,
+            style: NalviumText.caption.copyWith(
+              color: NalviumColors.primaryText,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (previousMediaId == null) {
+      return Center(child: SizedBox(width: 150, child: target));
+    }
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(
+            children: [
+              AspectRatio(
+                aspectRatio: 4 / 5,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(Corner.medium),
+                  child: AuthedImage(
+                    mediaId: previousMediaId!,
+                    semanticLabel: l10n.photoSemantics,
+                  ),
+                ),
+              ),
+              const SizedBox(height: Space.x2),
+              Text(previousIsVideo ? l10n.yourVideo : l10n.yourPhoto, style: NalviumText.caption),
+            ],
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: Space.x3, vertical: 54),
+          child: Icon(
+            Icons.arrow_forward_rounded,
+            size: 22,
+            color: NalviumColors.textMuted,
+          ),
+        ),
+        Expanded(child: target),
+      ],
+    );
+  }
+}
+
+/// INSTRUCTION : l'action est le héros — une phrase, un trait bleu, puis trois boutons hiérarchisés.
 class InstructionView extends StatelessWidget {
   const InstructionView({super.key, required this.step, required this.actions});
   final NextStep step;
@@ -159,58 +398,154 @@ class InstructionView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (step.stepNumber != null)
-          Padding(
-            padding: const EdgeInsets.only(bottom: NalviumSpacing.sm),
-            child: Text(l10n.stepLabel(step.stepNumber!), key: const Key('step-label'), style: theme.textTheme.titleMedium?.copyWith(color: NalviumColors.grey)),
-          ),
-        NalviumMessage(step.message),
+        _Head(
+          phase: Phase.action,
+          title: l10n.titleInstruction,
+          hero: step.message,
+          accentBar: true,
+          heroSize: 25,
+        ),
         if (step.requiredItems.isNotEmpty) ...[
-          const SizedBox(height: NalviumSpacing.md),
-          Text(l10n.youWillNeed(step.requiredItems.join(', ')), style: theme.textTheme.bodyMedium),
+          const SizedBox(height: Space.x6),
+          Text(
+            l10n.youNeed,
+            key: const Key('required-items-title'),
+            style: NalviumText.caption.copyWith(color: NalviumColors.textMuted),
+          ),
+          const SizedBox(height: Space.x2),
+          Wrap(
+            spacing: Space.x2,
+            runSpacing: Space.x2,
+            children: [
+              for (final item in step.requiredItems)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: Space.x3,
+                    vertical: Space.x2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: NalviumColors.surfaceSubtle,
+                    borderRadius: BorderRadius.circular(Corner.small),
+                  ),
+                  child: Text(
+                    item,
+                    style: NalviumText.body.copyWith(
+                      color: NalviumColors.textPrimary,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ],
-        const SizedBox(height: NalviumSpacing.lg),
-        FilledButton(key: const Key('action-done'), onPressed: () => actions.onActionResult(ActionChoice.done), child: Text(l10n.actionDone)),
-        const SizedBox(height: NalviumSpacing.sm),
-        OutlinedButton(key: const Key('action-cannot'), onPressed: () => actions.onActionResult(ActionChoice.cannot), child: Text(l10n.actionCannot)),
-        TextButton(key: const Key('action-mismatch'), onPressed: () => actions.onActionResult(ActionChoice.mismatch), child: Text(l10n.actionMismatch)),
-      ],
-    );
-  }
-}
-
-/// VERIFICATION : vérifier le résultat plutôt que de supposer.
-class VerificationView extends StatelessWidget {
-  const VerificationView({super.key, required this.step, required this.actions});
-  final NextStep step;
-  final SessionActions actions;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final choices = step.choices.isNotEmpty ? step.choices : [l10n.answerNo, l10n.answerYes, l10n.answerDontKnow];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        NalviumMessage(step.message),
-        const SizedBox(height: NalviumSpacing.lg),
-        _ChoiceButtons(choices: choices, onPick: actions.onAnswer),
-        TextButton.icon(
-          key: const Key('verify-with-photo'),
-          onPressed: actions.onTakePhoto,
-          icon: const Icon(Icons.photo_camera_outlined),
-          label: Text(l10n.takeAPhoto),
+        const SizedBox(height: Space.x8),
+        PrimaryButton(
+          key: const Key('action-done'),
+          label: l10n.actionDone,
+          onPressed: () => actions.onActionResult(ActionChoice.done),
+        ),
+        const SizedBox(height: Space.x3),
+        SecondaryButton(
+          key: const Key('action-cannot'),
+          label: l10n.actionCannot,
+          onPressed: () => actions.onActionResult(ActionChoice.cannot),
+        ),
+        const SizedBox(height: Space.x1),
+        TertiaryButton(
+          key: const Key('action-mismatch'),
+          label: l10n.actionMismatch,
+          color: NalviumColors.textSecondary,
+          onPressed: () => actions.onActionResult(ActionChoice.mismatch),
         ),
       ],
     );
   }
 }
 
-/// SAFETY_STOP : immédiatement identifiable, sans aucune autre action que partir.
+/// VERIFICATION : les réponses se lisent comme des RÉSULTATS (grille 2×2 avec icônes), pas un questionnaire.
+class VerificationView extends StatelessWidget {
+  const VerificationView({
+    super.key,
+    required this.step,
+    required this.actions,
+  });
+  final NextStep step;
+  final SessionActions actions;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final choices = step.choices.isNotEmpty
+        ? step.choices
+        : [
+            l10n.answerYes,
+            l10n.answerALittle,
+            l10n.answerNo,
+            l10n.answerDontKnow,
+          ];
+    final grid =
+        choices.length == 4 && choices.every((c) => _iconForAnswer(c) != null);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _Head(
+          phase: Phase.control,
+          title: l10n.titleVerification,
+          hero: step.message,
+          heroSize: 24,
+        ),
+        const SizedBox(height: Space.x8),
+        if (grid)
+          LayoutBuilder(
+            builder: (context, c) {
+              final w = (c.maxWidth - Space.x3) / 2;
+              return Wrap(
+                spacing: Space.x3,
+                runSpacing: Space.x3,
+                children: [
+                  for (final choice in choices)
+                    SizedBox(
+                      width: w,
+                      child: ChoiceTile(
+                        key: Key('choice-$choice'),
+                        label: choice,
+                        icon: _iconForAnswer(choice),
+                        vertical: true,
+                        onTap: () => actions.onAnswer(choice),
+                      ),
+                    ),
+                ],
+              );
+            },
+          )
+        else
+          for (final c in choices) ...[
+            ChoiceTile(
+              key: Key('choice-$c'),
+              label: c,
+
+              onTap: () => actions.onAnswer(c),
+            ),
+            const SizedBox(height: Space.x3),
+          ],
+        const SizedBox(height: Space.x2),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: TertiaryButton(
+            key: const Key('verify-with-photo'),
+            label: l10n.verifyWithPhoto,
+            onPressed: actions.onTakePhoto,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// SAFETY_STOP : change immédiatement de niveau d'attention. Aucune action DIY, aucun bouton de réparation.
 class SafetyStopView extends StatelessWidget {
   const SafetyStopView({super.key, required this.step, required this.actions});
   final NextStep step;
@@ -219,101 +554,316 @@ class SafetyStopView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const SizedBox(height: NalviumSpacing.lg),
+        const SizedBox(height: Space.x6),
+        Center(
+          child: Container(
+            width: 92,
+            height: 92,
+            decoration: const BoxDecoration(
+              color: NalviumColors.dangerSoft,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.warning_amber_rounded,
+              size: 50,
+              color: NalviumColors.danger,
+            ),
+          ),
+        ),
+        const SizedBox(height: Space.x6),
+        Semantics(
+          header: true,
+          liveRegion: true,
+          child: Text(
+            l10n.safetyTitle,
+            key: const Key('safety-title'),
+            textAlign: TextAlign.center,
+            style: NalviumText.display.copyWith(
+              color: NalviumColors.dangerText,
+            ),
+          ),
+        ),
+        const SizedBox(height: Space.x5),
+        Text(
+          stripStopPrefix(step.message),
+          key: const Key('safety-message'),
+          textAlign: TextAlign.center,
+          style: NalviumText.bodyLarge.copyWith(height: 1.5),
+        ),
+        const SizedBox(height: Space.x10),
+        DangerButton(
+          key: const Key('safety-understood'),
+          label: l10n.understoodShort,
+          onPressed: actions.onHome,
+        ),
+        const SizedBox(height: Space.x2),
+        TertiaryButton(
+          key: const Key('safety-find-pro'),
+          label: l10n.findProfessional,
+          color: NalviumColors.textSecondary,
+          onPressed: actions.onRepairOptions,
+        ),
+      ],
+    );
+  }
+}
+
+/// RECOMMEND_PROFESSIONAL : calme, pas alarmiste.
+class ProfessionalView extends StatelessWidget {
+  const ProfessionalView({
+    super.key,
+    required this.step,
+    required this.actions,
+  });
+  final NextStep step;
+  final SessionActions actions;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final generic = {
+      'Cette intervention nécessite un professionnel.',
+      l10n.titleProfessional,
+    };
+    final showMessage = !generic.contains(step.message.trim());
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: Space.x4),
         Center(
           child: Container(
             width: 84,
             height: 84,
-            decoration: const BoxDecoration(color: NalviumColors.danger, shape: BoxShape.circle),
-            child: const Icon(Icons.front_hand_rounded, size: 42, color: Colors.white),
+            decoration: const BoxDecoration(
+              color: NalviumColors.primarySoft,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.engineering_rounded,
+              size: 40,
+              color: NalviumColors.primary,
+            ),
           ),
         ),
-        const SizedBox(height: NalviumSpacing.lg),
-        Text(l10n.safetyTitle, key: const Key('safety-title'), textAlign: TextAlign.center, style: theme.textTheme.headlineLarge?.copyWith(color: NalviumColors.danger)),
-        const SizedBox(height: NalviumSpacing.md),
-        Text(stripStopPrefix(step.message), key: const Key('safety-message'), textAlign: TextAlign.center, style: theme.textTheme.bodyLarge?.copyWith(fontSize: 19)),
-        const SizedBox(height: NalviumSpacing.xl),
-        FilledButton(
-          key: const Key('safety-understood'),
-          style: FilledButton.styleFrom(backgroundColor: NalviumColors.navy),
-          onPressed: actions.onHome,
-          child: Text(l10n.understood),
-        ),
-      ],
-    );
-  }
-}
-
-/// RECOMMEND_PROFESSIONAL : orientation simple vers l'onglet Dépannage.
-class ProfessionalView extends StatelessWidget {
-  const ProfessionalView({super.key, required this.step, required this.actions});
-  final NextStep step;
-  final SessionActions actions;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    // Le titre fixe suffit si le message de l'IA est le même.
-    final showMessage = step.message.trim() != l10n.proTitle;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const SizedBox(height: NalviumSpacing.md),
-        Center(
-          child: Container(
-            width: 80,
-            height: 80,
-            decoration: const BoxDecoration(color: NalviumColors.blueSoft, shape: BoxShape.circle),
-            child: const Icon(Icons.engineering_rounded, size: 38, color: NalviumColors.blue),
+        const SizedBox(height: Space.x6),
+        Semantics(
+          header: true,
+          child: Text(
+            l10n.titleProfessional,
+            key: const Key('pro-title'),
+            textAlign: TextAlign.center,
+            style: NalviumText.titleLarge,
           ),
         ),
-        const SizedBox(height: NalviumSpacing.lg),
-        Text(l10n.proTitle, key: const Key('pro-title'), textAlign: TextAlign.center, style: theme.textTheme.headlineMedium),
         if (showMessage) ...[
-          const SizedBox(height: NalviumSpacing.md),
-          Text(step.message, key: const Key('nalvium-message'), textAlign: TextAlign.center, style: theme.textTheme.bodyLarge),
+          const SizedBox(height: Space.x4),
+          Text(
+            step.message,
+            key: const Key('nalvium-message'),
+            textAlign: TextAlign.center,
+            style: NalviumText.bodyLarge,
+          ),
         ],
-        const SizedBox(height: NalviumSpacing.xl),
-        FilledButton(key: const Key('see-repair-options'), onPressed: actions.onRepairOptions, child: Text(l10n.seeRepairOptions)),
-        TextButton(key: const Key('pro-home'), onPressed: actions.onHome, child: Text(l10n.backHome)),
+        const SizedBox(height: Space.x8),
+        PrimaryButton(
+          key: const Key('see-repair-options'),
+          label: l10n.askForHelp,
+          onPressed: actions.onRepairOptions,
+        ),
+        const SizedBox(height: Space.x1),
+        TertiaryButton(
+          key: const Key('pro-home'),
+          label: l10n.backToHome,
+          color: NalviumColors.textSecondary,
+          onPressed: actions.onHome,
+        ),
       ],
     );
   }
 }
 
-/// RESOLVED : seulement lorsque Nalvium a vérifié.
-class ResolvedView extends StatelessWidget {
-  const ResolvedView({super.key, required this.step, required this.actions});
+/// RESOLVED : « Nalvium m'a aidé ». Une surface de succès très légère, un check qui se pose, une conclusion lisible.
+class ResolvedView extends StatefulWidget {
+  const ResolvedView({
+    super.key,
+    required this.step,
+    required this.actions,
+    this.problemTitle,
+  });
   final NextStep step;
   final SessionActions actions;
+  final String? problemTitle;
+
+  @override
+  State<ResolvedView> createState() => _ResolvedViewState();
+}
+
+class _ResolvedViewState extends State<ResolvedView>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 900),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    HapticFeedback.mediumImpact();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (reduceMotion(context)) {
+      _c.value = 1;
+    } else if (!_c.isAnimating && _c.value == 0) {
+      _c.forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  Animation<double> _iv(double a, double b, Curve curve) => CurvedAnimation(
+    parent: _c,
+    curve: Interval(a, b, curve: curve),
+  );
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
+    final ring = _iv(0.0, 0.5, Curves.easeOutCubic);
+    final check = _iv(0.2, 0.65, Curves.easeOutBack);
+    final text = _iv(0.45, 0.9, Curves.easeOutCubic);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const SizedBox(height: NalviumSpacing.md),
-        Center(
-          child: Container(
-            width: 80,
-            height: 80,
-            decoration: const BoxDecoration(color: NalviumColors.success, shape: BoxShape.circle),
-            child: const Icon(Icons.check_rounded, size: 44, color: Colors.white),
+        const SizedBox(height: Space.x2),
+        Container(
+          padding: const EdgeInsets.fromLTRB(
+            Space.x6,
+            Space.x8,
+            Space.x6,
+            Space.x8,
+          ),
+          decoration: BoxDecoration(
+            color: NalviumColors.successSoft.withValues(alpha: 0.55),
+            borderRadius: BorderRadius.circular(Corner.large),
+          ),
+          child: Column(
+            children: [
+              AnimatedBuilder(
+                animation: _c,
+                builder: (context, _) => SizedBox(
+                  width: 132,
+                  height: 132,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Opacity(
+                        opacity: ring.value.clamp(0.0, 1.0),
+                        child: Transform.scale(
+                          scale: 0.7 + 0.3 * ring.value,
+                          child: Container(
+                            width: 132,
+                            height: 132,
+                            decoration: const BoxDecoration(
+                              color: NalviumColors.successSoft,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Opacity(
+                        opacity: check.value.clamp(0.0, 1.0),
+                        child: Transform.scale(
+                          scale: 0.6 + 0.4 * check.value,
+                          child: Container(
+                            width: 88,
+                            height: 88,
+                            decoration: const BoxDecoration(
+                              color: NalviumColors.success,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.check_rounded,
+                              size: 52,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: Space.x5),
+              FadeTransition(
+                opacity: text,
+                child: SlideTransition(
+                  position: Tween(
+                    begin: const Offset(0, 0.08),
+                    end: Offset.zero,
+                  ).animate(text),
+                  child: Column(
+                    children: [
+                      Semantics(
+                        header: true,
+                        child: Text(
+                          l10n.titleResolved,
+                          key: const Key('resolved-title'),
+                          textAlign: TextAlign.center,
+                          style: NalviumText.display,
+                        ),
+                      ),
+                      if (widget.problemTitle != null &&
+                          widget.problemTitle!.trim().isNotEmpty) ...[
+                        const SizedBox(height: Space.x2),
+                        Text(
+                          widget.problemTitle!,
+                          key: const Key('resolved-problem'),
+                          textAlign: TextAlign.center,
+                          style: NalviumText.title.copyWith(
+                            fontSize: 17,
+                            color: NalviumColors.success,
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: Space.x4),
+                      Text(
+                        widget.step.message,
+                        key: const Key('nalvium-message'),
+                        textAlign: TextAlign.center,
+                        style: NalviumText.bodyLarge.copyWith(
+                          fontSize: 18,
+                          height: 1.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: NalviumSpacing.lg),
-        Text(l10n.resolvedTitle, key: const Key('resolved-title'), textAlign: TextAlign.center, style: theme.textTheme.headlineMedium),
-        const SizedBox(height: NalviumSpacing.md),
-        Text(step.message, key: const Key('nalvium-message'), textAlign: TextAlign.center, style: theme.textTheme.bodyLarge),
-        const SizedBox(height: NalviumSpacing.xl),
-        FilledButton(key: const Key('resolved-finish'), onPressed: actions.onHome, child: Text(l10n.finish)),
+        const SizedBox(height: Space.x8),
+        PrimaryButton(
+          key: const Key('resolved-finish'),
+          label: l10n.finish,
+          onPressed: widget.actions.onHome,
+        ),
+        const SizedBox(height: Space.x1),
+        TertiaryButton(
+          key: const Key('resolved-summary'),
+          label: l10n.seeSummary,
+          onPressed: widget.actions.onSummary,
+        ),
       ],
     );
   }
