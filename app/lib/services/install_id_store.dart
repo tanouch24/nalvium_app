@@ -16,6 +16,13 @@ class InstallIdStore {
 
   Future<String> getOrCreate() => _cached ??= _load();
 
+  /// Oublie l'identité actuelle (après suppression des données) : la prochaine lecture en crée une NOUVELLE.
+  Future<void> reset() async {
+    _cached = null;
+    final prefs = await _prefsFuture;
+    await prefs.remove(key);
+  }
+
   Future<String> _load() async {
     final prefs = await _prefsFuture;
     final existing = prefs.getString(key);

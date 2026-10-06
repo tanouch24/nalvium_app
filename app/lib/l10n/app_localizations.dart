@@ -2901,6 +2901,300 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Les interventions sont actuellement disponibles à {name} et dans un rayon de {km} km. Vous pouvez continuer à utiliser gratuitement le diagnostic Nalvium.'**
   String oozBody(String name, int km);
+
+  /// No description provided for @stTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réglages'**
+  String get stTitle;
+
+  /// No description provided for @stSecData.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes données'**
+  String get stSecData;
+
+  /// No description provided for @stSecPrivacy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confidentialité et publicité'**
+  String get stSecPrivacy;
+
+  /// No description provided for @stSecHelp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aide'**
+  String get stSecHelp;
+
+  /// No description provided for @stSecLegal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Légal'**
+  String get stSecLegal;
+
+  /// No description provided for @stSecApp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Application'**
+  String get stSecApp;
+
+  /// No description provided for @stHistory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Historique des diagnostics'**
+  String get stHistory;
+
+  /// No description provided for @stHouse.
+  ///
+  /// In fr, this message translates to:
+  /// **'Maison'**
+  String get stHouse;
+
+  /// No description provided for @stRequests.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demandes d\'intervention'**
+  String get stRequests;
+
+  /// No description provided for @stCommunity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Publications Communauté'**
+  String get stCommunity;
+
+  /// No description provided for @stDeleteData.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer mes données'**
+  String get stDeleteData;
+
+  /// No description provided for @stPrivacy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confidentialité'**
+  String get stPrivacy;
+
+  /// No description provided for @stAdChoices.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choix publicitaires'**
+  String get stAdChoices;
+
+  /// No description provided for @stAbout.
+  ///
+  /// In fr, this message translates to:
+  /// **'À propos et limites de Nalvium'**
+  String get stAbout;
+
+  /// No description provided for @stContact.
+  ///
+  /// In fr, this message translates to:
+  /// **'Contacter Nalvium'**
+  String get stContact;
+
+  /// No description provided for @stPrivacyPolicy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Politique de confidentialité'**
+  String get stPrivacyPolicy;
+
+  /// No description provided for @stTerms.
+  ///
+  /// In fr, this message translates to:
+  /// **'Conditions d\'utilisation'**
+  String get stTerms;
+
+  /// No description provided for @stLegalNotice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mentions légales'**
+  String get stLegalNotice;
+
+  /// No description provided for @stAiInfo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Informations relatives à l\'IA'**
+  String get stAiInfo;
+
+  /// No description provided for @stVersion.
+  ///
+  /// In fr, this message translates to:
+  /// **'Version'**
+  String get stVersion;
+
+  /// No description provided for @stProvisional.
+  ///
+  /// In fr, this message translates to:
+  /// **'Texte provisoire, en cours de relecture avant publication.'**
+  String get stProvisional;
+
+  /// No description provided for @stContactBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Écrivez-nous. Nous lisons chaque message, sans engagement de délai de réponse.'**
+  String get stContactBody;
+
+  /// No description provided for @stContactCopy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Copier l\'adresse'**
+  String get stContactCopy;
+
+  /// No description provided for @stContactCopied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adresse copiée.'**
+  String get stContactCopied;
+
+  /// No description provided for @stAdsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confidentialité et publicité'**
+  String get stAdsTitle;
+
+  /// No description provided for @stAdsBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nalvium est gratuit grâce à la publicité. Dans l\'Espace économique européen, vous pouvez choisir quelles données sont utilisées pour personnaliser les annonces. Aucune donnée de diagnostic n\'est transmise aux annonceurs.'**
+  String get stAdsBody;
+
+  /// No description provided for @stAdsManage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gérer mes choix publicitaires'**
+  String get stAdsManage;
+
+  /// No description provided for @stAdsNone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun choix à gérer actuellement. Si un choix vous est demandé, il apparaîtra ici.'**
+  String get stAdsNone;
+
+  /// No description provided for @stDataTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes données'**
+  String get stDataTitle;
+
+  /// No description provided for @stDataBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nalvium fonctionne sans compte : vos données sont rattachées à un identifiant anonyme propre à ce téléphone. Elles comprennent vos diagnostics, vos photos et vidéos privées, votre Maison, vos demandes d\'intervention et votre activité dans la Communauté.'**
+  String get stDataBody;
+
+  /// No description provided for @stDataDelete.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer mes données'**
+  String get stDataDelete;
+
+  /// No description provided for @stDelTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer mes données ?'**
+  String get stDelTitle;
+
+  /// No description provided for @stDelIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette action est définitive. Elle supprimera de nos serveurs :'**
+  String get stDelIntro;
+
+  /// No description provided for @stDelItem1.
+  ///
+  /// In fr, this message translates to:
+  /// **'vos diagnostics et leurs échanges ;'**
+  String get stDelItem1;
+
+  /// No description provided for @stDelItem2.
+  ///
+  /// In fr, this message translates to:
+  /// **'vos photos et vidéos privées ;'**
+  String get stDelItem2;
+
+  /// No description provided for @stDelItem3.
+  ///
+  /// In fr, this message translates to:
+  /// **'votre Maison, vos équipements et leurs notices ;'**
+  String get stDelItem3;
+
+  /// No description provided for @stDelItem4.
+  ///
+  /// In fr, this message translates to:
+  /// **'vos demandes d\'intervention ;'**
+  String get stDelItem4;
+
+  /// No description provided for @stDelItem5.
+  ///
+  /// In fr, this message translates to:
+  /// **'vos publications et commentaires dans la Communauté, vos « Utile » et vos enregistrements ;'**
+  String get stDelItem5;
+
+  /// No description provided for @stDelItem6.
+  ///
+  /// In fr, this message translates to:
+  /// **'vos signalements.'**
+  String get stDelItem6;
+
+  /// No description provided for @stDelStays.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ne peut pas être rappelé : un message déjà envoyé à l\'exploitant à la suite d\'une demande d\'intervention. Vos publications seront supprimées, pas anonymisées.'**
+  String get stDelStays;
+
+  /// No description provided for @stDelAfter.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ensuite, Nalvium repart à zéro avec une nouvelle identité anonyme.'**
+  String get stDelAfter;
+
+  /// No description provided for @stDelCheck.
+  ///
+  /// In fr, this message translates to:
+  /// **'Je comprends que mes données seront supprimées définitivement.'**
+  String get stDelCheck;
+
+  /// No description provided for @stDelConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer définitivement'**
+  String get stDelConfirm;
+
+  /// No description provided for @stDelWorking.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suppression en cours'**
+  String get stDelWorking;
+
+  /// No description provided for @stDelFail.
+  ///
+  /// In fr, this message translates to:
+  /// **'La suppression n\'a pas pu être effectuée. Rien n\'a été modifié : réessayez.'**
+  String get stDelFail;
+
+  /// No description provided for @stDelDoneTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos données ont été supprimées'**
+  String get stDelDoneTitle;
+
+  /// No description provided for @stDelDoneBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nalvium repart à zéro avec une nouvelle identité anonyme.'**
+  String get stDelDoneBody;
+
+  /// No description provided for @stDelHome.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour à l\'accueil'**
+  String get stDelHome;
+
+  /// No description provided for @stDataRow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Consulter et supprimer mes données'**
+  String get stDataRow;
 }
 
 class _AppLocalizationsDelegate

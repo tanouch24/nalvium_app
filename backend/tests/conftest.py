@@ -35,6 +35,15 @@ def engine():
     eng.dispose()
 
 
+@pytest.fixture(autouse=True)
+def _reset_rate_limits():
+    from app.api import ratelimit
+
+    ratelimit.reset()
+    yield
+    ratelimit.reset()
+
+
 @pytest.fixture
 def clean_db(engine):
     """Vide les tables entre deux tests (le schéma reste migré)."""

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
+import '../analytics/analytics.dart';
 import 'ad_config.dart';
 import 'ad_policy.dart';
 import 'ads_service.dart';
@@ -10,7 +11,10 @@ import 'ads_service.dart';
 /// Implémentation Google Mobile Ads : UMP (consentement) → SDK → bannière / interstitiel / App Open.
 /// IDs de TEST uniquement. Aucune donnée de diagnostic (photos, textes) n'est jamais transmise aux pubs.
 class GoogleAdsService implements AdsService {
-  GoogleAdsService({required this.policy, AdIds? ids}) : ids = ids ?? AdIds.forBuild();
+  GoogleAdsService({required this.policy, AdIds? ids, this.onEvent}) : ids = ids ?? AdIds.forBuild();
+
+  /// Instrumentation sans donnée personnelle (impressions seulement).
+  final void Function(AnalyticsEvent event)? onEvent;
 
   final AdPolicy policy;
   final AdIds ids;
@@ -64,6 +68,35 @@ class GoogleAdsService implements AdsService {
     return done.future.timeout(const Duration(seconds: 20), onTimeout: () {});
   }
 
+  // ── UMP : options de confidentialité (Réglages) ─────────────────────
+  @override
+  Future<bool> privacyOptionsRequired() async {
+    try {
+      await initialize();
+      return await ConsentInformation.instance
+              .getPrivacyOptionsRequirementStatus() ==
+          PrivacyOptionsRequirementStatus.required;
+    } catch (_) {
+      return false; // indisponible : on ne propose rien, on ne bloque rien
+    }
+  }
+
+  @override
+  Future<void> showPrivacyOptions() async {
+    try {
+      final done = Completer<void>();
+      await ConsentForm.showPrivacyOptionsForm((error) {
+        if (error != null) {
+          debugPrint('[ADS] options de confidentialité: ${error.errorCode}');
+        }
+        if (!done.isCompleted) done.complete();
+      });
+      await done.future.timeout(const Duration(seconds: 120), onTimeout: () {});
+    } catch (_) {
+      // jamais bloquant
+    }
+  }
+
   // ── Bannière discrète (un seul bloc Nalvium, emplacements décidés par BannerPolicy) ───────────────────────────────────────────
   @override
   Widget buildBanner() => _AdaptiveBanner(service: this);
@@ -95,6 +128,8 @@ class GoogleAdsService implements AdsService {
       _showing = true;
       final dismissed = Completer<void>();
       ad.fullScreenContentCallback = FullScreenContentCallback(
+        onAdShowedFullScreenContent: (_) =>
+            onEvent?.call(AnalyticsEvent.adInterstitialShown),
         onAdDismissedFullScreenContent: (a) {
           a.dispose();
           _showing = false;
@@ -148,6 +183,8 @@ class GoogleAdsService implements AdsService {
     _appOpen = null;
     _showing = true;
     ad.fullScreenContentCallback = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (_) =>
+          onEvent?.call(AnalyticsEvent.adAppOpenShown),
       onAdDismissedFullScreenContent: (a) {
         a.dispose();
         _showing = false;
@@ -222,6 +259,8 @@ class _AdaptiveBannerState extends State<_AdaptiveBanner> {
       size: size,
       request: const AdRequest(),
       listener: BannerAdListener(
+        onAdImpression: (_) =>
+            widget.service.onEvent?.call(AnalyticsEvent.adBannerImpression),
         onAdLoaded: (_) {
           if (mounted) setState(() {});
         },

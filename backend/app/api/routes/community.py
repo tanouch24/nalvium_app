@@ -4,6 +4,7 @@ import uuid
 from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile
 
 from app.api.deps import current_user_id, get_community_service, optional_user_id
+from app.api.ratelimit import rate_limit
 from app.api.schemas import (
     CommunityCommentCreate,
     CommunityCommentOut,
@@ -44,7 +45,7 @@ def consent_version():
     return {"consent_version": COMMUNITY_CONSENT_VERSION}
 
 
-@router.post("/media", response_model=CommunityMediaOut, status_code=201)
+@router.post("/media", response_model=CommunityMediaOut, status_code=201, dependencies=[Depends(rate_limit("upload", 60, 600))])
 async def upload_photo(
     file: UploadFile = File(...),
     user_id: uuid.UUID = Depends(current_user_id),
@@ -101,7 +102,7 @@ def saved(cursor: str | None = None, limit: int | None = None, user_id: uuid.UUI
     return CommunityPage(items=[community_post_out(r, user_id) for r in items], next_cursor=nxt)
 
 
-@router.post("/posts", response_model=CommunityPostOut, status_code=201)
+@router.post("/posts", response_model=CommunityPostOut, status_code=201, dependencies=[Depends(rate_limit("post", 20, 3600))])
 def create_post(body: CommunityPostCreate, user_id: uuid.UUID = Depends(current_user_id), svc: CommunityService = Depends(get_community_service)):
     row = _guard(lambda: svc.create_post(
         user_id, title=body.title, solution=body.solution, category=body.category, materials=body.materials,
@@ -156,7 +157,7 @@ def list_comments(post_id: uuid.UUID, cursor: str | None = None, limit: int | No
     )
 
 
-@router.post("/posts/{post_id}/comments", response_model=CommunityCommentOut, status_code=201)
+@router.post("/posts/{post_id}/comments", response_model=CommunityCommentOut, status_code=201, dependencies=[Depends(rate_limit("comment", 60, 600))])
 def add_comment(post_id: uuid.UUID, body: CommunityCommentCreate, user_id: uuid.UUID = Depends(current_user_id), svc: CommunityService = Depends(get_community_service)):
     c = _guard(lambda: svc.add_comment(user_id, post_id, body.body))
     return CommunityCommentOut(id=c.id, body=c.body, created_at=c.created_at, mine=True)
@@ -167,11 +168,11 @@ def delete_comment(comment_id: uuid.UUID, user_id: uuid.UUID = Depends(current_u
     _guard(lambda: svc.delete_comment(user_id, comment_id))
 
 
-@router.post("/posts/{post_id}/report", response_model=CommunityReportOut)
+@router.post("/posts/{post_id}/report", response_model=CommunityReportOut, dependencies=[Depends(rate_limit("report", 30, 3600))])
 def report_post(post_id: uuid.UUID, body: CommunityReportIn, user_id: uuid.UUID = Depends(current_user_id), svc: CommunityService = Depends(get_community_service)):
     return CommunityReportOut(created=_guard(lambda: svc.report(user_id, post_id=post_id, reason=body.reason, details=body.details)))
 
 
-@router.post("/comments/{comment_id}/report", response_model=CommunityReportOut)
+@router.post("/comments/{comment_id}/report", response_model=CommunityReportOut, dependencies=[Depends(rate_limit("report", 30, 3600))])
 def report_comment(comment_id: uuid.UUID, body: CommunityReportIn, user_id: uuid.UUID = Depends(current_user_id), svc: CommunityService = Depends(get_community_service)):
     return CommunityReportOut(created=_guard(lambda: svc.report(user_id, comment_id=comment_id, reason=body.reason, details=body.details)))

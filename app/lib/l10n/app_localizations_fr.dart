@@ -1525,4 +1525,163 @@ class AppLocalizationsFr extends AppLocalizations {
   String oozBody(String name, int km) {
     return 'Les interventions sont actuellement disponibles à $name et dans un rayon de $km km. Vous pouvez continuer à utiliser gratuitement le diagnostic Nalvium.';
   }
+
+  @override
+  String get stTitle => 'Réglages';
+
+  @override
+  String get stSecData => 'Mes données';
+
+  @override
+  String get stSecPrivacy => 'Confidentialité et publicité';
+
+  @override
+  String get stSecHelp => 'Aide';
+
+  @override
+  String get stSecLegal => 'Légal';
+
+  @override
+  String get stSecApp => 'Application';
+
+  @override
+  String get stHistory => 'Historique des diagnostics';
+
+  @override
+  String get stHouse => 'Maison';
+
+  @override
+  String get stRequests => 'Demandes d\'intervention';
+
+  @override
+  String get stCommunity => 'Publications Communauté';
+
+  @override
+  String get stDeleteData => 'Supprimer mes données';
+
+  @override
+  String get stPrivacy => 'Confidentialité';
+
+  @override
+  String get stAdChoices => 'Choix publicitaires';
+
+  @override
+  String get stAbout => 'À propos et limites de Nalvium';
+
+  @override
+  String get stContact => 'Contacter Nalvium';
+
+  @override
+  String get stPrivacyPolicy => 'Politique de confidentialité';
+
+  @override
+  String get stTerms => 'Conditions d\'utilisation';
+
+  @override
+  String get stLegalNotice => 'Mentions légales';
+
+  @override
+  String get stAiInfo => 'Informations relatives à l\'IA';
+
+  @override
+  String get stVersion => 'Version';
+
+  @override
+  String get stProvisional =>
+      'Texte provisoire, en cours de relecture avant publication.';
+
+  @override
+  String get stContactBody =>
+      'Écrivez-nous. Nous lisons chaque message, sans engagement de délai de réponse.';
+
+  @override
+  String get stContactCopy => 'Copier l\'adresse';
+
+  @override
+  String get stContactCopied => 'Adresse copiée.';
+
+  @override
+  String get stAdsTitle => 'Confidentialité et publicité';
+
+  @override
+  String get stAdsBody =>
+      'Nalvium est gratuit grâce à la publicité. Dans l\'Espace économique européen, vous pouvez choisir quelles données sont utilisées pour personnaliser les annonces. Aucune donnée de diagnostic n\'est transmise aux annonceurs.';
+
+  @override
+  String get stAdsManage => 'Gérer mes choix publicitaires';
+
+  @override
+  String get stAdsNone =>
+      'Aucun choix à gérer actuellement. Si un choix vous est demandé, il apparaîtra ici.';
+
+  @override
+  String get stDataTitle => 'Mes données';
+
+  @override
+  String get stDataBody =>
+      'Nalvium fonctionne sans compte : vos données sont rattachées à un identifiant anonyme propre à ce téléphone. Elles comprennent vos diagnostics, vos photos et vidéos privées, votre Maison, vos demandes d\'intervention et votre activité dans la Communauté.';
+
+  @override
+  String get stDataDelete => 'Supprimer mes données';
+
+  @override
+  String get stDelTitle => 'Supprimer mes données ?';
+
+  @override
+  String get stDelIntro =>
+      'Cette action est définitive. Elle supprimera de nos serveurs :';
+
+  @override
+  String get stDelItem1 => 'vos diagnostics et leurs échanges ;';
+
+  @override
+  String get stDelItem2 => 'vos photos et vidéos privées ;';
+
+  @override
+  String get stDelItem3 => 'votre Maison, vos équipements et leurs notices ;';
+
+  @override
+  String get stDelItem4 => 'vos demandes d\'intervention ;';
+
+  @override
+  String get stDelItem5 =>
+      'vos publications et commentaires dans la Communauté, vos « Utile » et vos enregistrements ;';
+
+  @override
+  String get stDelItem6 => 'vos signalements.';
+
+  @override
+  String get stDelStays =>
+      'Ne peut pas être rappelé : un message déjà envoyé à l\'exploitant à la suite d\'une demande d\'intervention. Vos publications seront supprimées, pas anonymisées.';
+
+  @override
+  String get stDelAfter =>
+      'Ensuite, Nalvium repart à zéro avec une nouvelle identité anonyme.';
+
+  @override
+  String get stDelCheck =>
+      'Je comprends que mes données seront supprimées définitivement.';
+
+  @override
+  String get stDelConfirm => 'Supprimer définitivement';
+
+  @override
+  String get stDelWorking => 'Suppression en cours';
+
+  @override
+  String get stDelFail =>
+      'La suppression n\'a pas pu être effectuée. Rien n\'a été modifié : réessayez.';
+
+  @override
+  String get stDelDoneTitle => 'Vos données ont été supprimées';
+
+  @override
+  String get stDelDoneBody =>
+      'Nalvium repart à zéro avec une nouvelle identité anonyme.';
+
+  @override
+  String get stDelHome => 'Retour à l\'accueil';
+
+  @override
+  String get stDataRow => 'Consulter et supprimer mes données';
 }

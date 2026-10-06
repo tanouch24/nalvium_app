@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:nalvium/core/network/api_exceptions.dart';
+import 'package:nalvium/core/analytics/analytics.dart';
+import 'package:nalvium/data/account_repository.dart';
 import 'package:nalvium/data/sessions_repository.dart';
 import 'package:nalvium/domain/diagnosis.dart';
 import 'package:nalvium/domain/session.dart';
@@ -132,4 +134,25 @@ class FakeSessionsRepository implements SessionsRepository {
     if (listError case final ApiException e) throw e;
     return activeOnly ? sessions.where((s) => s.status == 'active').toList() : sessions;
   }
+}
+
+/// Faux dépôt de suppression de données (TEST) : enregistre les appels, peut échouer.
+class FakeAccountRepository implements AccountRepository {
+  FakeAccountRepository({this.fail = false});
+  bool fail;
+  int deletes = 0;
+
+  @override
+  Future<void> deleteAll() async {
+    deletes++;
+    if (fail) throw const ApiNetworkException();
+  }
+}
+
+/// Faux sink d'analytics (TEST) : garde les événements pour vérifier l'absence de donnée personnelle.
+class FakeAnalyticsSink implements AnalyticsSink {
+  final events = <(AnalyticsEvent, Map<String, Object>)>[];
+
+  @override
+  void log(AnalyticsEvent event, Map<String, Object> properties) => events.add((event, properties));
 }

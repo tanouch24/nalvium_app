@@ -14,6 +14,7 @@ import '../../services/providers.dart';
 import '../capture/capture_flow.dart';
 import '../house/add_equipment_screen.dart' show EquipmentNotice;
 import 'community_widgets.dart';
+import '../../core/analytics/analytics.dart';
 
 class ComposeArgs {
   const ComposeArgs({this.draft = const CommunityDraft(), this.editing});
@@ -168,6 +169,7 @@ class _ComposePostScreenState extends ConsumerState<ComposePostScreen> {
         mediaId: _photoId,
       );
       _published = true;
+      ref.read(analyticsProvider).log(AnalyticsEvent.communityPostCreated);
       ref.read(communityFeedProvider(false).notifier).refresh();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.cmPublished)));

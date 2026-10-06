@@ -57,6 +57,8 @@ Future<FakePhotoCaptureService> pumpApp(
   FakeHomeRepository? home,
   FakeServiceRequestsRepository? requests,
   FakeCommunityRepository? community,
+  FakeAccountRepository? account,
+  FakeAnalyticsSink? analytics,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = dpr;
@@ -78,6 +80,8 @@ Future<FakePhotoCaptureService> pumpApp(
       homeRepositoryProvider.overrideWithValue(home ?? FakeHomeRepository()),
       serviceRequestsRepositoryProvider.overrideWithValue(requests ?? FakeServiceRequestsRepository()),
       communityRepositoryProvider.overrideWithValue(community ?? FakeCommunityRepository()),
+      accountRepositoryProvider.overrideWithValue(account ?? FakeAccountRepository()),
+      analyticsSinkProvider.overrideWithValue(analytics ?? FakeAnalyticsSink()),
       adsServiceProvider.overrideWithValue(ads ?? FakeAdsService()),
       videoRecorderFactoryProvider.overrideWithValue(() => recorder ?? FakeVideoRecorder()),
       videoFileSizeProvider.overrideWithValue((_) async => fileSize),
@@ -94,7 +98,11 @@ Future<FakePhotoCaptureService> pumpApp(
 
 /// Faux service publicitaire de TEST : enregistre les appels, aucun SDK.
 class FakeAdsService implements AdsService {
-  FakeAdsService({this.banner});
+  FakeAdsService({this.banner, this.privacyRequired = false});
+
+  /// UMP simulé : le formulaire d'options est-il requis ? Combien de fois a-t-il été ouvert ?
+  final bool privacyRequired;
+  int privacyFormShown = 0;
 
   /// Bannière simulée (par défaut un bloc de 60 dp) ; permet de simuler no-fill / chargement retardé.
   final Widget? banner;
@@ -105,6 +113,12 @@ class FakeAdsService implements AdsService {
 
   @override
   Future<void> initialize() async => initializeCalls++;
+
+  @override
+  Future<bool> privacyOptionsRequired() async => privacyRequired;
+
+  @override
+  Future<void> showPrivacyOptions() async => privacyFormShown++;
 
   @override
   Widget buildBanner() => banner ?? const DecoratedBox(key: Key('ad-slot'), decoration: BoxDecoration(color: Color(0xFFE3E9F2)), child: SizedBox(height: 60, width: double.infinity));

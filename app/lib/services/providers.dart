@@ -4,11 +4,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/ads/ad_policy.dart';
+import '../core/analytics/analytics.dart';
 import '../core/ads/ads_service.dart';
 import '../core/ads/google_ads_service.dart';
 import '../core/config/api_config.dart';
 import '../core/network/api_client.dart';
 import '../core/network/api_exceptions.dart';
+import '../data/account_repository.dart';
 import '../data/community_repository.dart';
 import '../data/home_repository.dart';
 import '../data/service_requests_repository.dart';
@@ -22,6 +24,14 @@ import 'photo_capture_service.dart';
 import 'video_recorder_service.dart';
 
 const _debugPhoto = String.fromEnvironment('NALVIUM_DEBUG_PHOTO');
+
+/// Sink d'analytics : aucun par défaut (NoOp). Les tests le remplacent par un faux.
+final analyticsSinkProvider = Provider<AnalyticsSink>(
+  (ref) => const NoOpAnalytics(),
+);
+final analyticsProvider = Provider<Analytics>(
+  (ref) => Analytics(ref.watch(analyticsSinkProvider)),
+);
 
 final photoCaptureServiceProvider = Provider<PhotoCaptureService>(
   (ref) => kDebugMode && _debugPhoto.isNotEmpty
@@ -256,7 +266,10 @@ final adsServiceProvider = Provider<AdsService>(
       ? const NoopAdsService()
       : (kDebugMode && _debugBanner)
       ? const PlaceholderBannerAdsService()
-      : GoogleAdsService(policy: AdPolicy(counter: PrefsDiagnosticCounter())),
+      : GoogleAdsService(
+          policy: AdPolicy(counter: PrefsDiagnosticCounter()),
+          onEvent: (e) => ref.read(analyticsProvider).log(e),
+        ),
 );
 
 /// Fabrique d'enregistreur vidéo (les tests la remplacent par un faux, sans caméra).
@@ -264,3 +277,18 @@ final videoRecorderFactoryProvider = Provider<VideoRecorder Function()>((ref) =>
 
 /// Taille d'un fichier local (surchargée en test).
 final videoFileSizeProvider = Provider<Future<int> Function(String)>((ref) => (path) => File(path).length());
+
+final accountRepositoryProvider = Provider<AccountRepository>(
+  (ref) => HttpAccountRepository(ref.watch(apiClientProvider)),
+);
+
+/// Après suppression des données : nouvelle identité anonyme, et plus aucune donnée de l'ancienne en mémoire.
+Future<void> deleteAllMyData(WidgetRef ref) async {
+  await ref.read(accountRepositoryProvider).deleteAll();
+  await ref.read(installIdStoreProvider).reset();
+  ref.read(sessionsRevisionProvider.notifier).bump();
+  ref.read(homeRevisionProvider.notifier).bump();
+  ref.read(requestsRevisionProvider.notifier).bump();
+  ref.invalidate(communityFeedProvider);
+  ref.invalidate(serviceAreaProvider);
+}

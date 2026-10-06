@@ -4,6 +4,7 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.api.deps import current_user_id, get_service_area_policy, get_service_request_service
+from app.api.ratelimit import rate_limit
 from app.api.schemas import (
     ServiceAreaCheckIn,
     ServiceAreaCheckOut,
@@ -67,7 +68,7 @@ def consent_version():
     return {"consent_version": CONSENT_VERSION}
 
 
-@router.post("/service-requests", response_model=ServiceRequestOut, status_code=201)
+@router.post("/service-requests", response_model=ServiceRequestOut, status_code=201, dependencies=[Depends(rate_limit("sr-create", 30, 3600))])
 def create_request(
     body: ServiceRequestCreate,
     user_id: uuid.UUID = Depends(current_user_id),
@@ -130,7 +131,7 @@ def select_media(
     return _out(svc, user_id, _guard(lambda: svc.select_media(user_id, request_id, body.media_ids)))
 
 
-@router.post("/service-requests/{request_id}/submit", response_model=ServiceRequestOut)
+@router.post("/service-requests/{request_id}/submit", response_model=ServiceRequestOut, dependencies=[Depends(rate_limit("sr-submit", 15, 3600))])
 def submit_request(
     request_id: uuid.UUID,
     body: ServiceRequestSubmit,

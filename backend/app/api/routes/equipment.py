@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFil
 
 from app.ai.provider import AIProviderError, AIProviderNotConfigured
 from app.api.deps import current_user_id, get_equipment_service, get_manual_service
+from app.api.ratelimit import rate_limit
 from app.api.schemas import (
     EquipmentCreate,
     EquipmentDetail,
@@ -79,7 +80,7 @@ def create_equipment(
     return _detail(svc, user_id, item, manuals)
 
 
-@router.post("/equipment/photo", response_model=MediaOut, status_code=201)
+@router.post("/equipment/photo", response_model=MediaOut, status_code=201, dependencies=[Depends(rate_limit("upload", 60, 600))])
 async def upload_equipment_photo(
     file: UploadFile = File(...),
     user_id: uuid.UUID = Depends(current_user_id),
@@ -111,7 +112,7 @@ def discard_equipment_photo(
         raise HTTPException(404, "media_not_found") from exc
 
 
-@router.post("/equipment/identify", response_model=IdentificationOut)
+@router.post("/equipment/identify", response_model=IdentificationOut, dependencies=[Depends(rate_limit("identify", 20, 3600))])
 async def identify_equipment(
     body: IdentifyRequest,
     user_id: uuid.UUID = Depends(current_user_id),
@@ -174,7 +175,7 @@ def delete_equipment(
 
 
 # ---- Notice constructeur ---------------------------------------------------------
-@router.post("/equipment/{equipment_id}/manual/search", response_model=ManualSearchOut)
+@router.post("/equipment/{equipment_id}/manual/search", response_model=ManualSearchOut, dependencies=[Depends(rate_limit("manual-search", 12, 3600))])
 async def search_manual(
     equipment_id: uuid.UUID,
     user_id: uuid.UUID = Depends(current_user_id),

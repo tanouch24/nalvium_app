@@ -18,6 +18,7 @@ from app.repositories.equipment import EquipmentRepository, HomeRepository
 from app.repositories.service_requests import ServiceRequestRepository
 from app.repositories.sessions import MediaRepository, SessionRepository, UserRepository
 from app.service_area.policy import ServiceAreaPolicy
+from app.services.account_service import AccountService
 from app.services.community_service import CommunityService
 from app.services.diagnostic_service import DiagnosticService
 from app.services.equipment_service import EquipmentService
@@ -87,6 +88,10 @@ def get_manual_service(
     fetcher: PdfFetcher = Depends(get_pdf_fetcher),
 ) -> Iterator[ManualService]:
     yield ManualService(EquipmentRepository(db), DocumentRepository(db), storage, provider, fetcher)
+
+
+def get_account_service(db: Session = Depends(get_db), storage: MediaStorage = Depends(get_storage)) -> Iterator[AccountService]:
+    yield AccountService(db, storage)
 
 
 def get_community_service(

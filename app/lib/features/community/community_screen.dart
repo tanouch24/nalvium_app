@@ -13,6 +13,7 @@ import '../../l10n/app_localizations.dart';
 import '../../services/providers.dart';
 import '../history/session_labels.dart';
 import 'community_widgets.dart';
+import '../../core/analytics/analytics.dart';
 
 /// Communauté : le fil national des solutions partagées. Simple, lumineux, une action principale.
 class CommunityScreen extends ConsumerWidget {
@@ -369,6 +370,7 @@ Future<CommunityPost?> toggleHelpful(
         .read(communityRepositoryProvider)
         .setHelpful(p.id, !p.helpful);
     _sync(ref, updated);
+    if (updated.helpful) ref.read(analyticsProvider).log(AnalyticsEvent.communityHelpful);
     return updated;
   } on ApiException {
     if (context.mounted) {
@@ -389,6 +391,7 @@ Future<CommunityPost?> toggleSaved(
         .read(communityRepositoryProvider)
         .setSaved(p.id, !p.saved);
     _sync(ref, updated);
+    if (updated.saved) ref.read(analyticsProvider).log(AnalyticsEvent.communitySaved);
     ref.read(communityFeedProvider(true).notifier).refresh();
     return updated;
   } on ApiException {

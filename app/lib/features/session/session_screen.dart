@@ -21,6 +21,7 @@ import '../../domain/community.dart';
 import '../community/compose_post_screen.dart';
 import '../house/manual_citation.dart';
 import 'views/action_views.dart';
+import '../../core/analytics/analytics.dart';
 
 /// Expérience guidée. Le BACKEND est la source de vérité : l'écran se recharge depuis lui
 /// (reprise après redémarrage) et l'interface dépend uniquement de `action_type`.
@@ -81,6 +82,15 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
 
   void _apply(SessionState state, {bool busyAfter = false}) {
     if (!mounted) return;
+    final before = _state?.next?.actionType;
+    final after = state.next?.actionType;
+    if (after != before) {
+      if (after == NextActionType.safetyStop) {
+        ref.read(analyticsProvider).log(AnalyticsEvent.safetyStop);
+      } else if (after == NextActionType.resolved) {
+        ref.read(analyticsProvider).log(AnalyticsEvent.diagnosticResolved);
+      }
+    }
     setState(() {
       _state = state;
       _busy = busyAfter;

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/capture/analysis_screen.dart';
@@ -29,9 +28,8 @@ import '../../features/video/video_capture_screen.dart';
 import '../../features/video/video_preview_screen.dart';
 import '../../domain/video.dart';
 import '../../features/session/session_summary_screen.dart';
+import '../../features/settings/settings_screen.dart';
 import '../../features/shell/app_shell.dart';
-import '../../l10n/app_localizations.dart';
-import '../widgets/empty_screen.dart';
 import '../widgets/page_transitions.dart';
 
 GoRouter buildRouter({
@@ -212,19 +210,30 @@ GoRouter buildRouter({
     ),
     GoRoute(
       path: '/settings',
-      pageBuilder: (context, state) {
-        final l = AppLocalizations.of(context);
-        return nalviumPage(
-          state,
-          EmptyScreen(
-            title: l.settings,
-            icon: Icons.settings_outlined,
-            emptyTitle: l.settingsEmptyTitle,
-            emptyBody: l.settingsEmptyBody,
-            showBack: true,
-          ),
-        );
-      },
+      pageBuilder: (_, state) => nalviumPage(state, const SettingsScreen()),
+    ),
+    GoRoute(
+      path: '/settings/data',
+      pageBuilder: (_, state) => nalviumPage(state, const DataScreen()),
+    ),
+    GoRoute(
+      path: '/settings/data/delete',
+      pageBuilder: (_, state) => nalviumPage(state, const DeleteDataScreen()),
+    ),
+    GoRoute(
+      path: '/settings/ads',
+      pageBuilder: (_, state) => nalviumPage(state, const AdChoicesScreen()),
+    ),
+    GoRoute(
+      path: '/settings/contact',
+      pageBuilder: (_, state) => nalviumPage(state, const ContactScreen()),
+    ),
+    GoRoute(
+      path: '/settings/legal/:id',
+      pageBuilder: (_, state) => nalviumPage(
+        state,
+        LegalScreen(documentId: state.pathParameters['id']!),
+      ),
     ),
   ],
 );

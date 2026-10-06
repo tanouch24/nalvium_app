@@ -15,6 +15,13 @@ abstract interface class AdsService {
   /// L'app revient au premier plan ([backgroundFor] = durée passée en arrière-plan).
   Future<void> onAppResumed({required String route, required Duration backgroundFor});
 
+  /// UMP : un formulaire « options de confidentialité » doit-il être proposé à l'utilisateur (EEE/UK…) ?
+  /// Faux si le consentement n'est pas requis ou indisponible. Ne lève jamais.
+  Future<bool> privacyOptionsRequired();
+
+  /// Ouvre le formulaire UMP des choix publicitaires. Ne lève jamais ; ne bloque jamais l'app.
+  Future<void> showPrivacyOptions();
+
   /// Exécute [action] (ex. caméra système) sans qu'un retour au premier plan déclenche une App Open.
   Future<T> suspendAppOpen<T>(Future<T> Function() action);
 }
@@ -29,6 +36,10 @@ class NoopAdsService implements AdsService {
   Future<void> beforeNewDiagnostic() async {}
   @override
   Future<void> onAppResumed({required String route, required Duration backgroundFor}) async {}
+  @override
+  Future<bool> privacyOptionsRequired() async => false;
+  @override
+  Future<void> showPrivacyOptions() async {}
   @override
   Future<T> suspendAppOpen<T>(Future<T> Function() action) => action();
 }

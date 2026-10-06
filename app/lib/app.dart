@@ -9,6 +9,7 @@ import 'core/router/app_router.dart';
 import 'core/theme/nalvium_theme.dart';
 import 'l10n/app_localizations.dart';
 import 'services/providers.dart';
+import 'core/analytics/analytics.dart';
 
 class NalviumApp extends ConsumerStatefulWidget {
   const NalviumApp({super.key, this.router});
@@ -29,7 +30,10 @@ class _NalviumAppState extends ConsumerState<NalviumApp>
     WidgetsBinding.instance.addObserver(this);
     // Consentement (UMP) puis SDK publicitaire, après le premier affichage.
     WidgetsBinding.instance.addPostFrameCallback(
-      (_) => ref.read(adsServiceProvider).initialize(),
+      (_) {
+        ref.read(analyticsProvider).log(AnalyticsEvent.appOpened);
+        ref.read(adsServiceProvider).initialize();
+      },
     );
   }
 

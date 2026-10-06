@@ -1,3 +1,12 @@
+import java.util.Properties
+
+// Signature de release : lue dans android/key.properties (NON commité, voir docs/PLAY_STORE_RELEASE.md).
+val keystoreProps = Properties().apply {
+    val f = rootProject.file("key.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
+}
+val hasReleaseKey = keystoreProps.getProperty("storeFile") != null
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -29,6 +38,17 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        if (hasReleaseKey) {
+            create("release") {
+                storeFile = rootProject.file(keystoreProps.getProperty("storeFile"))
+                storePassword = keystoreProps.getProperty("storePassword")
+                keyAlias = keystoreProps.getProperty("keyAlias")
+                keyPassword = keystoreProps.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         // ID d'application AdMob : TEST pour debug/profile, PRODUCTION uniquement pour release.
         debug {
@@ -39,9 +59,8 @@ android {
         }
         release {
             manifestPlaceholders["admobAppId"] = "ca-app-pub-9787163762873138~8283818658"
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // Sans key.properties : signature de DEBUG (test local uniquement, REFUSÉE par le Play Store).
+            signingConfig = if (hasReleaseKey) signingConfigs.getByName("release") else signingConfigs.getByName("debug")
         }
     }
 }

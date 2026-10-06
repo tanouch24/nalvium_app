@@ -46,6 +46,23 @@ class Settings(BaseSettings):
 
     media_root: str = "./var/media"
 
+    # --- Production : API ---
+    # Documentation interactive : jamais exposée en production.
+    # Limites d'abus simples (mémoire du processus, par identité anonyme). Désactivable pour des tests de charge.
+    rate_limit_enabled: bool = True
+
+    # --- Rétention / nettoyage (ajustables après relecture juridique ; voir docs/RETENTION.md) ---
+    # Brouillon de demande d'intervention jamais envoyé : l'utilisateur peut revenir dessus quelques jours.
+    retention_draft_request_days: int = 14
+    # Photo temporaire (ajout d'équipement / demande directe) non rattachée : abandon probable après 2 jours.
+    retention_temp_photo_hours: int = 48
+    # Copie publique de brouillon Communauté jamais publiée : un brouillon se fait en quelques minutes.
+    retention_community_draft_hours: int = 24
+    # Fichier du stockage sans aucune référence en base (reste d'un échec) : délai de sécurité avant suppression.
+    retention_orphan_file_hours: int = 48
+    # Nombre maximal d'éléments supprimés par catégorie et par exécution (job borné).
+    cleanup_batch_limit: int = 500
+
     @property
     def is_production(self) -> bool:
         return self.env is Environment.PRODUCTION

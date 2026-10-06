@@ -17,6 +17,7 @@ import '../../services/providers.dart';
 import '../capture/capture_flow.dart';
 import '../house/add_equipment_screen.dart' show EquipmentNotice;
 import 'out_of_zone_screen.dart';
+import '../../core/analytics/analytics.dart';
 
 /// « Votre demande d'intervention » : un écran simple, sections claires, une action principale.
 /// Depuis un diagnostic, le contexte est déjà prêt (rien à réexpliquer). Aucun média n'est joint sans choix explicite ;
@@ -141,6 +142,7 @@ class _HelpRequestScreenState extends ConsumerState<HelpRequestScreen> {
   }
 
   void _openOutOfZone() {
+    ref.read(analyticsProvider).log(AnalyticsEvent.serviceRequestOutOfZone);
     final area = ref.read(serviceAreaProvider).value;
     context.push(
       '/help/out-of-zone',
@@ -208,6 +210,7 @@ class _HelpRequestScreenState extends ConsumerState<HelpRequestScreen> {
       });
       await repo.selectMedia(id, _selected.toList()); // exactement la sélection affichée
       await repo.submit(id);
+      ref.read(analyticsProvider).log(AnalyticsEvent.serviceRequestSubmitted, mediaCount: _selected.length);
       ref.read(requestsRevisionProvider.notifier).bump();
       if (mounted) context.pushReplacement('/help/$id/done');
     } on ApiHttpException catch (e) {

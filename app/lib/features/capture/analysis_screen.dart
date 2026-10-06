@@ -16,6 +16,7 @@ import '../../core/widgets/video_poster.dart';
 import '../../services/providers.dart';
 import '../video/video_alternatives.dart';
 import 'analysis_wait.dart';
+import '../../core/analytics/analytics.dart';
 
 /// Point d'entrée d'une nouvelle session : une photo OU une description.
 sealed class SessionStart {
@@ -67,7 +68,13 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
     try {
       final repo = ref.read(sessionsRepositoryProvider);
       final start = widget.start;
-      _sessionId ??= await repo.createSession(equipmentId: start.equipmentId);
+      if (_sessionId == null) {
+        _sessionId = await repo.createSession(equipmentId: start.equipmentId);
+        ref.read(analyticsProvider).log(
+          AnalyticsEvent.diagnosticStarted,
+          source: start is PhotoStart ? 'photo' : (start is VideoStart ? 'video' : 'description'),
+        );
+      }
       if (start is PhotoStart) {
         _mediaId ??= await repo.uploadPhoto(_sessionId!, start.path);
       } else if (start is VideoStart) {

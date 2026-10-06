@@ -7,6 +7,7 @@ from fastapi.concurrency import run_in_threadpool
 
 from app.ai.provider import AIProviderError, AIProviderNotConfigured
 from app.api.deps import current_user_id, get_equipment_service, get_session_service
+from app.api.ratelimit import rate_limit
 from app.api.schemas import (
     CreateSessionRequest,
     EquipmentSuggestionsOut,
@@ -100,7 +101,7 @@ def equipment_suggestions(
     )
 
 
-@router.post("/sessions/{session_id}/media", response_model=MediaOut, status_code=201)
+@router.post("/sessions/{session_id}/media", response_model=MediaOut, status_code=201, dependencies=[Depends(rate_limit("upload", 60, 600))])
 async def upload_media(
     session_id: uuid.UUID,
     file: UploadFile = File(...),
@@ -127,7 +128,7 @@ async def upload_media(
     return MediaOut(id=asset.id, width=asset.width, height=asset.height)
 
 
-@router.post("/sessions/{session_id}/video", response_model=MediaOut, status_code=201)
+@router.post("/sessions/{session_id}/video", response_model=MediaOut, status_code=201, dependencies=[Depends(rate_limit("upload", 60, 600))])
 async def upload_video(
     session_id: uuid.UUID,
     file: UploadFile = File(...),
@@ -167,7 +168,7 @@ async def upload_video(
     )
 
 
-@router.post("/sessions/{session_id}/turn", response_model=SessionOut)
+@router.post("/sessions/{session_id}/turn", response_model=SessionOut, dependencies=[Depends(rate_limit("analysis", 60, 600))])
 async def turn(
     session_id: uuid.UUID,
     body: TurnRequest | None = None,
