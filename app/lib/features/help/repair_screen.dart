@@ -39,16 +39,16 @@ class RepairScreen extends ConsumerWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(Space.x5),
-                decoration: BoxDecoration(color: NalviumColors.primarySoft, borderRadius: BorderRadius.circular(Corner.large)),
+                decoration: BoxDecoration(color: NalviumColors.primarySoft, borderRadius: BorderRadius.circular(Corner.large - 4)),
                 child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                  Semantics(header: true, child: Text(l10n.repairHeadline, key: const Key('repair-headline'), style: NalviumText.titleLarge)),
-                  const SizedBox(height: Space.x2),
-                  Text(l10n.repairHeadlineBody, style: NalviumText.body.copyWith(color: NalviumColors.textPrimary)),
+                  Semantics(header: true, child: Text(l10n.repairHeadline, key: const Key('repair-headline'), style: NalviumText.titleLarge.copyWith(fontSize: 25, height: 1.2))),
+                  const SizedBox(height: Space.x2 + 2),
+                  Text(l10n.repairHeadlineBody, style: NalviumText.body.copyWith(color: NalviumColors.textPrimary, height: 1.45)),
                   const SizedBox(height: Space.x5),
                   PrimaryButton(key: const Key('repair-ask'), label: l10n.repairAsk, icon: Icons.support_agent_rounded, onPressed: () => context.push('/help/new')),
                 ]),
               ),
-              const SizedBox(height: Space.x8),
+              const SizedBox(height: Space.x6 + 4),
               Semantics(header: true, child: Text(l10n.repairYourRequests, style: NalviumText.title.copyWith(fontSize: 19))),
               const SizedBox(height: Space.x3),
               requests.when(
@@ -80,22 +80,22 @@ class _RequestCard extends StatelessWidget {
     final color = requestStatusColor(req.status);
     final date = relativeDate(l10n, req.submittedAt ?? req.createdAt);
     return Padding(
-      padding: const EdgeInsets.only(bottom: Space.x2),
+      padding: const EdgeInsets.only(bottom: Space.x2 + 2),
       child: Material(
         color: NalviumColors.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Corner.medium), side: const BorderSide(color: NalviumColors.borderSubtle, width: 1.2)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Corner.small + 4), side: const BorderSide(color: NalviumColors.borderSubtle)),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           key: Key('request-${req.id}'),
           onTap: () => context.push('/requests/${req.id}'),
           child: Padding(
-            padding: const EdgeInsets.all(Space.x4),
+            padding: const EdgeInsets.symmetric(horizontal: Space.x4, vertical: Space.x3 + 2),
             child: Row(children: [
               Expanded(
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(req.summary ?? '', maxLines: 2, overflow: TextOverflow.ellipsis, style: NalviumText.title.copyWith(fontSize: 17.5)),
+                  Text(req.summary ?? '', maxLines: 2, overflow: TextOverflow.ellipsis, style: NalviumText.title.copyWith(fontSize: 17.5, height: 1.25)),
                   if (req.equipmentLabel != null) Text(req.equipmentLabel!, maxLines: 1, overflow: TextOverflow.ellipsis, style: NalviumText.caption),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 4),
                   Row(children: [
                     Icon(requestStatusIcon(req.status), size: 16, color: color),
                     const SizedBox(width: 5),

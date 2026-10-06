@@ -1684,4 +1684,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get stDataRow => 'Consulter et supprimer mes données';
+
+  @override
+  String get preparingNext => 'Je prépare la suite…';
+
+  @override
+  String get cmPreviewNote =>
+      'Seul ce qui apparaît ci-dessous sera publié, et visible par les autres utilisateurs de Nalvium.';
 }

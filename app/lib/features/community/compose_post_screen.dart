@@ -246,16 +246,45 @@ class _ComposePostScreenState extends ConsumerState<ComposePostScreen> {
     );
   }
 
-  Widget _label(String t) => Padding(
-    padding: const EdgeInsets.only(top: Space.x5, bottom: Space.x1 + 2),
-    child: Text(t, style: NalviumText.caption.copyWith(fontWeight: FontWeight.w700, color: NalviumColors.textPrimary)),
+  // Les champs facultatifs (photo, catégorie, matériel) ont un libellé plus discret que le problème et la solution.
+  Widget _label(String t, {bool optional = false}) => Padding(
+    padding: EdgeInsets.only(top: optional ? Space.x6 : Space.x5, bottom: Space.x1 + 2),
+    child: Text(t, style: NalviumText.caption.copyWith(fontWeight: optional ? FontWeight.w600 : FontWeight.w700, color: optional ? NalviumColors.textSecondary : NalviumColors.textPrimary)),
   );
 
   Widget _form(AppLocalizations l10n) {
     final errors = _tried ? _errors(l10n) : const <String, String>{};
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      Text(l10n.cmReview, key: const Key('compose-review'), style: NalviumText.caption),
-      _label(l10n.cmPhoto),
+      Container(
+        padding: const EdgeInsets.all(Space.x3),
+        decoration: BoxDecoration(color: NalviumColors.primarySoft, borderRadius: BorderRadius.circular(Corner.small + 4)),
+        child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Padding(padding: EdgeInsets.only(top: 1), child: Icon(Icons.public_rounded, size: 18, color: NalviumColors.primaryText)),
+          const SizedBox(width: Space.x2),
+          Expanded(child: Text(l10n.cmReview, key: const Key('compose-review'), style: NalviumText.caption.copyWith(color: NalviumColors.textPrimary, height: 1.4))),
+        ]),
+      ),
+      _label(l10n.cmFieldTitle),
+      TextField(
+        key: const Key('compose-title'),
+        controller: _title,
+        maxLength: 120,
+        textCapitalization: TextCapitalization.sentences,
+        decoration: InputDecoration(hintText: l10n.cmFieldTitleHint, counterText: '', errorText: errors['title']),
+        onChanged: (_) => setState(() {}),
+      ),
+      _label(l10n.cmFieldSolution),
+      TextField(
+        key: const Key('compose-solution'),
+        controller: _solution,
+        minLines: 4,
+        maxLines: 10,
+        maxLength: 2000,
+        textCapitalization: TextCapitalization.sentences,
+        decoration: InputDecoration(hintText: l10n.cmFieldSolutionHint, errorText: errors['solution']),
+        onChanged: (_) => setState(() {}),
+      ),
+      _label(l10n.cmPhoto, optional: true),
       Text(l10n.cmPhotoRecommended, style: NalviumText.caption.copyWith(color: NalviumColors.textMuted)),
       const SizedBox(height: Space.x2),
       if (_photoId != null) ...[
@@ -284,32 +313,12 @@ class _ComposePostScreenState extends ConsumerState<ComposePostScreen> {
           ]),
         ],
       ],
-      _label(l10n.cmFieldTitle),
-      TextField(
-        key: const Key('compose-title'),
-        controller: _title,
-        maxLength: 120,
-        textCapitalization: TextCapitalization.sentences,
-        decoration: InputDecoration(hintText: l10n.cmFieldTitleHint, counterText: '', errorText: errors['title']),
-        onChanged: (_) => setState(() {}),
-      ),
-      _label(l10n.cmFieldSolution),
-      TextField(
-        key: const Key('compose-solution'),
-        controller: _solution,
-        minLines: 4,
-        maxLines: 10,
-        maxLength: 2000,
-        textCapitalization: TextCapitalization.sentences,
-        decoration: InputDecoration(hintText: l10n.cmFieldSolutionHint, errorText: errors['solution']),
-        onChanged: (_) => setState(() {}),
-      ),
-      _label(l10n.cmFieldCategory),
+      _label(l10n.cmFieldCategory, optional: true),
       Wrap(spacing: Space.x2, runSpacing: Space.x2, children: [
         for (final c in kCommunityCategories)
           _CategoryChip(key: Key('compose-cat-$c'), label: categoryName(l10n, c), selected: _category == c, onTap: () => setState(() => _category = _category == c ? null : c)),
       ]),
-      _label(l10n.cmFieldMaterials),
+      _label(l10n.cmFieldMaterials, optional: true),
       TextField(
         key: const Key('compose-materials'),
         controller: _materials,
@@ -326,10 +335,12 @@ class _ComposePostScreenState extends ConsumerState<ComposePostScreen> {
     final cat = categoryName(l10n, _category);
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Semantics(header: true, child: Text(l10n.cmPreviewTitle, key: const Key('preview-title'), style: NalviumText.titleLarge)),
+      const SizedBox(height: Space.x2),
+      Text(l10n.cmPreviewNote, key: const Key('preview-note'), style: NalviumText.body.copyWith(height: 1.45)),
       const SizedBox(height: Space.x4),
       Container(
         key: const Key('preview-card'),
-        decoration: BoxDecoration(color: NalviumColors.surface, borderRadius: BorderRadius.circular(Corner.medium), border: Border.all(color: NalviumColors.borderSubtle, width: 1.2)),
+        decoration: BoxDecoration(color: NalviumColors.surface, borderRadius: BorderRadius.circular(Corner.small + 4), border: Border.all(color: NalviumColors.borderSubtle)),
         clipBehavior: Clip.antiAlias,
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           if (_photoId != null) AspectRatio(aspectRatio: 16 / 9, child: CommunityImage(mediaId: _photoId!, variant: 'thumb')),
@@ -354,17 +365,21 @@ class _ComposePostScreenState extends ConsumerState<ComposePostScreen> {
           Expanded(child: Text(l10n.cmPhotoPublicNotice, key: const Key('preview-public-notice'), style: NalviumText.caption.copyWith(fontWeight: FontWeight.w600))),
         ]),
       ],
-      const SizedBox(height: Space.x5),
-      InkWell(
+      const SizedBox(height: Space.x6),
+      Material(
+        color: NalviumColors.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Corner.small + 4), side: BorderSide(color: _consent ? NalviumColors.primary : NalviumColors.borderSubtle, width: 1.5)),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
         key: const Key('compose-consent'),
-        borderRadius: BorderRadius.circular(Corner.small),
         onTap: () => setState(() => _consent = !_consent),
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: 48),
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Checkbox(value: _consent, onChanged: (v) => setState(() => _consent = v ?? false), activeColor: NalviumColors.primary),
-            Expanded(child: Padding(padding: const EdgeInsets.only(top: 12), child: Text(l10n.cmConsent, style: NalviumText.body.copyWith(color: NalviumColors.textPrimary, fontSize: 15)))),
+            Expanded(child: Padding(padding: const EdgeInsets.fromLTRB(0, 12, Space.x3, 12), child: Text(l10n.cmConsent, style: NalviumText.body.copyWith(color: NalviumColors.textPrimary, fontSize: 15)))),
           ]),
+        ),
         ),
       ),
       if (_tried && !_consent)

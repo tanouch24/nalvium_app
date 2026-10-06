@@ -3195,6 +3195,18 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Consulter et supprimer mes données'**
   String get stDataRow;
+
+  /// No description provided for @preparingNext.
+  ///
+  /// In fr, this message translates to:
+  /// **'Je prépare la suite…'**
+  String get preparingNext;
+
+  /// No description provided for @cmPreviewNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Seul ce qui apparaît ci-dessous sera publié, et visible par les autres utilisateurs de Nalvium.'**
+  String get cmPreviewNote;
 }
 
 class _AppLocalizationsDelegate

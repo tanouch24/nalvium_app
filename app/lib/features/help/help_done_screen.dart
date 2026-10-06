@@ -30,7 +30,7 @@ class HelpDoneScreen extends ConsumerWidget {
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(
               Space.gutter,
-              Space.x10,
+              Space.x8,
               Space.gutter,
               Space.x8,
             ),
@@ -39,20 +39,20 @@ class HelpDoneScreen extends ConsumerWidget {
               children: [
                 Center(
                   child: Container(
-                    width: 96,
-                    height: 96,
+                    width: 84,
+                    height: 84,
                     decoration: const BoxDecoration(
                       color: NalviumColors.successSoft,
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
                       Icons.check_rounded,
-                      size: 52,
+                      size: 44,
                       color: NalviumColors.success,
                     ),
                   ),
                 ),
-                const SizedBox(height: Space.x6),
+                const SizedBox(height: Space.x5),
                 Semantics(
                   header: true,
                   liveRegion: true,
@@ -60,7 +60,7 @@ class HelpDoneScreen extends ConsumerWidget {
                     l10n.helpDoneTitle,
                     key: const Key('help-done-title'),
                     textAlign: TextAlign.center,
-                    style: NalviumText.titleLarge,
+                    style: NalviumText.titleLarge.copyWith(fontSize: 25, height: 1.25),
                   ),
                 ),
                 const SizedBox(height: Space.x3),
@@ -68,7 +68,7 @@ class HelpDoneScreen extends ConsumerWidget {
                   l10n.helpDoneBody,
                   key: const Key('help-done-body'),
                   textAlign: TextAlign.center,
-                  style: NalviumText.body,
+                  style: NalviumText.body.copyWith(height: 1.5),
                 ),
                 if (req != null) ...[
                   const SizedBox(height: Space.x6),
@@ -77,7 +77,7 @@ class HelpDoneScreen extends ConsumerWidget {
                     padding: const EdgeInsets.all(Space.x4),
                     decoration: BoxDecoration(
                       color: NalviumColors.surface,
-                      borderRadius: BorderRadius.circular(Corner.medium),
+                      borderRadius: BorderRadius.circular(Corner.small + 4),
                       border: Border.all(color: NalviumColors.borderSubtle),
                     ),
                     child: Column(
@@ -103,7 +103,7 @@ class HelpDoneScreen extends ConsumerWidget {
                     ),
                   ),
                 ],
-                const SizedBox(height: Space.x8),
+                const SizedBox(height: Space.x6),
                 PrimaryButton(
                   key: const Key('help-done-see'),
                   label: l10n.helpSeeRequest,

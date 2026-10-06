@@ -47,13 +47,21 @@ String stripStopPrefix(String message) {
       : trimmed;
 }
 
+/// Typographie française : l'espace avant « ! ? : ; » est insécable, pour qu'une ponctuation ne se retrouve
+/// jamais seule en début de ligne. Le texte reçu n'est pas modifié autrement.
+String keepPunctuationWithWord(String text) =>
+    text.replaceAllMapped(RegExp(r' ([!?:;»])'), (m) => '\u00A0${m[1]}');
+
 enum Phase { observation, action, control }
 
 /// Où l'on en est, qualitativement (jamais « étape 2/7 » : on ne connaît pas le nombre d'étapes).
 /// Une pastille discrète : icône + libellé, pour s'orienter sans que ce soit un titre.
 class PhaseLabel extends StatelessWidget {
-  const PhaseLabel(this.phase, {super.key});
+  const PhaseLabel(this.phase, {super.key, this.refined = false});
   final Phase phase;
+
+  /// Question guidée : simple repère (icône + libellé), sans pastille de fond.
+  final bool refined;
 
   @override
   Widget build(BuildContext context) {
@@ -64,11 +72,13 @@ class PhaseLabel extends StatelessWidget {
       Phase.control => (Icons.fact_check_outlined, l10n.phaseControl),
     };
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: Space.x3, vertical: 5),
-      decoration: BoxDecoration(
-        color: NalviumColors.primarySoft,
-        borderRadius: BorderRadius.circular(Corner.small),
-      ),
+      padding: refined ? EdgeInsets.zero : const EdgeInsets.symmetric(horizontal: Space.x3, vertical: 5),
+      decoration: refined
+          ? null
+          : BoxDecoration(
+              color: NalviumColors.primarySoft,
+              borderRadius: BorderRadius.circular(Corner.small),
+            ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -100,8 +110,10 @@ class _Head extends StatelessWidget {
     required this.hero,
     this.accentBar = false,
     this.heroSize = 24,
+    this.refined = false,
   });
   final Phase phase;
+  final bool refined;
   final String title;
   final String hero;
   final bool accentBar;
@@ -122,21 +134,21 @@ class _Head extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        PhaseLabel(phase),
-        const SizedBox(height: Space.x4),
+        PhaseLabel(phase, refined: refined),
+        SizedBox(height: refined ? Space.x2 : Space.x4),
         Semantics(
           header: true,
           child: Text(
             title,
             key: const Key('guidance-title'),
             style: NalviumText.title.copyWith(
-              fontSize: 18,
+              fontSize: refined ? 16 : 18,
               color: NalviumColors.textSecondary,
-              fontWeight: FontWeight.w600,
+              fontWeight: refined ? FontWeight.w500 : FontWeight.w600,
             ),
           ),
         ),
-        const SizedBox(height: Space.x3),
+        SizedBox(height: refined ? Space.x2 + 2 : Space.x3),
         if (accentBar)
           IntrinsicHeight(
             child: Row(
@@ -205,12 +217,14 @@ class _AskQuestionViewState extends State<AskQuestionView> {
           title: l10n.titleAsk,
           hero: widget.step.message,
           heroSize: 25,
+          refined: true,
         ),
-        const SizedBox(height: Space.x8),
+        const SizedBox(height: Space.x6),
         for (final c in choices) ...[
           ChoiceTile(
             key: Key('choice-$c'),
             label: c,
+            refined: true,
             icon: useIcons ? _iconForAnswer(c) : null,
             onTap: () => widget.actions.onAnswer(c),
           ),
@@ -236,7 +250,7 @@ class _AskQuestionViewState extends State<AskQuestionView> {
           ),
         ] else
           Align(
-            alignment: Alignment.centerLeft,
+            alignment: Alignment.center,
             child: TertiaryButton(
               key: const Key('answer-otherwise'),
               label: l10n.answerOtherwise,
@@ -272,15 +286,16 @@ class RequestPhotoView extends StatelessWidget {
           phase: Phase.observation,
           title: l10n.titleRequestPhoto,
           hero: step.message,
-          heroSize: 22,
+          heroSize: 24,
+          refined: true,
         ),
-        const SizedBox(height: Space.x6),
+        const SizedBox(height: Space.x5),
         _PhotoPair(
           previousMediaId: previousMediaId,
           previousIsVideo: previousIsVideo,
           onTake: actions.onTakePhoto,
         ),
-        const SizedBox(height: Space.x6),
+        const SizedBox(height: Space.x5),
         PrimaryButton(
           key: const Key('take-requested-photo'),
           label: l10n.takeThePhoto,
@@ -315,10 +330,10 @@ class _PhotoPair extends StatelessWidget {
       child: Column(
         children: [
           AspectRatio(
-            aspectRatio: 4 / 5,
+            aspectRatio: 1,
             child: Material(
               color: NalviumColors.primarySoft,
-              borderRadius: BorderRadius.circular(Corner.medium),
+              borderRadius: BorderRadius.circular(Corner.small + 4),
               clipBehavior: Clip.antiAlias,
               child: InkWell(
                 key: const Key('photo-target'),
@@ -338,7 +353,7 @@ class _PhotoPair extends StatelessWidget {
                     const Center(
                       child: Icon(
                         Icons.photo_camera_outlined,
-                        size: 34,
+                        size: 28,
                         color: NalviumColors.primary,
                       ),
                     ),
@@ -360,7 +375,7 @@ class _PhotoPair extends StatelessWidget {
     );
 
     if (previousMediaId == null) {
-      return Center(child: SizedBox(width: 150, child: target));
+      return Center(child: SizedBox(width: 132, child: target));
     }
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -369,9 +384,9 @@ class _PhotoPair extends StatelessWidget {
           child: Column(
             children: [
               AspectRatio(
-                aspectRatio: 4 / 5,
+                aspectRatio: 1,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(Corner.medium),
+                  borderRadius: BorderRadius.circular(Corner.small + 4),
                   child: AuthedImage(
                     mediaId: previousMediaId!,
                     semanticLabel: l10n.photoSemantics,
@@ -384,7 +399,7 @@ class _PhotoPair extends StatelessWidget {
           ),
         ),
         const Padding(
-          padding: EdgeInsets.symmetric(horizontal: Space.x3, vertical: 54),
+          padding: EdgeInsets.symmetric(horizontal: Space.x3, vertical: 44),
           child: Icon(
             Icons.arrow_forward_rounded,
             size: 22,
@@ -415,6 +430,7 @@ class InstructionView extends StatelessWidget {
           hero: step.message,
           accentBar: true,
           heroSize: 25,
+          refined: true,
         ),
         if (step.requiredItems.isNotEmpty) ...[
           const SizedBox(height: Space.x6),
@@ -449,7 +465,7 @@ class InstructionView extends StatelessWidget {
             ],
           ),
         ],
-        const SizedBox(height: Space.x8),
+        const SizedBox(height: Space.x6),
         PrimaryButton(
           key: const Key('action-done'),
           label: l10n.actionDone,
@@ -503,9 +519,10 @@ class VerificationView extends StatelessWidget {
           phase: Phase.control,
           title: l10n.titleVerification,
           hero: step.message,
-          heroSize: 24,
+          heroSize: 25,
+          refined: true,
         ),
-        const SizedBox(height: Space.x8),
+        const SizedBox(height: Space.x6),
         if (grid)
           LayoutBuilder(
             builder: (context, c) {
@@ -520,6 +537,7 @@ class VerificationView extends StatelessWidget {
                       child: ChoiceTile(
                         key: Key('choice-$choice'),
                         label: choice,
+                        refined: true,
                         icon: _iconForAnswer(choice),
                         vertical: true,
                         onTap: () => actions.onAnswer(choice),
@@ -534,14 +552,14 @@ class VerificationView extends StatelessWidget {
             ChoiceTile(
               key: Key('choice-$c'),
               label: c,
-
+              refined: true,
               onTap: () => actions.onAnswer(c),
             ),
             const SizedBox(height: Space.x3),
           ],
-        const SizedBox(height: Space.x2),
+        const SizedBox(height: Space.x1),
         Align(
-          alignment: Alignment.centerLeft,
+          alignment: Alignment.center,
           child: TertiaryButton(
             key: const Key('verify-with-photo'),
             label: l10n.verifyWithPhoto,
@@ -640,18 +658,18 @@ class ProfessionalView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const SizedBox(height: Space.x4),
+        const SizedBox(height: Space.x2),
         Center(
           child: Container(
-            width: 84,
-            height: 84,
+            width: 64,
+            height: 64,
             decoration: const BoxDecoration(
               color: NalviumColors.primarySoft,
               shape: BoxShape.circle,
             ),
             child: const Icon(
               Icons.engineering_rounded,
-              size: 40,
+              size: 32,
               color: NalviumColors.primary,
             ),
           ),
@@ -663,7 +681,7 @@ class ProfessionalView extends StatelessWidget {
             l10n.titleProfessional,
             key: const Key('pro-title'),
             textAlign: TextAlign.center,
-            style: NalviumText.titleLarge,
+            style: NalviumText.titleLarge.copyWith(fontSize: 25, height: 1.25),
           ),
         ),
         if (showMessage) ...[
@@ -672,10 +690,10 @@ class ProfessionalView extends StatelessWidget {
             step.message,
             key: const Key('nalvium-message'),
             textAlign: TextAlign.center,
-            style: NalviumText.bodyLarge,
+            style: NalviumText.bodyLarge.copyWith(height: 1.5),
           ),
         ],
-        const SizedBox(height: Space.x8),
+        const SizedBox(height: Space.x6),
         PrimaryButton(
           key: const Key('see-repair-options'),
           label: l10n.askForHelp,
@@ -755,23 +773,24 @@ class _ResolvedViewState extends State<ResolvedView>
         const SizedBox(height: Space.x2),
         Container(
           padding: const EdgeInsets.fromLTRB(
+            Space.x5,
             Space.x6,
-            Space.x8,
+            Space.x5,
             Space.x6,
-            Space.x8,
           ),
           decoration: BoxDecoration(
-            color: NalviumColors.successSoft.withValues(alpha: 0.55),
-            borderRadius: BorderRadius.circular(Corner.large),
+            color: NalviumColors.successSoft.withValues(alpha: 0.45),
+            borderRadius: BorderRadius.circular(Corner.large - 4),
           ),
           child: Column(
             children: [
               AnimatedBuilder(
                 animation: _c,
                 builder: (context, _) => SizedBox(
-                  width: 132,
-                  height: 132,
+                  width: 112,
+                  height: 112,
                   child: Stack(
+
                     alignment: Alignment.center,
                     children: [
                       Opacity(
@@ -779,8 +798,8 @@ class _ResolvedViewState extends State<ResolvedView>
                         child: Transform.scale(
                           scale: 0.7 + 0.3 * ring.value,
                           child: Container(
-                            width: 132,
-                            height: 132,
+                            width: 112,
+                            height: 112,
                             decoration: const BoxDecoration(
                               color: NalviumColors.successSoft,
                               shape: BoxShape.circle,
@@ -793,15 +812,15 @@ class _ResolvedViewState extends State<ResolvedView>
                         child: Transform.scale(
                           scale: 0.6 + 0.4 * check.value,
                           child: Container(
-                            width: 88,
-                            height: 88,
+                            width: 76,
+                            height: 76,
                             decoration: const BoxDecoration(
                               color: NalviumColors.success,
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
                               Icons.check_rounded,
-                              size: 52,
+                              size: 46,
                               color: Colors.white,
                             ),
                           ),
@@ -811,7 +830,7 @@ class _ResolvedViewState extends State<ResolvedView>
                   ),
                 ),
               ),
-              const SizedBox(height: Space.x5),
+              const SizedBox(height: Space.x4),
               FadeTransition(
                 opacity: text,
                 child: SlideTransition(
@@ -843,13 +862,13 @@ class _ResolvedViewState extends State<ResolvedView>
                           ),
                         ),
                       ],
-                      const SizedBox(height: Space.x4),
+                      const SizedBox(height: Space.x3),
                       Text(
-                        widget.step.message,
+                        keepPunctuationWithWord(widget.step.message),
                         key: const Key('nalvium-message'),
                         textAlign: TextAlign.center,
                         style: NalviumText.bodyLarge.copyWith(
-                          fontSize: 18,
+                          fontSize: 17.5,
                           height: 1.5,
                         ),
                       ),
@@ -860,7 +879,7 @@ class _ResolvedViewState extends State<ResolvedView>
             ],
           ),
         ),
-        const SizedBox(height: Space.x8),
+        const SizedBox(height: Space.x6),
         PrimaryButton(
           key: const Key('resolved-finish'),
           label: l10n.finish,

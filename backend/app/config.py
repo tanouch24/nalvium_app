@@ -1,8 +1,9 @@
 """Configuration par environnement. Aucun secret n'est commité : tout vient de l'env / .env."""
 from enum import StrEnum
 from functools import lru_cache
+from pathlib import Path
 
-from pydantic import AliasChoices, Field
+from pydantic import AliasChoices, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -18,7 +19,11 @@ class Settings(BaseSettings):
     )
 
     env: Environment = Environment.DEVELOPMENT
-    database_url: str = "postgresql+psycopg://nalvium:nalvium_dev@localhost:5433/nalvium"
+    # Accepte NALVIUM_DATABASE_URL ou DATABASE_URL (fournie telle quelle par les hébergeurs : « postgresql://… »).
+    database_url: str = Field(
+        default="postgresql+psycopg://nalvium:nalvium_dev@localhost:5433/nalvium",
+        validation_alias=AliasChoices("NALVIUM_DATABASE_URL", "DATABASE_URL"),
+    )
 
     # Serveur uniquement. Jamais exposé au client Flutter.
     ai_provider: str = "openai"
@@ -63,13 +68,29 @@ class Settings(BaseSettings):
     # Nombre maximal d'éléments supprimés par catégorie et par exécution (job borné).
     cleanup_batch_limit: int = 500
 
+    @field_validator("database_url")
+    @classmethod
+    def _psycopg_driver(cls, url: str) -> str:
+        """Le driver installé est psycopg 3 : « postgres:// » et « postgresql:// » sont complétés."""
+        for plain in ("postgres://", "postgresql://"):
+            if url.startswith(plain):
+                return "postgresql+psycopg://" + url[len(plain):]
+        return url
+
     @property
     def is_production(self) -> bool:
         return self.env is Environment.PRODUCTION
 
     def validate_for_runtime(self) -> None:
-        if self.is_production and "nalvium_dev" in self.database_url:
+        if not self.is_production:
+            return
+        if "nalvium_dev" in self.database_url:
             raise RuntimeError("Identifiants de base de données de dev interdits en production")
+        # Les médias vivent sur disque : un chemin relatif tomberait dans le système de fichiers éphémère du conteneur.
+        if not Path(self.media_root).is_absolute():
+            raise RuntimeError("NALVIUM_MEDIA_ROOT doit être un chemin absolu (volume persistant) en production")
+        if self.ai_provider == "openai" and not self.openai_api_key:
+            raise RuntimeError("OPENAI_API_KEY absente : renseignez-la ou choisissez NALVIUM_AI_PROVIDER=none")
 
 
 @lru_cache

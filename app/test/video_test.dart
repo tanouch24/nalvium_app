@@ -220,6 +220,8 @@ void main() {
       testWidgets('les deux actions restent visibles et atteignables : ${cfg.$1}', (tester) async {
         await pumpApp(tester, size: cfg.$2, dpr: cfg.$3, textScale: cfg.$4, recorder: FakeVideoRecorder());
         await tester.scrollUntilVisible(find.byKey(const Key('film-problem')), 200, scrollable: find.byType(Scrollable).first);
+        await tester.ensureVisible(find.byKey(const Key('film-problem'))); // entièrement visible, pas seulement effleuré par le bord
+        await tester.pump();
         await tester.tap(find.byKey(const Key('film-problem')));
         await tester.pumpAndSettle();
         await record(tester, const Duration(seconds: 4));

@@ -61,7 +61,7 @@ class _Body extends ConsumerWidget {
         ]),
         if (req.submittedAt != null) Text('${l10n.requestSentOn} ${relativeDate(l10n, req.submittedAt!)}', style: NalviumText.caption),
         const SizedBox(height: Space.x4),
-        Semantics(header: true, child: Text(req.summary ?? '', key: const Key('request-summary'), style: NalviumText.titleLarge.copyWith(fontSize: 24))),
+        Semantics(header: true, child: Text(req.summary ?? '', key: const Key('request-summary'), style: NalviumText.titleLarge.copyWith(fontSize: 24, height: 1.25))),
         if (req.equipmentLabel != null) ...[const SizedBox(height: Space.x2), Text(req.equipmentLabel!, key: const Key('request-equipment'), style: NalviumText.body)],
         if (stop != null) ...[
           const SizedBox(height: Space.x4),
@@ -72,10 +72,17 @@ class _Body extends ConsumerWidget {
           ),
         ],
         _h(l10n.requestShared),
-        _row(Icons.person_outline_rounded, [?req.firstName, ?req.phone].join(' · ')),
-        _row(Icons.place_outlined, [?req.city, ?req.postalCode].join(' · ')),
-        if ((req.email ?? '').isNotEmpty) _row(Icons.mail_outline_rounded, req.email!),
-        _row(Icons.event_outlined, availabilityLabel(l10n, req), key: const Key('request-availability')),
+        // Une seule surface légère : disponibilité (préférence), puis coordonnées.
+        Container(
+          padding: const EdgeInsets.fromLTRB(Space.x4, Space.x4, Space.x4, Space.x2),
+          decoration: BoxDecoration(color: NalviumColors.surface, borderRadius: BorderRadius.circular(Corner.small + 4), border: Border.all(color: NalviumColors.borderSubtle)),
+          child: Column(children: [
+            _row(Icons.event_outlined, availabilityLabel(l10n, req), key: const Key('request-availability')),
+            _row(Icons.person_outline_rounded, [?req.firstName, ?req.phone].join(' · ')),
+            _row(Icons.place_outlined, [?req.city, ?req.postalCode].join(' · ')),
+            if ((req.email ?? '').isNotEmpty) _row(Icons.mail_outline_rounded, req.email!),
+          ]),
+        ),
         _h(l10n.requestMedia),
         if (req.mediaIds.isEmpty)
           Text(l10n.helpMediaNone, style: NalviumText.body.copyWith(fontSize: 15))
@@ -94,8 +101,8 @@ class _Body extends ConsumerWidget {
   }
 
   Widget _h(String t) => Padding(
-    padding: const EdgeInsets.only(top: Space.x6, bottom: Space.x2),
-    child: Semantics(header: true, child: Text(t, style: NalviumText.title.copyWith(fontSize: 19))),
+    padding: const EdgeInsets.only(top: Space.x6, bottom: Space.x3),
+    child: Semantics(header: true, child: Text(t, style: NalviumText.title.copyWith(fontSize: 18.5))),
   );
 
   Widget _row(IconData i, String t, {Key? key}) => Padding(

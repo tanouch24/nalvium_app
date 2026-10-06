@@ -246,8 +246,8 @@ class PostCard extends ConsumerWidget {
       child: Material(
         color: NalviumColors.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(Corner.medium),
-          side: const BorderSide(color: NalviumColors.borderSubtle, width: 1.2),
+          borderRadius: BorderRadius.circular(Corner.small + 4),
+          side: const BorderSide(color: NalviumColors.borderSubtle),
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(
@@ -272,9 +272,9 @@ class PostCard extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(
                       Space.x4,
-                      Space.x3,
+                      Space.x3 + 2,
                       Space.x4,
-                      Space.x1,
+                      Space.x3,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -294,14 +294,14 @@ class PostCard extends ConsumerWidget {
                           p.title,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: NalviumText.title.copyWith(fontSize: 18),
+                          style: NalviumText.title.copyWith(fontSize: 18, height: 1.25),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 6),
                         Text(
                           p.solution,
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
-                          style: NalviumText.body.copyWith(fontSize: 15),
+                          style: NalviumText.body.copyWith(fontSize: 15, height: 1.45),
                         ),
                         if (p.materials != null) ...[
                           const SizedBox(height: 4),
@@ -318,6 +318,7 @@ class PostCard extends ConsumerWidget {
                 ],
               ),
             ),
+            const Divider(height: 1, thickness: 1, color: NalviumColors.borderSubtle),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: Space.x2),
               child: Wrap(

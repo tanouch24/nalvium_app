@@ -376,7 +376,11 @@ class _HelpRequestScreenState extends ConsumerState<HelpRequestScreen> {
           ],
           // ── PHOTOS / VIDÉOS ──
           _heading(l10n.helpSectionMedia),
-          Text(l10n.helpMediaPrivacy, key: const Key('help-media-privacy'), style: NalviumText.caption),
+          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Padding(padding: EdgeInsets.only(top: 1), child: Icon(Icons.lock_outline_rounded, size: 16, color: NalviumColors.textSecondary)),
+            const SizedBox(width: 6),
+            Expanded(child: Text(l10n.helpMediaPrivacy, key: const Key('help-media-privacy'), style: NalviumText.caption.copyWith(color: NalviumColors.textSecondary, height: 1.4))),
+          ]),
           const SizedBox(height: Space.x3),
           if (sessionMedia.isEmpty && _extraMedia.isEmpty)
             Text(l10n.helpMediaNone, key: const Key('help-media-none'), style: NalviumText.body.copyWith(fontSize: 15))
@@ -436,12 +440,15 @@ class _HelpRequestScreenState extends ConsumerState<HelpRequestScreen> {
           ],
           if (errors['when'] != null) _error(errors['when']!, const Key('help-when-error')),
           // ── CONSENTEMENT ──
-          const SizedBox(height: Space.x6),
+          const SizedBox(height: Space.x8),
           Semantics(
             container: true,
-            child: InkWell(
+            child: Material(
+              color: NalviumColors.surface,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Corner.small + 4), side: BorderSide(color: _consent ? NalviumColors.primary : NalviumColors.borderSubtle, width: 1.5)),
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
               key: const Key('help-consent'),
-              borderRadius: BorderRadius.circular(Corner.small),
               onTap: () => setState(() => _consent = !_consent),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(minHeight: 48),
@@ -450,9 +457,10 @@ class _HelpRequestScreenState extends ConsumerState<HelpRequestScreen> {
                   children: [
                     Checkbox(value: _consent, onChanged: (v) => setState(() => _consent = v ?? false), activeColor: NalviumColors.primary, visualDensity: VisualDensity.standard),
                     const SizedBox(width: Space.x1),
-                    Expanded(child: Padding(padding: const EdgeInsets.only(top: 12), child: Text(l10n.helpConsent, style: NalviumText.body.copyWith(color: NalviumColors.textPrimary, fontSize: 15)))),
+                    Expanded(child: Padding(padding: const EdgeInsets.fromLTRB(0, 12, Space.x3, 12), child: Text(l10n.helpConsent, style: NalviumText.body.copyWith(color: NalviumColors.textPrimary, fontSize: 15)))),
                   ],
                 ),
+              ),
               ),
             ),
           ),
@@ -494,8 +502,8 @@ class _HelpRequestScreenState extends ConsumerState<HelpRequestScreen> {
   };
 
   Widget _heading(String t) => Padding(
-    padding: const EdgeInsets.only(top: Space.x6, bottom: Space.x2),
-    child: Semantics(header: true, child: Text(t, style: NalviumText.title.copyWith(fontSize: 19))),
+    padding: const EdgeInsets.only(top: Space.x8, bottom: Space.x3),
+    child: Semantics(header: true, child: Text(t, style: NalviumText.title.copyWith(fontSize: 18.5))),
   );
 
   Widget _error(String text, Key key) => Padding(
@@ -512,7 +520,7 @@ class _HelpRequestScreenState extends ConsumerState<HelpRequestScreen> {
     Padding(
       padding: const EdgeInsets.only(bottom: Space.x3),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(label, style: NalviumText.caption.copyWith(fontWeight: FontWeight.w700, color: NalviumColors.textPrimary)),
+        Text(label, style: NalviumText.caption.copyWith(fontWeight: FontWeight.w600, color: NalviumColors.textSecondary)),
         const SizedBox(height: Space.x1 + 2),
         TextField(
           key: Key(key),

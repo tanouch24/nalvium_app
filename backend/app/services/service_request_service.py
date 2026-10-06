@@ -2,6 +2,8 @@
 
 V1 sans réseau de professionnels : l'envoi enregistre un lead qualifié (rien n'est transmis, aucun SMS/e-mail).
 Un diagnostic n'est jamais modifié par une demande ; le Safety Engine n'est jamais contourné."""
+from __future__ import annotations
+
 import logging
 import uuid
 from datetime import UTC, date, datetime

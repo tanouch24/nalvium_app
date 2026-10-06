@@ -190,18 +190,18 @@ class _BodyState extends ConsumerState<_Body> {
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       padding: EdgeInsets.fromLTRB(Space.gutter, Space.x2, Space.gutter, Space.x10 + MediaQuery.viewInsetsOf(context).bottom),
       children: [
-        if (p.photoId != null) ...[
-          AspectRatio(
-            aspectRatio: (p.photoWidth != null && p.photoHeight != null && p.photoHeight! > 0) ? (p.photoWidth! / p.photoHeight!).clamp(0.75, 1.8) : 16 / 9,
-            child: ClipRRect(borderRadius: BorderRadius.circular(Corner.large), child: CommunityImage(key: const Key('post-photo'), mediaId: p.photoId!, variant: 'large', semanticLabel: l10n.photoSemantics)),
-          ),
-          const SizedBox(height: Space.x4),
-        ],
         Text([if (cat.isNotEmpty) cat, '${l10n.cmMember} · ${relativeDate(l10n, p.createdAt)}'].join(' · '), key: const Key('post-meta'), style: NalviumText.caption.copyWith(color: NalviumColors.textMuted)),
         const SizedBox(height: Space.x1),
-        Semantics(header: true, child: Text(p.title, key: const Key('post-title'), style: NalviumText.titleLarge.copyWith(fontSize: 26))),
-        const SizedBox(height: Space.x3),
-        Text(p.solution, key: const Key('post-solution'), style: NalviumText.bodyLarge.copyWith(fontWeight: FontWeight.w400, fontSize: 17.5)),
+        Semantics(header: true, child: Text(p.title, key: const Key('post-title'), style: NalviumText.titleLarge.copyWith(fontSize: 26, height: 1.2))),
+        if (p.photoId != null) ...[
+          const SizedBox(height: Space.x4),
+          AspectRatio(
+            aspectRatio: (p.photoWidth != null && p.photoHeight != null && p.photoHeight! > 0) ? (p.photoWidth! / p.photoHeight!).clamp(0.75, 1.8) : 16 / 9,
+            child: ClipRRect(borderRadius: BorderRadius.circular(Corner.medium), child: CommunityImage(key: const Key('post-photo'), mediaId: p.photoId!, variant: 'large', semanticLabel: l10n.photoSemantics)),
+          ),
+        ],
+        const SizedBox(height: Space.x4),
+        Text(p.solution, key: const Key('post-solution'), style: NalviumText.bodyLarge.copyWith(fontWeight: FontWeight.w400, fontSize: 17.5, height: 1.5)),
         if (p.materials != null) ...[
           const SizedBox(height: Space.x3),
           Text('${l10n.cmMaterials} : ${p.materials}', key: const Key('post-materials'), style: NalviumText.body.copyWith(color: NalviumColors.textPrimary)),
@@ -213,7 +213,10 @@ class _BodyState extends ConsumerState<_Body> {
           Expanded(child: Text(l10n.cmNotOfficial, key: const Key('post-not-official'), style: NalviumText.caption.copyWith(color: NalviumColors.textMuted, fontSize: 13))),
         ]),
         const SizedBox(height: Space.x3),
-        Wrap(children: [
+        const Divider(height: 1, thickness: 1, color: NalviumColors.borderSubtle),
+        const SizedBox(height: Space.x1),
+        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+         Expanded(child: Wrap(children: [
           CommunityAction(
             key: const Key('detail-helpful'),
             icon: Icons.thumb_up_outlined,
@@ -230,6 +233,7 @@ class _BodyState extends ConsumerState<_Body> {
             active: p.saved,
             onTap: () => toggleSaved(context, ref, p),
           ),
+         ])),
           CommunityAction(
             key: const Key('detail-report'),
             icon: Icons.flag_outlined,
@@ -248,6 +252,8 @@ class _BodyState extends ConsumerState<_Body> {
           ]),
         ],
         const SizedBox(height: Space.x6),
+        const Divider(height: 1, thickness: 1, color: NalviumColors.borderSubtle),
+        const SizedBox(height: Space.x5),
         Semantics(header: true, child: Text('${l10n.cmComments}${p.commentCount > 0 ? ' · ${p.commentCount}' : ''}', style: NalviumText.title.copyWith(fontSize: 19))),
         const SizedBox(height: Space.x3),
         if (_commentsError != null && !_loaded)
@@ -298,7 +304,7 @@ class _CommentRow extends StatelessWidget {
       key: Key('comment-${comment.id}'),
       margin: const EdgeInsets.only(bottom: Space.x2),
       padding: const EdgeInsets.fromLTRB(Space.x4, Space.x3, Space.x2, Space.x1),
-      decoration: BoxDecoration(color: NalviumColors.surface, borderRadius: BorderRadius.circular(Corner.medium), border: Border.all(color: NalviumColors.borderSubtle)),
+      decoration: BoxDecoration(color: NalviumColors.surface, borderRadius: BorderRadius.circular(Corner.small + 4), border: Border.all(color: NalviumColors.borderSubtle)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text('${l10n.cmMember} · ${relativeDate(l10n, comment.createdAt)}', style: NalviumText.caption.copyWith(color: NalviumColors.textMuted, fontSize: 13)),
         const SizedBox(height: 2),

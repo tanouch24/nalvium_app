@@ -88,21 +88,21 @@ class _Body extends ConsumerWidget {
           AspectRatio(
             aspectRatio: 16 / 9,
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(Corner.large),
+              borderRadius: BorderRadius.circular(Corner.medium),
               child: AuthedImage(key: const Key('equipment-photo'), mediaId: e.photoMediaId!, semanticLabel: l10n.photoSemantics),
             ),
           )
         else
           Align(
             alignment: Alignment.centerLeft,
-            child: EquipmentAvatar(kind: e.kind, size: 84, radius: 24),
+            child: EquipmentAvatar(kind: e.kind, size: 72, radius: 20),
           ),
-        const SizedBox(height: Space.x5),
+        const SizedBox(height: Space.x4),
         Semantics(
           header: true,
-          child: Text(e.displayName, key: const Key('equipment-name'), style: NalviumText.titleLarge.copyWith(fontSize: 28)),
+          child: Text(e.displayName, key: const Key('equipment-name'), style: NalviumText.titleLarge.copyWith(fontSize: 26, height: 1.2)),
         ),
-        const SizedBox(height: Space.x1),
+        const SizedBox(height: Space.x2),
         // Marque et référence sont deux informations distinctes.
         if (e.brand != null)
           Text(e.brand!, key: const Key('equipment-brand'), style: NalviumText.bodyLarge.copyWith(color: NalviumColors.textSecondary))
@@ -121,7 +121,7 @@ class _Body extends ConsumerWidget {
             child: InfoPill(icon: room?.icon ?? Icons.meeting_room_outlined, label: e.roomName!),
           ),
         ],
-        const SizedBox(height: Space.x6),
+        const SizedBox(height: Space.x5),
         PrimaryButton(
           key: const Key('equipment-diagnose'),
           label: l10n.eqDiagnose,
@@ -223,14 +223,22 @@ class _DiagnosticRow extends StatelessWidget {
       _ => l10n.statusActive,
     };
     final title = (d.title ?? '').isEmpty ? l10n.untitledProblem : d.title!;
-    return Semantics(
+    return Padding(
+      padding: const EdgeInsets.only(bottom: Space.x2 + 2),
+      child: Semantics(
       button: true,
-      child: InkWell(
+      child: Material(
+        color: NalviumColors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(Corner.small + 4),
+          side: const BorderSide(color: NalviumColors.borderSubtle),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
         key: Key('equipment-diag-${d.id}'),
-        borderRadius: BorderRadius.circular(Corner.medium),
         onTap: () => context.push(d.status == 'active' ? '/session/${d.id}' : '/session/${d.id}/summary'),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: Space.x3),
+          padding: const EdgeInsets.symmetric(horizontal: Space.x4, vertical: Space.x3),
           child: Row(
             children: [
               Expanded(
@@ -256,6 +264,8 @@ class _DiagnosticRow extends StatelessWidget {
             ],
           ),
         ),
+      ),
+      ),
       ),
     );
   }

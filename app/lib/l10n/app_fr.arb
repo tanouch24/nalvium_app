@@ -654,5 +654,7 @@
   "stDelDoneTitle": "Vos données ont été supprimées",
   "stDelDoneBody": "Nalvium repart à zéro avec une nouvelle identité anonyme.",
   "stDelHome": "Retour à l'accueil",
-  "stDataRow": "Consulter et supprimer mes données"
+  "stDataRow": "Consulter et supprimer mes données",
+  "preparingNext": "Je prépare la suite…",
+  "cmPreviewNote": "Seul ce qui apparaît ci-dessous sera publié, et visible par les autres utilisateurs de Nalvium."
 }

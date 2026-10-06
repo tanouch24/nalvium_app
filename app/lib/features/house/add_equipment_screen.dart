@@ -202,11 +202,10 @@ class _AddEquipmentScreenState extends ConsumerState<AddEquipmentScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (widget.args.linkSessionId == null && widget.args.photoMediaId == null) ...[
-          SecondaryButton(
+          _QuickPath(
             key: const Key('add-identify'),
             label: l10n.eqIdentifyPhoto,
-            icon: Icons.photo_camera_outlined,
-            onPressed: () => context.pushReplacement('/equipment/identify'),
+            onTap: () => context.pushReplacement('/equipment/identify'),
           ),
           const SizedBox(height: Space.x4),
         ],
@@ -334,6 +333,40 @@ class _AddEquipmentScreenState extends ConsumerState<AddEquipmentScreen> {
   }
 }
 
+/// Chemin le plus simple : identifier l'équipement avec une photo. Fond bleu très clair, une seule zone tactile.
+class _QuickPath extends StatelessWidget {
+  const _QuickPath({super.key, required this.label, required this.onTap});
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    button: true,
+    child: Material(
+      color: NalviumColors.primarySoft,
+      borderRadius: BorderRadius.circular(Corner.small + 4),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 56),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: Space.x4, vertical: Space.x3),
+            child: Row(
+              children: [
+                const Icon(Icons.photo_camera_outlined, color: NalviumColors.primary),
+                const SizedBox(width: Space.x3),
+                Expanded(child: Text(label, style: NalviumText.button.copyWith(color: NalviumColors.primaryText))),
+                const Icon(Icons.chevron_right_rounded, color: NalviumColors.primaryText),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
 class _Field extends StatelessWidget {
   const _Field({required this.fieldKey, required this.label, required this.hint, required this.controller, this.onChanged});
   final Key fieldKey;
@@ -346,7 +379,7 @@ class _Field extends StatelessWidget {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text(label, style: NalviumText.caption.copyWith(fontWeight: FontWeight.w700, color: NalviumColors.textPrimary)),
+      Text(label, style: NalviumText.caption.copyWith(fontWeight: FontWeight.w600, color: NalviumColors.textSecondary)),
       const SizedBox(height: Space.x1 + 2),
       TextField(
         key: fieldKey,
@@ -373,7 +406,7 @@ class _PhotoBlock extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(l10n.eqPhoto, style: NalviumText.caption.copyWith(fontWeight: FontWeight.w700, color: NalviumColors.textPrimary)),
+        Text(l10n.eqPhoto, style: NalviumText.caption.copyWith(fontWeight: FontWeight.w600, color: NalviumColors.textSecondary)),
         const SizedBox(height: Space.x1 + 2),
         if (photoId != null) ...[
           AspectRatio(

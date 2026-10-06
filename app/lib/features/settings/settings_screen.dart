@@ -30,7 +30,50 @@ class _Header extends StatelessWidget {
       Space.gutter,
       Space.x2,
     ),
-    child: Semantics(header: true, child: Text(text, style: NalviumText.title)),
+    child: Semantics(
+      header: true,
+      child: Text(
+        text,
+        style: NalviumText.title.copyWith(
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+          color: NalviumColors.textSecondary,
+        ),
+      ),
+    ),
+  );
+}
+
+/// Un groupe de lignes sur une surface légère, séparées par de fins traits.
+class _Group extends StatelessWidget {
+  const _Group(this.children);
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: Space.gutter),
+    child: Container(
+      decoration: BoxDecoration(
+        color: NalviumColors.surface,
+        borderRadius: BorderRadius.circular(Corner.small + 4),
+        border: Border.all(color: NalviumColors.borderSubtle),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: [
+          for (var i = 0; i < children.length; i++) ...[
+            if (i > 0)
+              const Divider(
+                height: 1,
+                thickness: 1,
+                indent: Space.x4,
+                color: NalviumColors.borderSubtle,
+              ),
+            children[i],
+          ],
+        ],
+      ),
+    ),
   );
 }
 
@@ -40,9 +83,11 @@ class _Row extends StatelessWidget {
     required this.label,
     this.value,
     this.onTap,
+    this.icon,
     this.destructive = false,
   });
   final String label;
+  final IconData? icon;
   final String? value;
   final VoidCallback? onTap;
   final bool destructive;
@@ -53,11 +98,21 @@ class _Row extends StatelessWidget {
       constraints: const BoxConstraints(minHeight: Space.tap),
       child: Padding(
         padding: const EdgeInsets.symmetric(
-          horizontal: Space.gutter,
+          horizontal: Space.x4,
           vertical: Space.x3,
         ),
         child: Row(
           children: [
+            if (icon != null) ...[
+              Icon(
+                icon,
+                size: 22,
+                color: destructive
+                    ? NalviumColors.dangerText
+                    : NalviumColors.primary,
+              ),
+              const SizedBox(width: Space.x3),
+            ],
             Expanded(
               child: Text(
                 label,
@@ -101,55 +156,73 @@ class SettingsScreen extends ConsumerWidget {
           key: const Key('settings-list'),
           children: [
             _Header(l.stSecData),
-            _Row(
-              key: const Key('st-data'),
-              label: l.stDataTitle,
-              onTap: () => context.push('/settings/data'),
-            ),
+            _Group([
+              _Row(
+                key: const Key('st-data'),
+                icon: Icons.folder_open_rounded,
+                label: l.stDataRow,
+                onTap: () => context.push('/settings/data'),
+              ),
+            ]),
             _Header(l.stSecPrivacy),
-            _Row(
-              key: const Key('st-privacy'),
-              label: l.stPrivacy,
-              onTap: () => context.push('/settings/legal/privacy'),
-            ),
-            _Row(
-              key: const Key('st-ads'),
-              label: l.stAdChoices,
-              onTap: () => context.push('/settings/ads'),
-            ),
+            _Group([
+              _Row(
+                key: const Key('st-privacy'),
+                icon: Icons.lock_outline_rounded,
+                label: l.stPrivacy,
+                onTap: () => context.push('/settings/legal/privacy'),
+              ),
+              _Row(
+                key: const Key('st-ads'),
+                icon: Icons.tune_rounded,
+                label: l.stAdChoices,
+                onTap: () => context.push('/settings/ads'),
+              ),
+            ]),
             _Header(l.stSecHelp),
-            _Row(
-              key: const Key('st-about'),
-              label: l.stAbout,
-              onTap: () => context.push('/settings/legal/about'),
-            ),
-            _Row(
-              key: const Key('st-contact'),
-              label: l.stContact,
-              onTap: () => context.push('/settings/contact'),
-            ),
+            _Group([
+              _Row(
+                key: const Key('st-about'),
+                icon: Icons.info_outline_rounded,
+                label: l.stAbout,
+                onTap: () => context.push('/settings/legal/about'),
+              ),
+              _Row(
+                key: const Key('st-contact'),
+                icon: Icons.mail_outline_rounded,
+                label: l.stContact,
+                onTap: () => context.push('/settings/contact'),
+              ),
+            ]),
             _Header(l.stSecLegal),
-            _Row(
-              key: const Key('st-terms'),
-              label: l.stTerms,
-              onTap: () => context.push('/settings/legal/terms'),
-            ),
-            _Row(
-              key: const Key('st-notice'),
-              label: l.stLegalNotice,
-              onTap: () => context.push('/settings/legal/legal'),
-            ),
-            _Row(
-              key: const Key('st-ai'),
-              label: l.stAiInfo,
-              onTap: () => context.push('/settings/legal/ai'),
-            ),
+            _Group([
+              _Row(
+                key: const Key('st-terms'),
+                icon: Icons.description_outlined,
+                label: l.stTerms,
+                onTap: () => context.push('/settings/legal/terms'),
+              ),
+              _Row(
+                key: const Key('st-notice'),
+                icon: Icons.gavel_rounded,
+                label: l.stLegalNotice,
+                onTap: () => context.push('/settings/legal/legal'),
+              ),
+              _Row(
+                key: const Key('st-ai'),
+                icon: Icons.auto_awesome_outlined,
+                label: l.stAiInfo,
+                onTap: () => context.push('/settings/legal/ai'),
+              ),
+            ]),
             _Header(l.stSecApp),
-            _Row(
-              key: const Key('st-version'),
-              label: l.stVersion,
-              value: '$kAppVersionName ($kAppBuildNumber)',
-            ),
+            _Group([
+              _Row(
+                key: const Key('st-version'),
+                label: l.stVersion,
+                value: '$kAppVersionName ($kAppBuildNumber)',
+              ),
+            ]),
             const SizedBox(height: Space.x8),
           ],
         ),
@@ -199,15 +272,24 @@ class LegalScreen extends StatelessWidget {
               ),
             ),
             for (final s in doc.sections) ...[
-              const SizedBox(height: Space.x5),
+              const SizedBox(height: Space.x6),
               Semantics(
                 header: true,
-                child: Text(s.heading, style: NalviumText.title),
+                child: Text(
+                  s.heading,
+                  style: NalviumText.title.copyWith(fontSize: 18.5),
+                ),
               ),
               for (final p in s.paragraphs)
                 Padding(
-                  padding: const EdgeInsets.only(top: Space.x2),
-                  child: Text(p, style: NalviumText.body),
+                  padding: const EdgeInsets.only(top: Space.x2 + 2),
+                  child: Text(
+                    p,
+                    style: NalviumText.body.copyWith(
+                      color: NalviumColors.textPrimary,
+                      height: 1.55,
+                    ),
+                  ),
                 ),
             ],
             const SizedBox(height: Space.x4),
@@ -330,22 +412,30 @@ class DataScreen extends StatelessWidget {
               padding: const EdgeInsets.all(Space.gutter),
               child: Text(l.stDataBody, style: NalviumText.bodyLarge),
             ),
-            _Row(
-              key: const Key('st-history'),
-              label: l.stHistory,
-              onTap: () => context.push('/history'),
-            ),
-            _Row(
-              key: const Key('st-requests'),
-              label: l.stRequests,
-              onTap: () => context.go('/repair'),
-            ),
-            _Row(
-              key: const Key('st-delete'),
-              label: l.stDeleteData,
-              destructive: true,
-              onTap: () => context.push('/settings/data/delete'),
-            ),
+            _Group([
+              _Row(
+                key: const Key('st-history'),
+                icon: Icons.history_rounded,
+                label: l.stHistory,
+                onTap: () => context.push('/history'),
+              ),
+              _Row(
+                key: const Key('st-requests'),
+                icon: Icons.support_agent_rounded,
+                label: l.stRequests,
+                onTap: () => context.go('/repair'),
+              ),
+            ]),
+            const SizedBox(height: Space.x6),
+            _Group([
+              _Row(
+                key: const Key('st-delete'),
+                icon: Icons.delete_outline_rounded,
+                label: l.stDeleteData,
+                destructive: true,
+                onTap: () => context.push('/settings/data/delete'),
+              ),
+            ]),
           ],
         ),
       ),

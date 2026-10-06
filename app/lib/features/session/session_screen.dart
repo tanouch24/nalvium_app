@@ -208,6 +208,8 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
     } else if (_busy || state == null || state.next == null) {
       body = AnalysisWait(
         onCancel: _home,
+        refined: true,
+        lightweight: true,
         photo: state?.latestMediaId == null
             ? null
             : AuthedImage(
@@ -291,6 +293,13 @@ class _Content extends StatelessWidget {
       _ => state.latestMediaId != null || (state.title ?? '').trim().isNotEmpty,
     };
 
+    // Étapes guidées alignées sur la question (en-tête compact) ; les autres écrans gardent leur composition.
+    final guided = const {
+      NextActionType.askQuestion,
+      NextActionType.instruction,
+      NextActionType.verification,
+      NextActionType.recommendProfessional,
+    }.contains(type);
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(
         Space.gutter,
@@ -303,6 +312,7 @@ class _Content extends StatelessWidget {
         children: [
           if (showContext) ...[
             ContextHeader(
+              compact: guided,
               isVideo: state.latestMediaIsVideo,
               mediaId: state.latestMediaId,
               title: state.title,
@@ -310,7 +320,7 @@ class _Content extends StatelessWidget {
                   ? [state.equipment!.displayName, ?state.equipment!.roomName].join(' · ')
                   : categoryLabel(AppLocalizations.of(context), state.category),
             ),
-            const SizedBox(height: Space.x8),
+            SizedBox(height: guided ? Space.x6 : Space.x8),
           ],
           if (step.manual != null && type != NextActionType.safetyStop) ...[
             ManualCitationLine(citation: step.manual!, equipmentId: state.equipment?.id),
@@ -349,7 +359,7 @@ class _Content extends StatelessWidget {
             NextActionType.verification,
           }.contains(type))
             Padding(
-              padding: const EdgeInsets.only(top: Space.x4),
+              padding: const EdgeInsets.only(top: Space.x1),
               child: TertiaryButton(
                 key: const Key('ask-for-help'),
                 label: AppLocalizations.of(context).helpAsk,

@@ -39,20 +39,20 @@ class OutOfZoneScreen extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(Space.gutter, Space.x10, Space.gutter, Space.x8),
+          padding: const EdgeInsets.fromLTRB(Space.gutter, Space.x8, Space.gutter, Space.x8),
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             Center(
               child: Container(
-                width: 96,
-                height: 96,
+                width: 84,
+                height: 84,
                 decoration: const BoxDecoration(color: NalviumColors.primarySoft, shape: BoxShape.circle),
-                child: const Icon(Icons.place_outlined, size: 44, color: NalviumColors.primary),
+                child: const Icon(Icons.place_outlined, size: 38, color: NalviumColors.primary),
               ),
             ),
-            const SizedBox(height: Space.x6),
+            const SizedBox(height: Space.x5),
             Semantics(
               header: true,
-              child: Text(l10n.oozTitle, key: const Key('ooz-title'), textAlign: TextAlign.center, style: NalviumText.titleLarge),
+              child: Text(l10n.oozTitle, key: const Key('ooz-title'), textAlign: TextAlign.center, style: NalviumText.titleLarge.copyWith(fontSize: 25, height: 1.25)),
             ),
             const SizedBox(height: Space.x3),
             if (args.safety) ...[
@@ -61,8 +61,8 @@ class OutOfZoneScreen extends StatelessWidget {
               Text(l10n.helpEmergency, key: const Key('ooz-emergency'), textAlign: TextAlign.center, style: NalviumText.caption.copyWith(color: NalviumColors.dangerText, fontWeight: FontWeight.w600)),
               const SizedBox(height: Space.x3),
             ],
-            Text(l10n.oozBody(args.areaName, args.radiusKm), key: const Key('ooz-body'), textAlign: TextAlign.center, style: NalviumText.body),
-            const SizedBox(height: Space.x8),
+            Text(l10n.oozBody(args.areaName, args.radiusKm), key: const Key('ooz-body'), textAlign: TextAlign.center, style: NalviumText.body.copyWith(height: 1.5)),
+            const SizedBox(height: Space.x6),
             PrimaryButton(key: const Key('ooz-continue'), label: l10n.oozContinue, onPressed: () => _continue(context)),
             const SizedBox(height: Space.x1),
             TertiaryButton(key: const Key('ooz-back'), label: l10n.oozBack, color: NalviumColors.textSecondary, onPressed: () => context.pop()),

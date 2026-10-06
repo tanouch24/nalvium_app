@@ -16,6 +16,7 @@ class ContextHeader extends StatelessWidget {
     this.title,
     this.category,
     this.isVideo = false,
+    this.compact = false,
   });
   final String? mediaId;
   final String? title;
@@ -24,6 +25,9 @@ class ContextHeader extends StatelessWidget {
   /// La vignette est une image extraite d'une vidéo : petit badge de lecture.
   final bool isVideo;
 
+  /// Rappel plus discret (question guidée) : vignette 56 dp, titre un peu plus petit.
+  final bool compact;
+
   static const thumb = 64.0;
 
   @override
@@ -31,16 +35,17 @@ class ContextHeader extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final hasTitle = title != null && title!.trim().isNotEmpty;
     if (mediaId == null && !hasTitle) return const SizedBox.shrink();
+    final size = compact ? 56.0 : thumb;
     return Row(
       children: [
         SizedBox(
-          width: thumb,
-          height: thumb,
+          width: size,
+          height: size,
           child: Stack(
             fit: StackFit.expand,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(compact ? 14 : 16),
                 child: mediaId == null
                     ? const ColoredBox(
                         color: NalviumColors.primarySoft,
@@ -86,7 +91,7 @@ class ContextHeader extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(width: Space.x4),
+        SizedBox(width: compact ? Space.x3 + 2 : Space.x4),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,7 +103,7 @@ class ContextHeader extends StatelessWidget {
                   key: const Key('context-title'),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: NalviumText.title.copyWith(fontSize: 18),
+                  style: NalviumText.title.copyWith(fontSize: compact ? 17 : 18),
                 ),
               if (category != null && category!.isNotEmpty)
                 Padding(

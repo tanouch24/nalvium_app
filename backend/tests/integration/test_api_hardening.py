@@ -84,7 +84,9 @@ def test_production_exposes_no_docs_or_schema_and_no_cors():
     import app.config as cfg
 
     cfg.get_settings.cache_clear()
-    prod = Settings(env="production", database_url="postgresql+psycopg://u:p@db/prod")
+    prod = Settings(
+        env="production", database_url="postgresql+psycopg://u:p@db/prod", media_root="/data/media", ai_provider="none"
+    )
     assert prod.is_production
     orig = cfg.get_settings
     cfg.get_settings = lambda: prod
@@ -109,3 +111,28 @@ def test_production_refuses_dev_database_credentials():
 def test_no_debug_routes_are_exposed():
     paths = create_app().openapi()["paths"]
     assert paths and not any(w in p for p in paths for w in ("debug", "test", "admin", "internal"))
+
+
+def test_database_url_hebergeur_est_complete_pour_psycopg(monkeypatch):
+    from app.config import Settings
+
+    monkeypatch.delenv("NALVIUM_DATABASE_URL", raising=False)
+    monkeypatch.setenv("DATABASE_URL", "postgresql://u:p@db.example:5432/nalvium")
+    assert Settings().database_url == "postgresql+psycopg://u:p@db.example:5432/nalvium"
+    assert Settings(database_url="postgres://u:p@h/n").database_url == "postgresql+psycopg://u:p@h/n"
+    kept = "postgresql+psycopg://u:p@h/n"
+    assert Settings(database_url=kept).database_url == kept
+
+
+def test_production_refuse_media_ephemeres_et_ia_sans_cle():
+    import pytest
+
+    from app.config import Settings
+
+    good = {"env": "production", "database_url": "postgresql://u:p@h/n", "ai_provider": "none"}
+    Settings(**good, media_root="/data/media").validate_for_runtime()
+    with pytest.raises(RuntimeError, match="MEDIA_ROOT"):
+        Settings(**good, media_root="./var/media").validate_for_runtime()
+    with pytest.raises(RuntimeError, match="OPENAI_API_KEY"):
+        Settings(**{**good, "ai_provider": "openai"}, openai_api_key=None, media_root="/data/media").validate_for_runtime()
+    Settings(**{**good, "ai_provider": "openai"}, openai_api_key="x", media_root="/data/media").validate_for_runtime()

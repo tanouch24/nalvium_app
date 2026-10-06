@@ -5,6 +5,16 @@
 const kLegalVersion = '2026-10-provisoire';
 const kLegalContact = 'contact@nalvium.com';
 
+/// Identité de l'exploitant (entrepreneur individuel : ce n'est PAS une société, aucun capital social).
+const kPublisherName = 'Nathanyel David BENCHIMOL';
+const kTradeName = 'NB CONSULTING';
+const kSiren = '509 817 649';
+const kSiret = '509 817 649 00080';
+const kApeCode = '70.22Z';
+const kPublisherAddress = "10 rue d'Hanoï, 69100 Villeurbanne, France";
+const _publisherLine =
+    '$kPublisherName, entrepreneur individuel (nom commercial : $kTradeName)';
+
 class LegalSection {
   const LegalSection(this.heading, this.paragraphs);
   final String heading;
@@ -22,6 +32,7 @@ class LegalDocument {
   final List<LegalSection> sections;
 }
 
+/// Seul champ encore à renseigner après le déploiement de production : l'hébergeur du backend.
 const _todo = '[À COMPLÉTER AVANT PUBLICATION]';
 
 const privacyPolicy = LegalDocument(
@@ -33,7 +44,7 @@ const privacyPolicy = LegalDocument(
       "Certaines informations que vous choisissez de saisir ou de photographier sont traitées pour vous aider ; certaines sont envoyées à un fournisseur d'intelligence artificielle. Ce document explique lesquelles, pourquoi, et comment les supprimer.",
     ]),
     LegalSection("Qui est responsable", [
-      "Responsable du traitement : $_todo (raison sociale, adresse). Contact : $kLegalContact.",
+      "Responsable du traitement : $_publisherLine, $kPublisherAddress (SIREN $kSiren). Contact : $kLegalContact.",
     ]),
     LegalSection("Ce que Nalvium conserve", [
       "• Un identifiant anonyme d'installation : un code aléatoire généré sur votre téléphone. Ce n'est ni votre numéro, ni l'identifiant de votre appareil, ni votre identifiant publicitaire.",
@@ -108,7 +119,8 @@ const termsOfUse = LegalDocument(
       "Le service peut être interrompu ou modifié. L'analyse dépend d'un fournisseur d'IA et peut être indisponible.",
     ]),
     LegalSection("Contact", [
-      '$kLegalContact. Droit applicable et juridiction : $_todo.',
+      '$kLegalContact.',
+      "Droit applicable : droit français. Si vous êtes un consommateur, cela ne vous prive pas des droits que la loi impérative vous reconnaît, ni de la possibilité de saisir la juridiction compétente selon les règles applicables.",
     ]),
   ],
 );
@@ -118,8 +130,10 @@ const legalNotice = LegalDocument(
   title: 'Mentions légales',
   sections: [
     LegalSection('Éditeur', [
-      "Nalvium — $_todo (dénomination, forme juridique, capital, adresse du siège, numéro d'immatriculation).",
-      "Directeur de la publication : $_todo.",
+      "Nalvium est édité par $_publisherLine.",
+      "SIREN : $kSiren · SIRET : $kSiret · Code APE : $kApeCode.",
+      "Adresse : $kPublisherAddress.",
+      "Directeur de la publication : $kPublisherName.",
     ]),
     LegalSection('Contact', [kLegalContact]),
     LegalSection('Hébergement', [

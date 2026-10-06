@@ -15,6 +15,7 @@ class ChoiceTile extends StatefulWidget {
     required this.onTap,
     this.icon,
     this.vertical = false,
+    this.refined = false,
   });
   final String label;
   final VoidCallback onTap;
@@ -22,6 +23,9 @@ class ChoiceTile extends StatefulWidget {
 
   /// Icône au-dessus du libellé (grille de résultats) plutôt qu'à gauche.
   final bool vertical;
+
+  /// Finition de l'écran de question guidée (rayon plus doux, hauteur un peu plus compacte).
+  final bool refined;
 
   @override
   State<ChoiceTile> createState() => _ChoiceTileState();
@@ -69,10 +73,10 @@ class _ChoiceTileState extends State<ChoiceTile> {
         duration: d,
         child: AnimatedContainer(
           duration: d,
-          constraints: BoxConstraints(minHeight: widget.vertical ? 92 : 62),
+          constraints: BoxConstraints(minHeight: widget.vertical ? (widget.refined ? 84 : 92) : (widget.refined ? 58 : 62)),
           decoration: BoxDecoration(
             color: _pressed ? NalviumColors.primarySoft : NalviumColors.surface,
-            borderRadius: BorderRadius.circular(Corner.medium),
+            borderRadius: BorderRadius.circular(widget.refined ? Corner.small + 4 : Corner.medium),
             border: Border.all(
               color: _pressed
                   ? NalviumColors.primary
@@ -82,7 +86,7 @@ class _ChoiceTileState extends State<ChoiceTile> {
           ),
           child: Material(
             type: MaterialType.transparency,
-            borderRadius: BorderRadius.circular(Corner.medium),
+            borderRadius: BorderRadius.circular(widget.refined ? Corner.small + 4 : Corner.medium),
             clipBehavior: Clip.antiAlias,
             child: InkWell(
               onHighlightChanged: (v) => setState(() => _pressed = v),
@@ -91,9 +95,9 @@ class _ChoiceTileState extends State<ChoiceTile> {
                 widget.onTap();
               },
               child: Padding(
-                padding: const EdgeInsets.symmetric(
+                padding: EdgeInsets.symmetric(
                   horizontal: Space.x5,
-                  vertical: Space.x4,
+                  vertical: widget.refined ? Space.x3 + 2 : Space.x4,
                 ),
                 child: Align(
                   alignment: widget.vertical

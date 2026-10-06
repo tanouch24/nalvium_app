@@ -1,11 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/network/api_exceptions.dart';
 import '../../core/theme/nalvium_colors.dart';
+import '../../core/theme/nalvium_theme.dart';
 import '../../core/theme/nalvium_spacing.dart';
 import '../../core/widgets/buttons.dart';
 import '../../core/widgets/error_panel.dart';
@@ -70,10 +72,14 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
       final start = widget.start;
       if (_sessionId == null) {
         _sessionId = await repo.createSession(equipmentId: start.equipmentId);
-        ref.read(analyticsProvider).log(
-          AnalyticsEvent.diagnosticStarted,
-          source: start is PhotoStart ? 'photo' : (start is VideoStart ? 'video' : 'description'),
-        );
+        ref
+            .read(analyticsProvider)
+            .log(
+              AnalyticsEvent.diagnosticStarted,
+              source: start is PhotoStart
+                  ? 'photo'
+                  : (start is VideoStart ? 'video' : 'description'),
+            );
       }
       if (start is PhotoStart) {
         _mediaId ??= await repo.uploadPhoto(_sessionId!, start.path);
@@ -135,6 +141,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                 ? l10n.analyzingVideo
                 : null,
             video: start is VideoStart,
+            refined: true,
             subject: start is DescriptionStart ? start.text : null,
             photo: start is PhotoStart
                 ? Image.file(
@@ -149,6 +156,11 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                 : null,
           );
 
-    return Scaffold(body: SafeArea(child: content));
+    // Barre d'état claire sur fond clair : icônes sombres, appliquées localement (l'aperçu photo précédent
+    // laissait des icônes blanches).
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: nalviumSystemOverlay,
+      child: Scaffold(body: SafeArea(child: content)),
+    );
   }
 }

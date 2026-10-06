@@ -76,22 +76,24 @@ class _EmptyHouse extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Center(
+    return Align(
+      // Centre optique : un peu au-dessus du milieu, pour que l'état vide ait une intention et pas un grand blanc.
+      alignment: const Alignment(0, -0.3),
       child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: Space.gutter, vertical: Space.x8),
+        padding: const EdgeInsets.fromLTRB(Space.gutter, Space.x6, Space.gutter, Space.x10),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Center(
               child: Container(
-                width: 96,
-                height: 96,
+                width: 84,
+                height: 84,
                 decoration: const BoxDecoration(color: NalviumColors.primarySoft, shape: BoxShape.circle),
-                child: const Icon(Icons.house_outlined, size: 42, color: NalviumColors.primary),
+                child: const Icon(Icons.house_outlined, size: 38, color: NalviumColors.primary),
               ),
             ),
-            const SizedBox(height: Space.x6),
+            const SizedBox(height: Space.x5),
             Text(
               l10n.houseEmptyBody,
               key: const Key('house-empty-body'),
@@ -99,8 +101,8 @@ class _EmptyHouse extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: Space.x3),
-            Text(l10n.houseEmptyHint, style: NalviumText.body, textAlign: TextAlign.center),
-            const SizedBox(height: Space.x8),
+            Text(l10n.houseEmptyHint, style: NalviumText.body.copyWith(height: 1.45), textAlign: TextAlign.center),
+            const SizedBox(height: Space.x6),
             PrimaryButton(
               key: const Key('house-add'),
               label: l10n.houseAdd,
@@ -128,7 +130,7 @@ class _Filled extends StatelessWidget {
       children: [
         for (final g in groups) ...[
           Padding(
-            padding: const EdgeInsets.only(top: Space.x5, bottom: Space.x2),
+            padding: const EdgeInsets.only(top: Space.x6, bottom: Space.x2 + 2),
             child: Semantics(
               header: true,
               child: Row(
@@ -142,7 +144,7 @@ class _Filled extends StatelessWidget {
                   Flexible(
                     child: Text(
                       g.key ?? l10n.houseNoRoom,
-                      style: NalviumText.title.copyWith(fontSize: 18, color: NalviumColors.textSecondary),
+                      style: NalviumText.title.copyWith(fontSize: 17, color: NalviumColors.textSecondary, fontWeight: FontWeight.w600),
                     ),
                   ),
                 ],
@@ -151,7 +153,7 @@ class _Filled extends StatelessWidget {
           ),
           for (final e in g.value) EquipmentRow(equipment: e),
         ],
-        const SizedBox(height: Space.x8),
+        const SizedBox(height: Space.x6),
         SecondaryButton(
           key: const Key('house-add'),
           label: l10n.houseAdd,
@@ -177,7 +179,7 @@ class EquipmentRow extends StatelessWidget {
         : (e.diagnosticsCount == 1 ? l10n.houseDiagnosticsOne : l10n.eqDiagnosticsCount(e.diagnosticsCount));
     final brand = brandModel(e.brand, e.model) ?? l10n.eqNoBrand;
     return Padding(
-      padding: const EdgeInsets.only(bottom: Space.x2),
+      padding: const EdgeInsets.only(bottom: Space.x2 + 2),
       child: Semantics(
         button: true,
         label: '${e.displayName}. $brand. $diag',
@@ -185,25 +187,25 @@ class EquipmentRow extends StatelessWidget {
         child: Material(
           color: NalviumColors.surface,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(Corner.medium),
-            side: const BorderSide(color: NalviumColors.borderSubtle, width: 1.2),
+            borderRadius: BorderRadius.circular(Corner.small + 4),
+            side: const BorderSide(color: NalviumColors.borderSubtle),
           ),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             key: Key('equipment-${e.id}'),
             onTap: () => context.push('/equipment/${e.id}'),
             child: Padding(
-              padding: const EdgeInsets.all(Space.x3),
+              padding: const EdgeInsets.fromLTRB(Space.x3, Space.x3 - 2, Space.x3, Space.x3 - 2),
               child: Row(
                 children: [
-                  EquipmentAvatar(kind: e.kind, mediaId: e.photoMediaId),
-                  const SizedBox(width: Space.x3),
+                  EquipmentAvatar(kind: e.kind, mediaId: e.photoMediaId, size: 52, radius: 14),
+                  const SizedBox(width: Space.x3 + 2),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(e.displayName, maxLines: 2, overflow: TextOverflow.ellipsis, style: NalviumText.title.copyWith(fontSize: 17.5)),
-                        Text(brand, maxLines: 1, overflow: TextOverflow.ellipsis, style: NalviumText.caption),
+                        Text(e.displayName, maxLines: 2, overflow: TextOverflow.ellipsis, style: NalviumText.title.copyWith(fontSize: 17.5, height: 1.25)),
+                        Text(brand, maxLines: 1, overflow: TextOverflow.ellipsis, style: NalviumText.caption.copyWith(color: NalviumColors.textSecondary)),
                         Text(
                           diag,
                           maxLines: 1,

@@ -61,7 +61,7 @@ class KindTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Semantics(
     selected: selected,
-    child: ChoiceTile(key: Key('kind-${kind.slug}'), label: kind.label, icon: kind.icon, vertical: true, onTap: onTap),
+    child: ChoiceTile(key: Key('kind-${kind.slug}'), label: kind.label, icon: kind.icon, vertical: true, refined: true, onTap: onTap),
   );
 }
 
@@ -72,7 +72,7 @@ class RoomTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) =>
-      ChoiceTile(key: Key('room-${room.slug}'), label: room.label, icon: room.icon, vertical: true, onTap: onTap);
+      ChoiceTile(key: Key('room-${room.slug}'), label: room.label, icon: room.icon, vertical: true, refined: true, onTap: onTap);
 }
 
 /// Petite pastille d'information : icône + texte (jamais la couleur seule).

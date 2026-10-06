@@ -1,4 +1,6 @@
 """Moteur de session : le backend est la source de vérité de la conversation guidée."""
+from __future__ import annotations
+
 import uuid
 from dataclasses import dataclass
 from datetime import UTC, datetime

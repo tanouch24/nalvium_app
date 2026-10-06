@@ -17,6 +17,7 @@ Finder k(String key) => find.byKey(Key(key));
 void main() {
   a11y();
   analyticsWiring();
+  releaseGuards();
   group('Réglages', () {
     testWidgets('sections utiles, version affichée, pas de réglage inutile', (tester) async {
       await pumpApp(tester, location: '/settings');
@@ -190,5 +191,48 @@ void analyticsWiring() {
     for (final e in sink.events) {
       expect(e.$2.keys.toSet().difference({'source', 'media_count'}), isEmpty);
     }
+  });
+}
+
+void releaseGuards() {
+  testWidgets('RÉGLAGES : entrées regroupées, aucune entrée en double (« Mes données » ne se répète pas)', (tester) async {
+    await pumpApp(tester, location: '/settings');
+    expect(find.text('Mes données'), findsOneWidget); // le titre de section ; la ligne s'appelle autrement
+    expect(find.text('Consulter et supprimer mes données'), findsOneWidget);
+    expect(find.byType(Divider), findsWidgets);
+  });
+
+  testWidgets('MES DONNÉES : suppression distincte, destructive et séparée des autres lignes', (tester) async {
+    await pumpApp(tester, location: '/settings/data');
+    expect(k('st-delete'), findsOneWidget);
+    expect(tester.getSize(k('st-delete')).height, greaterThanOrEqualTo(48));
+    final history = tester.getTopLeft(k('st-history')).dy;
+    final del = tester.getTopLeft(k('st-delete')).dy;
+    expect(del - history, greaterThan(100)); // groupe distinct
+  });
+
+  test('JURIDIQUE : seul l\'hébergeur reste à compléter ; la bannière « provisoire » est obligatoire tant qu\'un champ subsiste', () {
+    final left = legalDocuments.expand((d) => d.sections).expand((s) => s.paragraphs).where((p) => p.contains('[À COMPLÉTER')).toList();
+    expect(left, isNotEmpty); // ce test échouera le jour où l'hébergeur est renseigné : retirer alors la bannière ET ce garde-fou
+    for (final p in left) {
+      expect(p.toLowerCase().contains('héberge'), isTrue, reason: p);
+    }
+  });
+
+  test('JURIDIQUE : identité de l\'exploitant complète, entrepreneur individuel (pas de société, pas de capital)', () {
+    final all = legalDocuments.expand((d) => d.sections).expand((s) => [s.heading, ...s.paragraphs]).join('\n');
+    for (final needed in ['Nathanyel David BENCHIMOL', 'entrepreneur individuel', 'NB CONSULTING', '509 817 649', '509 817 649 00080', '70.22Z', "10 rue d'Hanoï, 69100 Villeurbanne", 'Directeur de la publication', 'droit français', 'contact@nalvium.com']) {
+      expect(all.contains(needed), isTrue, reason: needed);
+    }
+    final lower = all.toLowerCase();
+    for (final forbidden in ['capital', 'sarl', 'sasu', ' sas ', 'société nb consulting', 'tribunaux de lyon exclusivement', 'exclusivement compétent']) {
+      expect(lower.contains(forbidden), isFalse, reason: forbidden);
+    }
+    expect(lower.contains('juridiction compétente selon les règles applicables'), isTrue);
+  });
+
+  testWidgets('JURIDIQUE : la bannière est affichée sur chaque document tant que le contenu est incomplet', (tester) async {
+    await pumpApp(tester, location: '/settings/legal/legal');
+    expect(k('legal-provisional'), findsOneWidget);
   });
 }
