@@ -27,6 +27,7 @@ def wire(**over) -> WireAnalysis:
         required_items=[],
         safety_flags=[],
         verification_outcome="none",
+        manual_pages_used=[],
     )
     base.update(over)
     return WireAnalysis(**base)

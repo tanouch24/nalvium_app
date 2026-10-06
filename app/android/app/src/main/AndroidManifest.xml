@@ -10,10 +10,10 @@
         android:label="Nalvium"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
-        <!-- ID d'APPLICATION AdMob de TEST (Google). À remplacer par le vrai ID avant publication. Ne jamais commiter le vrai. -->
+        <!-- ID d'APPLICATION AdMob : test en debug/profile, production en release (manifestPlaceholders, build.gradle.kts). -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713"/>
+            android:value="${admobAppId}"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

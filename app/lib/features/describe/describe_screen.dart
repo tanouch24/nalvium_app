@@ -10,7 +10,8 @@ import '../../services/providers.dart';
 import '../capture/analysis_screen.dart';
 
 class DescribeScreen extends ConsumerStatefulWidget {
-  const DescribeScreen({super.key});
+  const DescribeScreen({super.key, this.equipmentId});
+  final String? equipmentId;
 
   @override
   ConsumerState<DescribeScreen> createState() => _DescribeScreenState();
@@ -33,7 +34,7 @@ class _DescribeScreenState extends ConsumerState<DescribeScreen> {
     setState(() => _starting = true);
     await ref.read(adsServiceProvider).beforeNewDiagnostic();
     if (!mounted) return;
-    context.pushReplacement('/analyze', extra: DescriptionStart(text));
+    context.pushReplacement('/analyze', extra: DescriptionStart(text, equipmentId: widget.equipmentId));
   }
 
   @override

@@ -35,3 +35,14 @@ class ImagePickerPhotoCaptureService implements PhotoCaptureService {
     }
   }
 }
+
+/// VALIDATION SUR APPAREIL UNIQUEMENT (build debug) : renvoie toujours le même fichier de test, sans ouvrir
+/// l'application caméra du système (`--dart-define=NALVIUM_DEBUG_PHOTO=/chemin/photo.jpg`).
+/// Jamais actif en release (voir providers.dart).
+class FixedFilePhotoCaptureService implements PhotoCaptureService {
+  const FixedFilePhotoCaptureService(this.path);
+  final String path;
+
+  @override
+  Future<CapturedPhoto?> takePhoto() async => CapturedPhoto(path);
+}

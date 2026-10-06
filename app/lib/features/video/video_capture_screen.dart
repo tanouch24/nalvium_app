@@ -19,7 +19,8 @@ enum _Phase { initializing, ready, recording, finishing, error }
 
 /// Capture vidéo : 15 secondes maximum, temps restant réel, arrêt manuel, arrêt automatique, annulation.
 class VideoCaptureScreen extends ConsumerStatefulWidget {
-  const VideoCaptureScreen({super.key});
+  const VideoCaptureScreen({super.key, this.equipmentId});
+  final String? equipmentId;
 
   @override
   ConsumerState<VideoCaptureScreen> createState() => _VideoCaptureScreenState();
@@ -132,7 +133,7 @@ class _VideoCaptureScreenState extends ConsumerState<VideoCaptureScreen>
       }
       if (!mounted) return;
       context.pushReplacement(
-        '/video/preview',
+        widget.equipmentId == null ? '/video/preview' : '/video/preview?equipment=${widget.equipmentId}',
         extra: VideoClip(
           path: path,
           duration: elapsed,

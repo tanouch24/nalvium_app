@@ -7,6 +7,7 @@ from app.db.models import DiagnosticSession, MediaAsset, SessionMessage, VideoFr
 from app.domain.diagnosis import (
     DiagnosticAnalysis,
     DiagnosticContext,
+    EquipmentContext,
     MediaRef,
     NextActionType,
     VerificationOutcome,
@@ -16,6 +17,7 @@ from app.domain.diagnosis import (
 from app.media.pipeline import ProcessedImage
 from app.media.storage import MediaStorage
 from app.media.video import ProcessedVideo
+from app.repositories.equipment import EquipmentRepository
 from app.repositories.sessions import (
     TERMINAL_STATUSES,
     MediaRepository,
@@ -64,14 +66,35 @@ class SessionService:
         media: MediaRepository,
         storage: MediaStorage,
         diagnostics: DiagnosticService,
+        equipment: EquipmentRepository,
+        manuals=None,
     ) -> None:
+        self._manuals = manuals  # ManualRetriever | None
         self._users, self._sessions, self._media = users, sessions, media
-        self._storage, self._diagnostics = storage, diagnostics
+        self._storage, self._diagnostics, self._equipment = storage, diagnostics, equipment
 
     # ---- création / lecture -------------------------------------------------
-    def create(self, user_id: uuid.UUID) -> DiagnosticSession:
+    def create(self, user_id: uuid.UUID, equipment_id: uuid.UUID | None = None) -> DiagnosticSession:
+        """Un diagnostic lancé depuis une fiche équipement est lié à cet équipement dès sa création."""
         self._users.ensure(user_id)
-        return self._sessions.create(user_id)
+        if equipment_id is not None and self._equipment.get_owned(equipment_id, user_id) is None:
+            raise NotFound
+        return self._sessions.create(user_id, equipment_id)
+
+    def link_equipment(
+        self, user_id: uuid.UUID, session_id: uuid.UUID, equipment_id: uuid.UUID | None
+    ) -> DiagnosticSession:
+        """Rattache (ou détache avec None) APRÈS confirmation explicite de l'utilisateur côté app."""
+        session = self.get(user_id, session_id)
+        if equipment_id is None:
+            session.equipment_id, session.equipment = None, None
+        else:
+            item = self._equipment.get_owned(equipment_id, user_id)
+            if item is None:
+                raise NotFound
+            session.equipment_id, session.equipment = item.id, item
+        self._sessions.commit()
+        return self.get(user_id, session_id)
 
     def get(self, user_id: uuid.UUID, session_id: uuid.UUID) -> DiagnosticSession:
         session = self._sessions.get_owned(session_id, user_id)
@@ -146,6 +169,8 @@ class SessionService:
                 raise NotFound
             mid = asset.frames[len(asset.frames) // 2]
             return self._storage.get(mid.storage_key), "image/jpeg"
+        if asset.thumb_key:  # photo d'équipement : vignette légère plutôt que l'image complète
+            return self._storage.get(asset.thumb_key), "image/jpeg"
         return self._storage.get(asset.storage_key), asset.content_type
 
     def read_media(self, user_id: uuid.UUID, media_id: uuid.UUID) -> tuple[bytes, str]:
@@ -175,8 +200,20 @@ class SessionService:
         self._sessions.commit()  # on ne garde pas de transaction ouverte pendant l'appel IA
 
         ctx = self._build_context(session)
+        manual_doc = None
+        if self._manuals is not None and session.equipment_id:
+            # Recherche LOCALE automatique dans la notice de CET équipement (pas d'Internet, pas de clic).
+            query = " ".join(filter(None, [session.description, *ctx.conversation[-4:]]))
+            found = self._manuals.retrieve(session.equipment_id, query)
+            if found:
+                manual_doc, ctx.manual = found
         analysis = await self._diagnostics.analyze(ctx)
-        self._store_analysis(session, analysis)
+        provided = {e.page for e in ctx.manual.excerpts} if ctx.manual else set()
+        # Provenance honnête : seulement les pages réellement fournies ET déclarées utilisées par la réponse.
+        used = sorted(set(analysis.manual_pages_used) & provided)
+        if analysis.next_action.type is NextActionType.SAFETY_STOP:
+            used = []  # un arrêt de sécurité vient du Safety Engine Nalvium : jamais présenté comme « d'après la notice »
+        self._store_analysis(session, analysis, manual_doc if used else None, used)
         self._sessions.commit()
         return self.get(user_id, session_id)
 
@@ -266,8 +303,18 @@ class SessionService:
             for a in self._sessions.completed_actions(session.id)
         ]
         outcomes = [VerificationOutcome(v.outcome) for v in self._sessions.verifications(session.id)]
+        eq = session.equipment
         return DiagnosticContext(
             session_id=str(session.id),
+            equipment=(
+                EquipmentContext(
+                    type=eq.equipment_type, name=eq.display_name, brand=eq.brand, model=eq.model,
+                    room=eq.room.name if eq.room else None,
+                )
+                if eq
+                else None
+            ),
+            equipment_history=self._equipment_history(session) if eq else [],
             photos=photos,
             videos=videos,
             description=session.description,
@@ -277,7 +324,23 @@ class SessionService:
             previous_outcomes=outcomes,
         )
 
-    def _store_analysis(self, session: DiagnosticSession, a: DiagnosticAnalysis) -> SessionMessage:
+    def _equipment_history(self, session: DiagnosticSession) -> list[str]:
+        """Au plus 3 antécédents RÉCENTS du même équipement : titre + issue, sans conversation."""
+        outcome = {
+            "resolved": "résolu",
+            "referred": "professionnel recommandé",
+            "stopped": "arrêté par sécurité",
+            "active": "non terminé",
+        }
+        lines = []
+        for old in self._equipment.sessions_for(session.equipment_id, exclude=session.id, limit=3):
+            if old.title:
+                lines.append(f"{old.title} ({outcome.get(old.status, old.status)}, {old.updated_at:%m/%Y})")
+        return lines
+
+    def _store_analysis(
+        self, session: DiagnosticSession, a: DiagnosticAnalysis, manual_doc=None, manual_pages: list[int] | None = None
+    ) -> SessionMessage:
         action = a.next_action
         msg = self._sessions.add_message(
             session,
@@ -291,6 +354,8 @@ class SessionService:
             risk_level=a.risk_level.value,
             urgency=a.urgency.value,
             diy_allowed=a.diy_allowed,
+            manual_document_id=manual_doc,
+            manual_pages=manual_pages or None,
         )
         self._sessions.add_observations(msg, a.observations)
         self._sessions.add_hypotheses(msg, [(h.label, h.confidence) for h in a.hypotheses])

@@ -43,13 +43,17 @@ class MediaRepository:
         asset = self._db.get(MediaAsset, media_id)
         return asset if asset and asset.user_id == user_id else None
 
+    def delete(self, asset: MediaAsset) -> None:
+        self._db.delete(asset)
+        self._db.flush()
+
 
 class SessionRepository:
     def __init__(self, db: Session) -> None:
         self._db = db
 
-    def create(self, user_id: uuid.UUID) -> DiagnosticSession:
-        session = DiagnosticSession(user_id=user_id)
+    def create(self, user_id: uuid.UUID, equipment_id: uuid.UUID | None = None) -> DiagnosticSession:
+        session = DiagnosticSession(user_id=user_id, equipment_id=equipment_id)
         self._db.add(session)
         self._db.commit()
         return session

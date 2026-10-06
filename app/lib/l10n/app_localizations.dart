@@ -559,13 +559,13 @@ abstract class AppLocalizations {
   /// No description provided for @houseEmptyTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Votre maison prendra forme ici'**
+  /// **'Votre maison'**
   String get houseEmptyTitle;
 
   /// No description provided for @houseEmptyBody.
   ///
   /// In fr, this message translates to:
-  /// **'Les équipements que vous ajoutez apparaîtront ici.'**
+  /// **'Ajoutez vos équipements pour que Nalvium se souvienne de ce qu\'il y a chez vous.'**
   String get houseEmptyBody;
 
   /// No description provided for @repairEmptyBody.
@@ -1089,6 +1089,744 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Votre vidéo'**
   String get yourVideo;
+
+  /// No description provided for @houseEmptyHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos diagnostics pourront ensuite être rattachés automatiquement à vos équipements.'**
+  String get houseEmptyHint;
+
+  /// No description provided for @houseAdd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un équipement'**
+  String get houseAdd;
+
+  /// No description provided for @houseNoRoom.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans pièce'**
+  String get houseNoRoom;
+
+  /// No description provided for @houseNoIssue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun problème'**
+  String get houseNoIssue;
+
+  /// No description provided for @houseDiagnosticsOne.
+  ///
+  /// In fr, this message translates to:
+  /// **'1 diagnostic'**
+  String get houseDiagnosticsOne;
+
+  /// No description provided for @houseLoadError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d\'afficher votre maison'**
+  String get houseLoadError;
+
+  /// No description provided for @eqAddTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un équipement'**
+  String get eqAddTitle;
+
+  /// No description provided for @eqEditTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier l\'équipement'**
+  String get eqEditTitle;
+
+  /// No description provided for @eqStepType.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quel équipement ?'**
+  String get eqStepType;
+
+  /// No description provided for @eqSearchHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher un équipement'**
+  String get eqSearchHint;
+
+  /// No description provided for @eqSearchEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun équipement ne correspond. Choisissez « Autre » pour le nommer vous-même.'**
+  String get eqSearchEmpty;
+
+  /// No description provided for @eqIdentifyPhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Identifier avec une photo'**
+  String get eqIdentifyPhoto;
+
+  /// No description provided for @eqStepRoom.
+  ///
+  /// In fr, this message translates to:
+  /// **'Où se trouve-t-il ?'**
+  String get eqStepRoom;
+
+  /// No description provided for @eqRoomSkip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Je ne sais pas / Passer'**
+  String get eqRoomSkip;
+
+  /// No description provided for @eqStepDetails.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quelques précisions'**
+  String get eqStepDetails;
+
+  /// No description provided for @eqDetailsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tout est facultatif : vous pourrez compléter plus tard.'**
+  String get eqDetailsHint;
+
+  /// No description provided for @eqName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom'**
+  String get eqName;
+
+  /// No description provided for @eqNameHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex. Lave-vaisselle du fond'**
+  String get eqNameHint;
+
+  /// No description provided for @eqBrand.
+  ///
+  /// In fr, this message translates to:
+  /// **'Marque'**
+  String get eqBrand;
+
+  /// No description provided for @eqBrandHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Facultatif'**
+  String get eqBrandHint;
+
+  /// No description provided for @eqModel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modèle / référence'**
+  String get eqModel;
+
+  /// No description provided for @eqModelHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Facultatif'**
+  String get eqModelHint;
+
+  /// No description provided for @eqPhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo'**
+  String get eqPhoto;
+
+  /// No description provided for @eqPhotoAdd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter une photo'**
+  String get eqPhotoAdd;
+
+  /// No description provided for @eqPhotoChange.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changer la photo'**
+  String get eqPhotoChange;
+
+  /// No description provided for @eqPhotoRemove.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer la photo'**
+  String get eqPhotoRemove;
+
+  /// No description provided for @eqPhotoPrivate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre photo reste privée.'**
+  String get eqPhotoPrivate;
+
+  /// No description provided for @eqPhotoFail.
+  ///
+  /// In fr, this message translates to:
+  /// **'La photo n\'a pas pu être enregistrée. Votre saisie est conservée : réessayez.'**
+  String get eqPhotoFail;
+
+  /// No description provided for @eqSave.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer'**
+  String get eqSave;
+
+  /// No description provided for @eqSaveFail.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'équipement n\'a pas pu être enregistré. Votre saisie est conservée : réessayez.'**
+  String get eqSaveFail;
+
+  /// No description provided for @eqNext.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continuer'**
+  String get eqNext;
+
+  /// No description provided for @eqRoomLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pièce'**
+  String get eqRoomLabel;
+
+  /// No description provided for @eqType.
+  ///
+  /// In fr, this message translates to:
+  /// **'Type'**
+  String get eqType;
+
+  /// No description provided for @eqNoBrand.
+  ///
+  /// In fr, this message translates to:
+  /// **'Marque non renseignée'**
+  String get eqNoBrand;
+
+  /// No description provided for @eqIdentifyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Identifier avec une photo'**
+  String get eqIdentifyTitle;
+
+  /// No description provided for @eqIdentifyTip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photographiez l\'équipement entier, ou son étiquette si vous la trouvez.'**
+  String get eqIdentifyTip;
+
+  /// No description provided for @eqIdentifyTake.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prendre la photo'**
+  String get eqIdentifyTake;
+
+  /// No description provided for @eqIdentifyWorking.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nalvium regarde votre photo…'**
+  String get eqIdentifyWorking;
+
+  /// No description provided for @eqIdentifyNotSure.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nalvium n\'en est pas certain : vérifiez avant de confirmer.'**
+  String get eqIdentifyNotSure;
+
+  /// No description provided for @eqIdentifyConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Oui, c\'est ça'**
+  String get eqIdentifyConfirm;
+
+  /// No description provided for @eqIdentifyCorrect.
+  ///
+  /// In fr, this message translates to:
+  /// **'Corriger'**
+  String get eqIdentifyCorrect;
+
+  /// No description provided for @eqIdentifyUnknownTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nalvium n\'a pas pu l\'identifier'**
+  String get eqIdentifyUnknownTitle;
+
+  /// No description provided for @eqIdentifyUnknownBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce n\'est pas grave : choisissez vous-même le type d\'équipement. Votre photo est conservée.'**
+  String get eqIdentifyUnknownBody;
+
+  /// No description provided for @eqIdentifyChoose.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir moi-même'**
+  String get eqIdentifyChoose;
+
+  /// No description provided for @eqIdentifyFailTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'identification n\'est pas disponible'**
+  String get eqIdentifyFailTitle;
+
+  /// No description provided for @eqIdentifyFailBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous pouvez continuer sans : votre photo est conservée.'**
+  String get eqIdentifyFailBody;
+
+  /// No description provided for @eqIdentifyContinue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continuer sans identification'**
+  String get eqIdentifyContinue;
+
+  /// No description provided for @eqIdentifyReadable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Texte lu sur l\'appareil'**
+  String get eqIdentifyReadable;
+
+  /// No description provided for @eqDetailTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Équipement'**
+  String get eqDetailTitle;
+
+  /// No description provided for @eqProblems.
+  ///
+  /// In fr, this message translates to:
+  /// **'Problèmes traités'**
+  String get eqProblems;
+
+  /// No description provided for @eqNoProblems.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun problème enregistré pour cet équipement.'**
+  String get eqNoProblems;
+
+  /// No description provided for @eqDiagnose.
+  ///
+  /// In fr, this message translates to:
+  /// **'Diagnostiquer un problème'**
+  String get eqDiagnose;
+
+  /// No description provided for @eqDiagnoseHow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Comment voulez-vous montrer le problème ?'**
+  String get eqDiagnoseHow;
+
+  /// No description provided for @eqEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier'**
+  String get eqEdit;
+
+  /// No description provided for @eqDelete.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer'**
+  String get eqDelete;
+
+  /// No description provided for @eqDeleteTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer cet équipement ?'**
+  String get eqDeleteTitle;
+
+  /// No description provided for @eqDeleteBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ses diagnostics ne seront pas supprimés : ils seront simplement détachés de cet équipement. Sa photo sera supprimée.'**
+  String get eqDeleteBody;
+
+  /// No description provided for @eqDeleteConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer l\'équipement'**
+  String get eqDeleteConfirm;
+
+  /// No description provided for @eqDeleteFail.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'équipement n\'a pas pu être supprimé. Réessayez.'**
+  String get eqDeleteFail;
+
+  /// No description provided for @eqGone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cet équipement n\'existe plus.'**
+  String get eqGone;
+
+  /// No description provided for @eqBackToHouse.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour à la maison'**
+  String get eqBackToHouse;
+
+  /// No description provided for @eqLinkAdd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter à votre maison'**
+  String get eqLinkAdd;
+
+  /// No description provided for @eqLinkSave.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer cet équipement'**
+  String get eqLinkSave;
+
+  /// No description provided for @eqLinkTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter à votre maison'**
+  String get eqLinkTitle;
+
+  /// No description provided for @eqLinkChoose.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir un équipement existant'**
+  String get eqLinkChoose;
+
+  /// No description provided for @eqLinkNew.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer un nouvel équipement'**
+  String get eqLinkNew;
+
+  /// No description provided for @eqLinkYes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Oui, c\'est lui'**
+  String get eqLinkYes;
+
+  /// No description provided for @eqLinkNo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non'**
+  String get eqLinkNo;
+
+  /// No description provided for @eqLinkDone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce diagnostic est rattaché à votre équipement.'**
+  String get eqLinkDone;
+
+  /// No description provided for @eqLinkFail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le rattachement n\'a pas pu être enregistré. Réessayez.'**
+  String get eqLinkFail;
+
+  /// No description provided for @eqLinkedTo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Équipement'**
+  String get eqLinkedTo;
+
+  /// No description provided for @eqLinkDetach.
+  ///
+  /// In fr, this message translates to:
+  /// **'Détacher de cet équipement'**
+  String get eqLinkDetach;
+
+  /// No description provided for @eqLinkNothing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous n\'avez pas encore d\'équipement enregistré.'**
+  String get eqLinkNothing;
+
+  /// No description provided for @eqSessionGone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce diagnostic est introuvable.'**
+  String get eqSessionGone;
+
+  /// No description provided for @eqDiagnosticsCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} diagnostics'**
+  String eqDiagnosticsCount(int count);
+
+  /// No description provided for @eqLinkAsk.
+  ///
+  /// In fr, this message translates to:
+  /// **'Est-ce votre {name} ?'**
+  String eqLinkAsk(String name);
+
+  /// No description provided for @eqIdentifyResult.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cela ressemble à {what}.'**
+  String eqIdentifyResult(String what);
+
+  /// No description provided for @eqSemanticsEquipment.
+  ///
+  /// In fr, this message translates to:
+  /// **'{name}, {where}'**
+  String eqSemanticsEquipment(String name, String where);
+
+  /// No description provided for @eqRefLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Référence'**
+  String get eqRefLabel;
+
+  /// No description provided for @eqRefNone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Référence non renseignée'**
+  String get eqRefNone;
+
+  /// No description provided for @eqRefWhere.
+  ///
+  /// In fr, this message translates to:
+  /// **'Où trouver la référence ?'**
+  String get eqRefWhere;
+
+  /// No description provided for @eqRefHelpTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Où trouver la référence ?'**
+  String get eqRefHelpTitle;
+
+  /// No description provided for @eqRefHelpBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'C\'est une série de lettres et de chiffres (par exemple SMS46GI01E). Elle figure sur la plaque signalétique : à l\'intérieur de la porte d\'un lave-vaisselle ou d\'un lave-linge, sur le côté ou au dos d\'un four ou d\'un réfrigérateur, sous ou sur le côté d\'une chaudière. Elle est aussi dans la notice et sur la facture. Si vous ne la trouvez pas, ce n\'est pas grave : elle reste facultative.'**
+  String get eqRefHelpBody;
+
+  /// No description provided for @eqRefHelpClose.
+  ///
+  /// In fr, this message translates to:
+  /// **'J\'ai compris'**
+  String get eqRefHelpClose;
+
+  /// No description provided for @eqIdentifyCloser.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pour la référence, photographiez la plaque signalétique de plus près : Nalvium n\'invente jamais les caractères illisibles.'**
+  String get eqIdentifyCloser;
+
+  /// No description provided for @manualTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notice'**
+  String get manualTitle;
+
+  /// No description provided for @manualZone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notice constructeur'**
+  String get manualZone;
+
+  /// No description provided for @manualNeedRef.
+  ///
+  /// In fr, this message translates to:
+  /// **'Référence nécessaire'**
+  String get manualNeedRef;
+
+  /// No description provided for @manualNeedRefBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoutez la marque et la référence pour que Nalvium cherche la notice exacte de votre appareil.'**
+  String get manualNeedRefBody;
+
+  /// No description provided for @manualSearch.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher la notice'**
+  String get manualSearch;
+
+  /// No description provided for @manualSearching.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recherche en cours'**
+  String get manualSearching;
+
+  /// No description provided for @manualSearchingBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nalvium cherche la notice officielle de votre appareil. Cela peut prendre une minute.'**
+  String get manualSearchingBody;
+
+  /// No description provided for @manualAvailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notice disponible'**
+  String get manualAvailable;
+
+  /// No description provided for @manualAvailableBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nalvium s\'appuiera sur cette notice pour les prochains diagnostics de cet équipement.'**
+  String get manualAvailableBody;
+
+  /// No description provided for @manualConsult.
+  ///
+  /// In fr, this message translates to:
+  /// **'Consulter'**
+  String get manualConsult;
+
+  /// No description provided for @manualUpdate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mettre à jour'**
+  String get manualUpdate;
+
+  /// No description provided for @manualNotFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notice exacte introuvable'**
+  String get manualNotFound;
+
+  /// No description provided for @manualNotFoundBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune notice officielle correspondant exactement à cette référence n\'a été trouvée. Vous pouvez utiliser l\'équipement normalement.'**
+  String get manualNotFoundBody;
+
+  /// No description provided for @manualError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur de récupération'**
+  String get manualError;
+
+  /// No description provided for @manualErrorBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'La notice n\'a pas pu être récupérée pour le moment. Réessayez plus tard.'**
+  String get manualErrorBody;
+
+  /// No description provided for @manualApprox.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une notice proche a été trouvée'**
+  String get manualApprox;
+
+  /// No description provided for @manualApproxBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sa référence est légèrement différente de la vôtre. Nalvium ne l\'utilisera que si vous confirmez qu\'elle convient.'**
+  String get manualApproxBody;
+
+  /// No description provided for @manualApproxYes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Elle convient'**
+  String get manualApproxYes;
+
+  /// No description provided for @manualApproxNo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ignorer cette notice'**
+  String get manualApproxNo;
+
+  /// No description provided for @manualOfficial.
+  ///
+  /// In fr, this message translates to:
+  /// **'Source officielle du fabricant'**
+  String get manualOfficial;
+
+  /// No description provided for @manualRetry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réessayer'**
+  String get manualRetry;
+
+  /// No description provided for @manualUpToDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'La notice est déjà à jour.'**
+  String get manualUpToDate;
+
+  /// No description provided for @manualKept.
+  ///
+  /// In fr, this message translates to:
+  /// **'La recherche a échoué : votre notice actuelle est conservée.'**
+  String get manualKept;
+
+  /// No description provided for @manualPrivate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette notice reste privée : elle n\'est accessible que depuis votre appareil.'**
+  String get manualPrivate;
+
+  /// No description provided for @manualPageNext.
+  ///
+  /// In fr, this message translates to:
+  /// **'Page suivante'**
+  String get manualPageNext;
+
+  /// No description provided for @manualPagePrev.
+  ///
+  /// In fr, this message translates to:
+  /// **'Page précédente'**
+  String get manualPagePrev;
+
+  /// No description provided for @manualPageEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette page ne contient pas de texte exploitable.'**
+  String get manualPageEmpty;
+
+  /// No description provided for @manualLoadFail.
+  ///
+  /// In fr, this message translates to:
+  /// **'La page n\'a pas pu être chargée.'**
+  String get manualLoadFail;
+
+  /// No description provided for @manualConfirmFail.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'action n\'a pas pu être enregistrée. Réessayez.'**
+  String get manualConfirmFail;
+
+  /// No description provided for @manualPages.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} pages'**
+  String manualPages(int count);
+
+  /// No description provided for @manualSource.
+  ///
+  /// In fr, this message translates to:
+  /// **'Source : {domain}'**
+  String manualSource(String domain);
+
+  /// No description provided for @manualPageOf.
+  ///
+  /// In fr, this message translates to:
+  /// **'Page {page} sur {total}'**
+  String manualPageOf(int page, int total);
+
+  /// No description provided for @manualCite.
+  ///
+  /// In fr, this message translates to:
+  /// **'D\'après la notice {brand} de votre appareil'**
+  String manualCite(String brand);
+
+  /// No description provided for @manualCiteGeneric.
+  ///
+  /// In fr, this message translates to:
+  /// **'D\'après la notice de votre appareil'**
+  String get manualCiteGeneric;
+
+  /// No description provided for @manualCitePage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notice · page {pages}'**
+  String manualCitePage(String pages);
+
+  /// No description provided for @manualCitePages.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notice · pages {pages}'**
+  String manualCitePages(String pages);
+
+  /// No description provided for @manualIdle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notice non récupérée'**
+  String get manualIdle;
+
+  /// No description provided for @manualIdleBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nalvium peut chercher la notice officielle de votre appareil.'**
+  String get manualIdleBody;
 }
 
 class _AppLocalizationsDelegate

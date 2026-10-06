@@ -7,6 +7,8 @@ import '../../core/theme/nalvium_spacing.dart';
 import '../../core/theme/nalvium_typography.dart';
 import '../../core/widgets/authed_image.dart';
 import '../../core/widgets/error_panel.dart';
+import '../house/house_widgets.dart';
+import '../../domain/equipment.dart';
 import '../../core/widgets/status_chip.dart';
 import '../../core/widgets/viewfinder.dart';
 import '../../domain/diagnosis.dart';
@@ -156,6 +158,8 @@ class _Body extends StatelessWidget {
             ),
           ],
         ),
+        const SizedBox(height: Space.x3),
+        _HouseLink(state: state),
         if (observed.isNotEmpty) ...[
           const SizedBox(height: Space.x3),
           Text(
@@ -199,6 +203,57 @@ class _Body extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+}
+
+/// Équipement lié (pastille) ou proposition discrète « Ajouter à votre maison ». Jamais imposé.
+class _HouseLink extends StatelessWidget {
+  const _HouseLink({required this.state});
+  final SessionState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final eq = state.equipment;
+    if (eq != null) {
+      final kind = EquipmentCatalog.of(eq.equipmentType);
+      final label = [eq.displayName, ?eq.brand, ?eq.roomName].join(' · ');
+      return Align(
+        alignment: Alignment.centerLeft,
+        child: Semantics(
+          button: true,
+          label: '${l10n.eqLinkedTo} : $label',
+          excludeSemantics: true,
+          child: InkWell(
+            key: const Key('summary-equipment'),
+            borderRadius: BorderRadius.circular(Corner.small),
+            onTap: () => context.push('/equipment/${eq.id}'),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 48),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: InfoPill(icon: kind.icon, label: label),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: TextButton.icon(
+        key: const Key('summary-add-house'),
+        onPressed: () => context.push('/session/${state.id}/house'),
+        icon: const Icon(Icons.house_outlined, size: 20),
+        label: Text(l10n.eqLinkAdd),
+        style: TextButton.styleFrom(
+          foregroundColor: NalviumColors.primaryText,
+          minimumSize: const Size(48, 48),
+          padding: const EdgeInsets.symmetric(horizontal: Space.x3),
+          textStyle: NalviumText.button.copyWith(fontSize: 16),
+        ),
+      ),
     );
   }
 }

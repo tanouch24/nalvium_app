@@ -118,8 +118,7 @@ class HomeScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            // Bannière adaptative permanente : son espace est réservé sous le contenu, au-dessus de la navigation.
-            ref.watch(adsServiceProvider).buildHomeBanner(),
+            // La bannière est gérée au même endroit pour tous les écrans autorisés (AppShell / BannerSlot).
           ],
         ),
       ),

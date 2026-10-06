@@ -3,6 +3,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'core/ads/banner_slot.dart';
+import 'core/ads/route_path.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/nalvium_theme.dart';
 import 'l10n/app_localizations.dart';
@@ -16,7 +18,8 @@ class NalviumApp extends ConsumerStatefulWidget {
   ConsumerState<NalviumApp> createState() => _NalviumAppState();
 }
 
-class _NalviumAppState extends ConsumerState<NalviumApp> with WidgetsBindingObserver {
+class _NalviumAppState extends ConsumerState<NalviumApp>
+    with WidgetsBindingObserver {
   late final GoRouter _router = widget.router ?? buildRouter();
   DateTime? _pausedAt;
 
@@ -25,7 +28,9 @@ class _NalviumAppState extends ConsumerState<NalviumApp> with WidgetsBindingObse
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     // Consentement (UMP) puis SDK publicitaire, après le premier affichage.
-    WidgetsBinding.instance.addPostFrameCallback((_) => ref.read(adsServiceProvider).initialize());
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => ref.read(adsServiceProvider).initialize(),
+    );
   }
 
   @override
@@ -42,7 +47,9 @@ class _NalviumAppState extends ConsumerState<NalviumApp> with WidgetsBindingObse
       final away = DateTime.now().difference(_pausedAt!);
       _pausedAt = null;
       final route = _router.routeInformationProvider.value.uri.path;
-      ref.read(adsServiceProvider).onAppResumed(route: route, backgroundFor: away);
+      ref
+          .read(adsServiceProvider)
+          .onAppResumed(route: route, backgroundFor: away);
     }
   }
 
@@ -53,6 +60,25 @@ class _NalviumAppState extends ConsumerState<NalviumApp> with WidgetsBindingObse
       debugShowCheckedModeBanner: false,
       theme: buildNalviumTheme(),
       routerConfig: _router,
+      // Bannière des écrans empilés autorisés (historique, fiche équipement…), au même endroit pour tous.
+      builder: (context, child) => ValueListenableBuilder<String>(
+        valueListenable: RoutePath.of(_router),
+        builder: (context, path, _) {
+          final show = BannerSlot.visibleFor(path, inTabs: false);
+          return Column(
+            children: [
+              Expanded(
+                child: MediaQuery.removePadding(
+                  context: context,
+                  removeBottom: show,
+                  child: child ?? const SizedBox.shrink(),
+                ),
+              ),
+              BannerSlot(router: _router, inTabs: false),
+            ],
+          );
+        },
+      ),
       locale: const Locale('fr'),
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: const [

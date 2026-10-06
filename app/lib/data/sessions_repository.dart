@@ -4,7 +4,8 @@ import '../domain/session.dart';
 
 /// Accès aux sessions du backend (source de vérité).
 abstract interface class SessionsRepository {
-  Future<String> createSession();
+  /// [equipmentId] : diagnostic lancé depuis une fiche équipement (lié dès la création).
+  Future<String> createSession({String? equipmentId});
   Future<String> uploadPhoto(String sessionId, String filePath);
   Future<String> uploadVideo(String sessionId, String filePath);
 
@@ -19,8 +20,8 @@ class HttpSessionsRepository implements SessionsRepository {
   final ApiClient _api;
 
   @override
-  Future<String> createSession() async {
-    final json = await _api.postJson('/v1/sessions');
+  Future<String> createSession({String? equipmentId}) async {
+    final json = await _api.postJson('/v1/sessions', body: equipmentId == null ? null : {'equipment_id': equipmentId});
     return _map(json)['id'] as String;
   }
 

@@ -23,6 +23,7 @@ class ApiClient {
     http.Client? httpClient,
     this.timeout = const Duration(seconds: 20),
     this.analysisTimeout = const Duration(seconds: 70),
+    this.manualTimeout = const Duration(seconds: 150),
     ApiLog? log,
   })  : _http = httpClient ?? _defaultClient(),
         _log = log ?? (kDebugMode ? (l) => debugPrint(l) : (_) {});
@@ -36,6 +37,9 @@ class ApiClient {
 
   /// Délai plus long pour les appels qui déclenchent l'analyse IA.
   final Duration analysisTimeout;
+
+  /// Recherche de notice (web + téléchargement + indexation) : plus longue qu'une analyse.
+  final Duration manualTimeout;
   final http.Client _http;
   final ApiLog _log;
 
@@ -44,7 +48,7 @@ class ApiClient {
   Future<dynamic> getJson(String path, {Map<String, String>? query}) =>
       _send('GET', path, (headers) => http.Request('GET', config.uri(path, query))..headers.addAll(headers), timeout);
 
-  Future<dynamic> postJson(String path, {Object? body, bool analysis = false}) => _send(
+  Future<dynamic> postJson(String path, {Object? body, bool analysis = false, bool longWait = false}) => _send(
         'POST',
         path,
         (headers) {
@@ -55,8 +59,21 @@ class ApiClient {
           }
           return req;
         },
-        analysis ? analysisTimeout : timeout,
+        longWait ? manualTimeout : (analysis ? analysisTimeout : timeout),
       );
+
+  Future<dynamic> patchJson(String path, {required Object body}) => _send(
+        'PATCH',
+        path,
+        (headers) => http.Request('PATCH', config.uri(path))
+          ..headers.addAll(headers)
+          ..headers['Content-Type'] = 'application/json'
+          ..body = jsonEncode(body),
+        timeout,
+      );
+
+  Future<dynamic> deleteJson(String path) =>
+      _send('DELETE', path, (headers) => http.Request('DELETE', config.uri(path))..headers.addAll(headers), timeout);
 
   Future<dynamic> postFile(
     String path, {

@@ -54,3 +54,33 @@ class WireAnalysis(BaseModel):
     verification_outcome: Literal[
         "none", "resolved", "improved", "unchanged", "worsened", "cannot_determine"
     ]
+    # Numéros des pages d'extraits de la notice constructeur sur lesquelles la réponse s'appuie VRAIMENT ([] sinon).
+    manual_pages_used: list[int]
+
+
+EquipmentTypeWire = Literal[
+    "dishwasher", "washing_machine", "fridge", "oven", "hob", "boiler", "water_heater", "radiator",
+    "air_conditioner", "sink", "washbasin", "shower", "toilet", "tap", "vmc", "electrical_panel",
+    "socket", "light", "door", "window", "shutter", "other", "unknown",
+]
+
+
+class WireEquipmentIdentification(BaseModel):
+    """Identification d'équipement. Chaîne vide = inconnu (tout est requis en Structured Outputs)."""
+
+    equipment_type: EquipmentTypeWire
+    brand: str  # "" si aucune marque n'est visible ou reconnaissable
+    model: str  # "" si la référence n'est pas LISIBLE sur l'image
+    confidence: float  # 0.0 à 0.9 ; jamais 1
+    visible_text: list[str]  # textes réellement lisibles (marque, référence, étiquette)
+
+
+class WireManualCandidate(BaseModel):
+    url: str
+    title: str
+
+
+class WireManualSearch(BaseModel):
+    """Résultat de recherche web de notice. Liste vide si aucune notice officielle exacte n'est trouvée."""
+
+    candidates: list[WireManualCandidate]

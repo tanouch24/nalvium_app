@@ -20,6 +20,8 @@ SessionState sessionState({
   String? category = 'plumbing',
   List<String> observations = const [],
   List<Map<String, dynamic>> actions = const [],
+  Map<String, dynamic>? equipment,
+  Map<String, dynamic>? manual,
 }) {
   final wire = switch (action) {
     NextActionType.askQuestion => 'ASK_QUESTION',
@@ -41,6 +43,7 @@ SessionState sessionState({
     'risk_level': 'low',
     'pending_analysis': pending,
     'latest_media_id': mediaId,
+    'equipment': equipment,
     'messages': List.generate(messages, (_) => {}),
     'next': {
       'action_type': wire,
@@ -50,6 +53,7 @@ SessionState sessionState({
       'observations': observations,
       'step_number': step,
       'diy_allowed': true,
+      'manual': manual,
     },
   });
 }
@@ -76,6 +80,7 @@ class FakeSessionsRepository implements SessionsRepository {
   SessionState? stored; // ce que getSession renvoie (état « serveur »)
   final calls = <String>[];
   final inputs = <TurnInput?>[];
+  final createdWithEquipment = <String?>[];
   Object? listError;
   Object? getError;
 
@@ -83,8 +88,9 @@ class FakeSessionsRepository implements SessionsRepository {
   Completer<void>? turnGate;
 
   @override
-  Future<String> createSession() async {
+  Future<String> createSession({String? equipmentId}) async {
     calls.add('create');
+    createdWithEquipment.add(equipmentId);
     return 's1';
   }
 

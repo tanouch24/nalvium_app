@@ -17,6 +17,7 @@ import '../capture/analysis_wait.dart';
 import '../capture/capture_flow.dart';
 import '../history/session_labels.dart';
 import 'context_header.dart';
+import '../house/manual_citation.dart';
 import 'views/action_views.dart';
 
 /// Expérience guidée. Le BACKEND est la source de vérité : l'écran se recharge depuis lui
@@ -145,6 +146,9 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
     });
   }
 
+  /// L'utilisateur a rattaché ce diagnostic à un équipement depuis l'écran de résolution.
+  bool _linked = false;
+
   void _home() => context.go('/home');
 
   @override
@@ -163,6 +167,12 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
       onHome: _home,
       onRepairOptions: () => context.go('/repair'),
       onSummary: () => context.push('/session/${widget.sessionId}/summary'),
+      onSaveEquipment: state != null && state.equipment == null && !_linked
+          ? () async {
+              final linked = await context.push<bool>('/session/${widget.sessionId}/house');
+              if (linked == true && mounted) setState(() => _linked = true);
+            }
+          : null,
     );
 
     Widget body;
@@ -283,12 +293,15 @@ class _Content extends StatelessWidget {
               isVideo: state.latestMediaIsVideo,
               mediaId: state.latestMediaId,
               title: state.title,
-              category: categoryLabel(
-                AppLocalizations.of(context),
-                state.category,
-              ),
+              category: state.equipment != null
+                  ? [state.equipment!.displayName, ?state.equipment!.roomName].join(' · ')
+                  : categoryLabel(AppLocalizations.of(context), state.category),
             ),
             const SizedBox(height: Space.x8),
+          ],
+          if (step.manual != null && type != NextActionType.safetyStop) ...[
+            ManualCitationLine(citation: step.manual!, equipmentId: state.equipment?.id),
+            const SizedBox(height: Space.x4),
           ],
           AnimatedSwitcher(
             duration: motionDuration(

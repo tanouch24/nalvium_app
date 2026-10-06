@@ -10,7 +10,7 @@ import 'ads_service.dart';
 /// Implémentation Google Mobile Ads : UMP (consentement) → SDK → bannière / interstitiel / App Open.
 /// IDs de TEST uniquement. Aucune donnée de diagnostic (photos, textes) n'est jamais transmise aux pubs.
 class GoogleAdsService implements AdsService {
-  GoogleAdsService({required this.policy, AdIds? ids}) : ids = ids ?? AdIds.test();
+  GoogleAdsService({required this.policy, AdIds? ids}) : ids = ids ?? AdIds.forBuild();
 
   final AdPolicy policy;
   final AdIds ids;
@@ -39,7 +39,7 @@ class GoogleAdsService implements AdsService {
       }
       await MobileAds.instance.initialize();
       ready = true;
-      debugPrint('[ADS] SDK initialisé (IDs de test)');
+      debugPrint('[ADS] SDK initialisé (${AdIds.usesProduction ? 'production' : 'IDs de test'})');
       _loadInterstitial();
       _loadAppOpen(showWhenLoaded: true);
     } catch (e) {
@@ -64,9 +64,9 @@ class GoogleAdsService implements AdsService {
     return done.future.timeout(const Duration(seconds: 20), onTimeout: () {});
   }
 
-  // ── Bannière d'accueil ───────────────────────────────────────────
+  // ── Bannière discrète (un seul bloc Nalvium, emplacements décidés par BannerPolicy) ───────────────────────────────────────────
   @override
-  Widget buildHomeBanner() => _AdaptiveBanner(service: this);
+  Widget buildBanner() => _AdaptiveBanner(service: this);
 
   // ── Interstitiel : avant chaque NOUVEAU diagnostic à partir du n°2 ──
   void _loadInterstitial() {
@@ -259,11 +259,15 @@ class _AdaptiveBannerState extends State<_AdaptiveBanner> {
   @override
   Widget build(BuildContext context) {
     if (_failed || _height == 0) return const SizedBox.shrink();
-    return SizedBox(
-      key: const Key('home-banner'),
-      height: _height,
-      width: double.infinity,
-      child: _ad == null ? null : AdWidget(ad: _ad!),
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 200),
+      alignment: Alignment.bottomCenter,
+      child: SizedBox(
+        key: const Key('ad-banner'),
+        height: _height,
+        width: double.infinity,
+        child: _ad == null ? null : AdWidget(ad: _ad!),
+      ),
     );
   }
 }

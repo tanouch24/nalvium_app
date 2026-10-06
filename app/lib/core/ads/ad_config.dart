@@ -1,15 +1,30 @@
 import 'dart:io';
 
-/// Identifiants AdMob. DÉVELOPPEMENT : uniquement les IDs de TEST publiés par Google.
-/// Les vrais identifiants ne doivent JAMAIS être commités : ils seront injectés plus tard
-/// (dart-define) quand le compte AdMob existera. Voir aussi l'ID d'application dans
-/// AndroidManifest.xml / Info.plist (ID de test pour l'instant).
+import 'package:flutter/foundation.dart';
+
+/// Identifiants AdMob.
+///  • DEBUG / PROFILE / TESTS → IDs de TEST officiels de Google (jamais les IDs de production).
+///  • RELEASE (Android) → blocs de production Nalvium. L'ID d'application suit la même règle : il est choisi
+///    par type de build dans `android/app/build.gradle.kts` (manifestPlaceholders).
+///  • iOS : pas encore d'IDs de production → IDs de test (ne pas publier iOS avant d'en avoir).
 class AdIds {
   const AdIds({required this.banner, required this.interstitial, required this.appOpen});
 
   final String banner;
   final String interstitial;
   final String appOpen;
+
+  /// Blocs de production Nalvium (Android).
+  static const production = AdIds(
+    banner: 'ca-app-pub-9787163762873138/7749641197',
+    interstitial: 'ca-app-pub-9787163762873138/8092246961',
+    appOpen: 'ca-app-pub-9787163762873138/1479657021',
+  );
+
+  /// Production uniquement pour un build RELEASE Android.
+  static bool get usesProduction => kReleaseMode && Platform.isAndroid;
+
+  static AdIds forBuild() => usesProduction ? production : test();
 
   /// IDs de test Google (https://developers.google.com/admob/android/test-ads).
   static AdIds test() => Platform.isIOS

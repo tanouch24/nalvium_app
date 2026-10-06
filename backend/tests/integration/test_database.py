@@ -13,7 +13,8 @@ def test_migrations_upgrade_and_downgrade(engine):
     tables = set(inspect(engine).get_table_names())
     assert {"users", "diagnostic_sessions", "media_assets", "session_messages",
             "session_observations", "session_hypotheses", "session_actions",
-            "session_verifications"} <= tables
+            "session_verifications", "homes", "rooms", "equipment"} <= tables
+    assert "equipment_id" in {c["name"] for c in inspect(engine).get_columns("diagnostic_sessions")}
 
     command.downgrade(cfg, "base")
     assert "users" not in set(inspect(engine).get_table_names())
@@ -54,3 +55,12 @@ def test_analyze_dangerous_returns_stop_even_without_provider():
     body = r.json()
     assert body["next_action"]["type"] == "SAFETY_STOP"
     assert body["diy_allowed"] is False
+
+
+def test_home_schema_supports_future_multi_home_but_one_default(engine):
+    cols = {c["name"] for c in inspect(engine).get_columns("homes")}
+    assert {"id", "user_id", "is_default", "created_at", "updated_at"} <= cols
+    eq = {c["name"] for c in inspect(engine).get_columns("equipment")}
+    assert {"home_id", "room_id", "equipment_type", "display_name", "brand", "model",
+            "primary_media_id"} <= eq
+    assert {"home_id", "name", "normalized_type"} <= {c["name"] for c in inspect(engine).get_columns("rooms")}

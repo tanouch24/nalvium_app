@@ -39,3 +39,17 @@ def process_photo(raw: bytes) -> ProcessedImage:
     out = io.BytesIO()
     clean.save(out, format="JPEG", quality=JPEG_QUALITY, optimize=True)
     return ProcessedImage(data=out.getvalue(), width=clean.width, height=clean.height)
+
+
+THUMB_SIDE = 480
+THUMB_QUALITY = 78
+
+
+def make_thumbnail(image: ProcessedImage) -> bytes:
+    """Vignette (côté ≤ 480 px) dérivée d'une image DÉJÀ nettoyée : listes légères, aucune métadonnée."""
+    with Image.open(io.BytesIO(image.data)) as img:
+        thumb = img.convert("RGB")
+        thumb.thumbnail((THUMB_SIDE, THUMB_SIDE), Image.Resampling.LANCZOS)
+        out = io.BytesIO()
+        thumb.save(out, format="JPEG", quality=THUMB_QUALITY, optimize=True)
+        return out.getvalue()

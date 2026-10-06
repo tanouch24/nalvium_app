@@ -2,7 +2,7 @@ import logging
 
 from fastapi import FastAPI
 
-from app.api.routes import diagnostic, health, sessions
+from app.api.routes import diagnostic, equipment, health, sessions
 from app.config import get_settings
 
 
@@ -19,6 +19,7 @@ def create_app() -> FastAPI:
     app.include_router(health.router)
     app.include_router(diagnostic.router)
     app.include_router(sessions.router)
+    app.include_router(equipment.router)
     return app
 
 

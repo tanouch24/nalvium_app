@@ -228,7 +228,7 @@ class _FlakyUploadRepo extends FakeSessionsRepository {
   bool _failed = false;
 
   @override
-  Future<String> createSession() => inner.createSession();
+  Future<String> createSession({String? equipmentId}) => inner.createSession(equipmentId: equipmentId);
 
   @override
   Future<String> uploadPhoto(String sessionId, String filePath) async {

@@ -11,6 +11,7 @@ import 'package:nalvium/services/providers.dart';
 import 'package:nalvium/services/video_recorder_service.dart';
 
 import 'fakes.dart';
+import 'fake_home.dart';
 import 'package:nalvium/core/ads/ads_service.dart';
 
 class FakePhotoCaptureService implements PhotoCaptureService {
@@ -51,6 +52,7 @@ Future<FakePhotoCaptureService> pumpApp(
   FakeAdsService? ads,
   FakeVideoRecorder? recorder,
   int fileSize = 5 * 1024 * 1024,
+  FakeHomeRepository? home,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = dpr;
@@ -69,6 +71,7 @@ Future<FakePhotoCaptureService> pumpApp(
     overrides: [
       photoCaptureServiceProvider.overrideWithValue(fake),
       sessionsRepositoryProvider.overrideWithValue(repo ?? FakeSessionsRepository()),
+      homeRepositoryProvider.overrideWithValue(home ?? FakeHomeRepository()),
       adsServiceProvider.overrideWithValue(ads ?? FakeAdsService()),
       videoRecorderFactoryProvider.overrideWithValue(() => recorder ?? FakeVideoRecorder()),
       videoFileSizeProvider.overrideWithValue((_) async => fileSize),
@@ -85,6 +88,10 @@ Future<FakePhotoCaptureService> pumpApp(
 
 /// Faux service publicitaire de TEST : enregistre les appels, aucun SDK.
 class FakeAdsService implements AdsService {
+  FakeAdsService({this.banner});
+
+  /// Bannière simulée (par défaut un bloc de 60 dp) ; permet de simuler no-fill / chargement retardé.
+  final Widget? banner;
   int newDiagnostics = 0;
   int suspendCalls = 0;
   int initializeCalls = 0;
@@ -94,7 +101,7 @@ class FakeAdsService implements AdsService {
   Future<void> initialize() async => initializeCalls++;
 
   @override
-  Widget buildHomeBanner() => const SizedBox(key: Key('ad-slot'), height: 60, width: double.infinity);
+  Widget buildBanner() => banner ?? const DecoratedBox(key: Key('ad-slot'), decoration: BoxDecoration(color: Color(0xFFE3E9F2)), child: SizedBox(height: 60, width: double.infinity));
 
   @override
   Future<void> beforeNewDiagnostic() async => newDiagnostics++;

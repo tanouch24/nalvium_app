@@ -113,22 +113,22 @@ void main() {
     testWidgets('ACCUEIL : la bannière permanente est présente et n\'écrase pas le CTA photo', (tester) async {
       final repo = FakeSessionsRepository(sessions: [summary(lastMessage: 'Vérifiez le filtre')]);
       await pumpApp(tester, repo: repo, size: const Size(720, 1600), dpr: 2);
-      expect(find.byKey(const Key('ad-slot')), findsOneWidget);
+      expect(find.byKey(const Key('ad-slot')).hitTestable(), findsOneWidget);
       expect(find.byKey(const Key('take-photo')), findsOneWidget);
       expect(find.byKey(const Key('home-photo')), findsOneWidget);
       // (la visibilité de « À reprendre » au-dessus de la bannière est vérifiée sur Samsung : les tests n'ont pas la vraie police)
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('la bannière n\'existe que sur l\'accueil (ni session, ni historique)', (tester) async {
+    testWidgets('la bannière suit la politique centrale : consultation oui, session active non', (tester) async {
       final repo = FakeSessionsRepository(stored: sessionState(), sessions: [summary()]);
       await pumpApp(tester, repo: repo);
       await tester.tap(find.byKey(const Key('open-history')));
       await tester.pumpAndSettle();
-      expect(find.byKey(const Key('ad-slot')), findsNothing);
+      expect(find.byKey(const Key('ad-slot')).hitTestable(), findsOneWidget); // Historique
       await tester.tap(find.byKey(const Key('history-s1')));
       await tester.pumpAndSettle();
-      expect(find.byKey(const Key('ad-slot')), findsNothing); // session en cours : aucune pub
+      expect(find.byKey(const Key('ad-slot')).hitTestable(), findsNothing); // session en cours : aucune pub
     });
 
     testWidgets('PHOTO : « Utiliser cette photo » déclare un nouveau diagnostic (interstitiel éventuel avant l\'analyse)', (tester) async {

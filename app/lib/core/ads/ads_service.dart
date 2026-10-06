@@ -6,7 +6,7 @@ abstract interface class AdsService {
   Future<void> initialize();
 
   /// Bannière adaptative PERMANENTE de l'accueil (indépendante des pubs plein écran).
-  Widget buildHomeBanner();
+  Widget buildBanner();
 
   /// À appeler quand un NOUVEAU diagnostic démarre : affiche (et attend la fermeture de)
   /// l'interstitiel s'il est dû, et compte le diagnostic. Ne bloque jamais en cas d'échec.
@@ -24,11 +24,26 @@ class NoopAdsService implements AdsService {
   @override
   Future<void> initialize() async {}
   @override
-  Widget buildHomeBanner() => const SizedBox.shrink();
+  Widget buildBanner() => const SizedBox.shrink();
   @override
   Future<void> beforeNewDiagnostic() async {}
   @override
   Future<void> onAppResumed({required String route, required Duration backgroundFor}) async {}
   @override
   Future<T> suspendAppOpen<T>(Future<T> Function() action) => action();
+}
+
+/// VALIDATION VISUELLE UNIQUEMENT (build debug, `--dart-define=NALVIUM_DEBUG_BANNER=true`) : un bloc de la taille d'une
+/// bannière à la place de la vraie pub, pour vérifier la mise en page quand l'appareil n'a pas de réseau publicitaire.
+class PlaceholderBannerAdsService extends NoopAdsService {
+  const PlaceholderBannerAdsService();
+  @override
+  Widget buildBanner() => Container(
+    key: const Key('ad-banner'),
+    height: 60,
+    width: double.infinity,
+    alignment: Alignment.center,
+    color: const Color(0xFFE3E9F2),
+    child: const Text('Espace publicitaire (test de mise en page)', style: TextStyle(fontSize: 12, color: Color(0xFF4F5E78), decoration: TextDecoration.none, fontWeight: FontWeight.w400)),
+  );
 }

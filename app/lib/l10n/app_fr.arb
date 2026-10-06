@@ -84,8 +84,8 @@
   "describeShort": "Décrire",
   "filmShort": "Filmer",
   "resumeLastStep": "Dernière étape",
-  "houseEmptyTitle": "Votre maison prendra forme ici",
-  "houseEmptyBody": "Les équipements que vous ajoutez apparaîtront ici.",
+  "houseEmptyTitle": "Votre maison",
+  "houseEmptyBody": "Ajoutez vos équipements pour que Nalvium se souvienne de ce qu'il y a chez vous.",
   "repairEmptyBody": "Si un problème demande un professionnel, vous pourrez le demander ici.",
   "communityEmptyTitle": "Les réparations des autres, bientôt ici",
   "communityEmptyBody": "Vous verrez ici des problèmes réellement résolus par d'autres personnes.",
@@ -179,5 +179,204 @@
   "errVideoTooLongBody": "15 secondes maximum. Refaites une vidéo plus courte.",
   "errVideoInvalidTitle": "Format de vidéo non pris en charge",
   "errVideoInvalidBody": "Refaites la vidéo avec l'appareil photo de Nalvium, ou prenez une photo.",
-  "yourVideo": "Votre vidéo"
+  "yourVideo": "Votre vidéo",
+  "houseEmptyHint": "Vos diagnostics pourront ensuite être rattachés automatiquement à vos équipements.",
+  "houseAdd": "Ajouter un équipement",
+  "houseNoRoom": "Sans pièce",
+  "houseNoIssue": "Aucun problème",
+  "houseDiagnosticsOne": "1 diagnostic",
+  "houseLoadError": "Impossible d'afficher votre maison",
+  "eqAddTitle": "Ajouter un équipement",
+  "eqEditTitle": "Modifier l'équipement",
+  "eqStepType": "Quel équipement ?",
+  "eqSearchHint": "Rechercher un équipement",
+  "eqSearchEmpty": "Aucun équipement ne correspond. Choisissez « Autre » pour le nommer vous-même.",
+  "eqIdentifyPhoto": "Identifier avec une photo",
+  "eqStepRoom": "Où se trouve-t-il ?",
+  "eqRoomSkip": "Je ne sais pas / Passer",
+  "eqStepDetails": "Quelques précisions",
+  "eqDetailsHint": "Tout est facultatif : vous pourrez compléter plus tard.",
+  "eqName": "Nom",
+  "eqNameHint": "Ex. Lave-vaisselle du fond",
+  "eqBrand": "Marque",
+  "eqBrandHint": "Facultatif",
+  "eqModel": "Modèle / référence",
+  "eqModelHint": "Facultatif",
+  "eqPhoto": "Photo",
+  "eqPhotoAdd": "Ajouter une photo",
+  "eqPhotoChange": "Changer la photo",
+  "eqPhotoRemove": "Retirer la photo",
+  "eqPhotoPrivate": "Votre photo reste privée.",
+  "eqPhotoFail": "La photo n'a pas pu être enregistrée. Votre saisie est conservée : réessayez.",
+  "eqSave": "Enregistrer",
+  "eqSaveFail": "L'équipement n'a pas pu être enregistré. Votre saisie est conservée : réessayez.",
+  "eqNext": "Continuer",
+  "eqRoomLabel": "Pièce",
+  "eqType": "Type",
+  "eqNoBrand": "Marque non renseignée",
+  "eqIdentifyTitle": "Identifier avec une photo",
+  "eqIdentifyTip": "Photographiez l'équipement entier, ou son étiquette si vous la trouvez.",
+  "eqIdentifyTake": "Prendre la photo",
+  "eqIdentifyWorking": "Nalvium regarde votre photo…",
+  "eqIdentifyNotSure": "Nalvium n'en est pas certain : vérifiez avant de confirmer.",
+  "eqIdentifyConfirm": "Oui, c'est ça",
+  "eqIdentifyCorrect": "Corriger",
+  "eqIdentifyUnknownTitle": "Nalvium n'a pas pu l'identifier",
+  "eqIdentifyUnknownBody": "Ce n'est pas grave : choisissez vous-même le type d'équipement. Votre photo est conservée.",
+  "eqIdentifyChoose": "Choisir moi-même",
+  "eqIdentifyFailTitle": "L'identification n'est pas disponible",
+  "eqIdentifyFailBody": "Vous pouvez continuer sans : votre photo est conservée.",
+  "eqIdentifyContinue": "Continuer sans identification",
+  "eqIdentifyReadable": "Texte lu sur l'appareil",
+  "eqDetailTitle": "Équipement",
+  "eqProblems": "Problèmes traités",
+  "eqNoProblems": "Aucun problème enregistré pour cet équipement.",
+  "eqDiagnose": "Diagnostiquer un problème",
+  "eqDiagnoseHow": "Comment voulez-vous montrer le problème ?",
+  "eqEdit": "Modifier",
+  "eqDelete": "Supprimer",
+  "eqDeleteTitle": "Supprimer cet équipement ?",
+  "eqDeleteBody": "Ses diagnostics ne seront pas supprimés : ils seront simplement détachés de cet équipement. Sa photo sera supprimée.",
+  "eqDeleteConfirm": "Supprimer l'équipement",
+  "eqDeleteFail": "L'équipement n'a pas pu être supprimé. Réessayez.",
+  "eqGone": "Cet équipement n'existe plus.",
+  "eqBackToHouse": "Retour à la maison",
+  "eqLinkAdd": "Ajouter à votre maison",
+  "eqLinkSave": "Enregistrer cet équipement",
+  "eqLinkTitle": "Ajouter à votre maison",
+  "eqLinkChoose": "Choisir un équipement existant",
+  "eqLinkNew": "Créer un nouvel équipement",
+  "eqLinkYes": "Oui, c'est lui",
+  "eqLinkNo": "Non",
+  "eqLinkDone": "Ce diagnostic est rattaché à votre équipement.",
+  "eqLinkFail": "Le rattachement n'a pas pu être enregistré. Réessayez.",
+  "eqLinkedTo": "Équipement",
+  "eqLinkDetach": "Détacher de cet équipement",
+  "eqLinkNothing": "Vous n'avez pas encore d'équipement enregistré.",
+  "eqSessionGone": "Ce diagnostic est introuvable.",
+  "eqDiagnosticsCount": "{count} diagnostics",
+  "@eqDiagnosticsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "eqLinkAsk": "Est-ce votre {name} ?",
+  "@eqLinkAsk": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "eqIdentifyResult": "Cela ressemble à {what}.",
+  "@eqIdentifyResult": {
+    "placeholders": {
+      "what": {
+        "type": "String"
+      }
+    }
+  },
+  "eqSemanticsEquipment": "{name}, {where}",
+  "@eqSemanticsEquipment": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "where": {
+        "type": "String"
+      }
+    }
+  },
+  "eqRefLabel": "Référence",
+  "eqRefNone": "Référence non renseignée",
+  "eqRefWhere": "Où trouver la référence ?",
+  "eqRefHelpTitle": "Où trouver la référence ?",
+  "eqRefHelpBody": "C'est une série de lettres et de chiffres (par exemple SMS46GI01E). Elle figure sur la plaque signalétique : à l'intérieur de la porte d'un lave-vaisselle ou d'un lave-linge, sur le côté ou au dos d'un four ou d'un réfrigérateur, sous ou sur le côté d'une chaudière. Elle est aussi dans la notice et sur la facture. Si vous ne la trouvez pas, ce n'est pas grave : elle reste facultative.",
+  "eqRefHelpClose": "J'ai compris",
+  "eqIdentifyCloser": "Pour la référence, photographiez la plaque signalétique de plus près : Nalvium n'invente jamais les caractères illisibles.",
+  "manualTitle": "Notice",
+  "manualZone": "Notice constructeur",
+  "manualNeedRef": "Référence nécessaire",
+  "manualNeedRefBody": "Ajoutez la marque et la référence pour que Nalvium cherche la notice exacte de votre appareil.",
+  "manualSearch": "Rechercher la notice",
+  "manualSearching": "Recherche en cours",
+  "manualSearchingBody": "Nalvium cherche la notice officielle de votre appareil. Cela peut prendre une minute.",
+  "manualAvailable": "Notice disponible",
+  "manualAvailableBody": "Nalvium s'appuiera sur cette notice pour les prochains diagnostics de cet équipement.",
+  "manualConsult": "Consulter",
+  "manualUpdate": "Mettre à jour",
+  "manualNotFound": "Notice exacte introuvable",
+  "manualNotFoundBody": "Aucune notice officielle correspondant exactement à cette référence n'a été trouvée. Vous pouvez utiliser l'équipement normalement.",
+  "manualError": "Erreur de récupération",
+  "manualErrorBody": "La notice n'a pas pu être récupérée pour le moment. Réessayez plus tard.",
+  "manualApprox": "Une notice proche a été trouvée",
+  "manualApproxBody": "Sa référence est légèrement différente de la vôtre. Nalvium ne l'utilisera que si vous confirmez qu'elle convient.",
+  "manualApproxYes": "Elle convient",
+  "manualApproxNo": "Ignorer cette notice",
+  "manualOfficial": "Source officielle du fabricant",
+  "manualRetry": "Réessayer",
+  "manualUpToDate": "La notice est déjà à jour.",
+  "manualKept": "La recherche a échoué : votre notice actuelle est conservée.",
+  "manualPrivate": "Cette notice reste privée : elle n'est accessible que depuis votre appareil.",
+  "manualPageNext": "Page suivante",
+  "manualPagePrev": "Page précédente",
+  "manualPageEmpty": "Cette page ne contient pas de texte exploitable.",
+  "manualLoadFail": "La page n'a pas pu être chargée.",
+  "manualConfirmFail": "L'action n'a pas pu être enregistrée. Réessayez.",
+  "manualPages": "{count} pages",
+  "@manualPages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "manualSource": "Source : {domain}",
+  "@manualSource": {
+    "placeholders": {
+      "domain": {
+        "type": "String"
+      }
+    }
+  },
+  "manualPageOf": "Page {page} sur {total}",
+  "@manualPageOf": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "manualCite": "D'après la notice {brand} de votre appareil",
+  "@manualCite": {
+    "placeholders": {
+      "brand": {
+        "type": "String"
+      }
+    }
+  },
+  "manualCiteGeneric": "D'après la notice de votre appareil",
+  "manualCitePage": "Notice · page {pages}",
+  "@manualCitePage": {
+    "placeholders": {
+      "pages": {
+        "type": "String"
+      }
+    }
+  },
+  "manualCitePages": "Notice · pages {pages}",
+  "@manualCitePages": {
+    "placeholders": {
+      "pages": {
+        "type": "String"
+      }
+    }
+  },
+  "manualIdle": "Notice non récupérée",
+  "manualIdleBody": "Nalvium peut chercher la notice officielle de votre appareil."
 }

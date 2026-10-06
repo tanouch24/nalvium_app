@@ -17,7 +17,8 @@ import '../capture/analysis_screen.dart';
 
 /// Aperçu : lecture / pause, durée, puis « Utiliser cette vidéo » ou « Refilmer ». Aucun montage, aucun filtre.
 class VideoPreviewScreen extends ConsumerStatefulWidget {
-  const VideoPreviewScreen({super.key, required this.clip});
+  const VideoPreviewScreen({super.key, required this.clip, this.equipmentId});
+  final String? equipmentId;
   final VideoClip clip;
 
   @override
@@ -71,7 +72,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
     await _controller?.pause();
     await ref.read(adsServiceProvider).beforeNewDiagnostic();
     if (!mounted) return;
-    context.pushReplacement('/analyze', extra: VideoStart(widget.clip));
+    context.pushReplacement('/analyze', extra: VideoStart(widget.clip, equipmentId: widget.equipmentId));
   }
 
   Future<void> _refilm() async {
@@ -79,7 +80,7 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
     try {
       File(widget.clip.path).deleteSync(); // la vidéo refaite n'est plus utile : on ne garde rien
     } catch (_) {}
-    if (mounted) context.pushReplacement('/video/capture');
+    if (mounted) context.pushReplacement(widget.equipmentId == null ? '/video/capture' : '/video/capture?equipment=${widget.equipmentId}');
   }
 
   @override

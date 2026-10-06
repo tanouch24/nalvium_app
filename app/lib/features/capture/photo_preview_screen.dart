@@ -17,8 +17,9 @@ import 'capture_flow.dart';
 /// Aperçu : la photo occupe l'espace, la validation se fait dans une zone claire en bas.
 /// Aucune analyse n'est lancée avant « Utiliser cette photo ».
 class PhotoPreviewScreen extends ConsumerStatefulWidget {
-  const PhotoPreviewScreen({super.key, required this.photoPath});
+  const PhotoPreviewScreen({super.key, required this.photoPath, this.equipmentId});
   final String photoPath;
+  final String? equipmentId;
 
   @override
   ConsumerState<PhotoPreviewScreen> createState() => _PhotoPreviewScreenState();
@@ -35,7 +36,7 @@ class _PhotoPreviewScreenState extends ConsumerState<PhotoPreviewScreen> {
     setState(() => _starting = true);
     await ref.read(adsServiceProvider).beforeNewDiagnostic();
     if (!mounted) return;
-    context.pushReplacement('/analyze', extra: PhotoStart(_path));
+    context.pushReplacement('/analyze', extra: PhotoStart(_path, equipmentId: widget.equipmentId));
   }
 
   Future<void> _retake() async {

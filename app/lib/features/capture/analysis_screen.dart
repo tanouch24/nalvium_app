@@ -19,21 +19,24 @@ import 'analysis_wait.dart';
 
 /// Point d'entrée d'une nouvelle session : une photo OU une description.
 sealed class SessionStart {
-  const SessionStart();
+  const SessionStart({this.equipmentId});
+
+  /// Équipement de la Maison d'où part le diagnostic (null = diagnostic libre).
+  final String? equipmentId;
 }
 
 class PhotoStart extends SessionStart {
-  const PhotoStart(this.path);
+  const PhotoStart(this.path, {super.equipmentId});
   final String path;
 }
 
 class VideoStart extends SessionStart {
-  const VideoStart(this.clip);
+  const VideoStart(this.clip, {super.equipmentId});
   final VideoClip clip;
 }
 
 class DescriptionStart extends SessionStart {
-  const DescriptionStart(this.text);
+  const DescriptionStart(this.text, {super.equipmentId});
   final String text;
 }
 
@@ -64,7 +67,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
     try {
       final repo = ref.read(sessionsRepositoryProvider);
       final start = widget.start;
-      _sessionId ??= await repo.createSession();
+      _sessionId ??= await repo.createSession(equipmentId: start.equipmentId);
       if (start is PhotoStart) {
         _mediaId ??= await repo.uploadPhoto(_sessionId!, start.path);
       } else if (start is VideoStart) {

@@ -17,7 +17,9 @@ void main() {
 
     await tester.tap(find.byKey(const Key('nav-house')));
     await tester.pumpAndSettle();
-    expect(find.text('Votre maison prendra forme ici'), findsOneWidget);
+    // Phase 4 : l'onglet Maison est une vraie expérience (état vide invitant, pas un faux contenu).
+    expect(find.text('Votre maison'), findsOneWidget);
+    expect(find.byKey(const Key('house-add')), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('nav-repair')));
     await tester.pumpAndSettle();

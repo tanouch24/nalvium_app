@@ -81,6 +81,8 @@ class DiagnosticAnalysis(BaseModel):
     safety_flags: list[str] = Field(default_factory=list)
     # Évaluation par l'IA de la réponse de l'utilisateur à la dernière VERIFICATION.
     verification_outcome: VerificationOutcome | None = None
+    # Pages de la notice constructeur réellement utilisées pour cette réponse (sous-ensemble des extraits fournis).
+    manual_pages_used: list[int] = Field(default_factory=list)
 
 
 class MediaRef(BaseModel):
@@ -109,6 +111,51 @@ class VideoDiagnosticInput(BaseModel):
     frames: list[VideoFrameInput] = Field(default_factory=list)
 
 
+class EquipmentContext(BaseModel):
+    """Équipement de la Maison auquel se rattache le diagnostic (déclaré ou confirmé par l'utilisateur)."""
+
+    type: str
+    name: str
+    brand: str | None = None
+    model: str | None = None
+    room: str | None = None
+
+
+class ManualCandidate(BaseModel):
+    """Lien proposé par la recherche web. Rien n'est fiable tant que la source n'est pas validée (domaine officiel,
+    PDF, correspondance exacte de la référence)."""
+
+    url: str
+    title: str = ""
+
+
+class ManualExcerpt(BaseModel):
+    page: int
+    section: str | None = None
+    text: str
+
+
+class ManualContext(BaseModel):
+    """Extraits de LA notice constructeur liée à l'équipement (document exact), sélectionnés pour ce tour."""
+
+    manufacturer: str | None = None
+    model: str | None = None
+    exact: bool = True  # False : référence proche, notice confirmée par l'utilisateur
+    excerpts: list[ManualExcerpt] = Field(default_factory=list)
+
+
+class EquipmentIdentification(BaseModel):
+    """Proposition d'identification d'un équipement sur photo. Ce n'est PAS un diagnostic et ce n'est jamais
+    une certitude : l'utilisateur confirme toujours (needs_confirmation reste vrai)."""
+
+    equipment_type: str  # slug du catalogue, ou "unknown"
+    brand: str | None = None
+    model: str | None = None  # uniquement si lisible sur l'image
+    confidence: float = Field(ge=0.0, lt=1.0)
+    visible_text: list[str] = Field(default_factory=list)
+    needs_confirmation: bool = True
+
+
 class DiagnosticContext(BaseModel):
     """Ce que reçoit l'IA à chaque tour."""
 
@@ -120,6 +167,9 @@ class DiagnosticContext(BaseModel):
     conversation: list[str] = Field(default_factory=list)
     # Transcription complète (utilisateur + Nalvium) fournie à l'IA comme contexte.
     history: list[str] = Field(default_factory=list)
-    equipment: str | None = None
+    equipment: EquipmentContext | None = None
+    # Antécédents LIMITÉS du même équipement : contexte seulement, jamais une preuve de la cause actuelle.
+    equipment_history: list[str] = Field(default_factory=list)
+    manual: ManualContext | None = None
     completed_actions: list[str] = Field(default_factory=list)
     previous_outcomes: list[VerificationOutcome] = Field(default_factory=list)

@@ -1,4 +1,5 @@
 import 'diagnosis.dart';
+import 'equipment.dart';
 import 'text.dart';
 
 /// État d'une session tel que renvoyé par le backend (source de vérité).
@@ -18,6 +19,7 @@ class SessionState {
     this.actions = const [],
     this.updatedAt,
     this.latestMediaIsVideo = false,
+    this.equipment,
   });
 
   final String id;
@@ -36,6 +38,9 @@ class SessionState {
 
   /// La dernière pièce jointe est une vidéo (vignette = image extraite de la vidéo).
   final bool latestMediaIsVideo;
+
+  /// Équipement de la Maison auquel ce diagnostic est lié (null si aucun).
+  final EquipmentRef? equipment;
 
   bool get isActive => status == 'active';
 
@@ -64,6 +69,9 @@ class SessionState {
         : DateTime.parse(j['updated_at'] as String),
     latestMediaIsVideo: (j['media'] as List? ?? const []).isNotEmpty &&
         ((j['media'] as List).last as Map<String, dynamic>)['media_type'] == 'video',
+    equipment: j['equipment'] == null
+        ? null
+        : EquipmentRef.fromJson(j['equipment'] as Map<String, dynamic>),
   );
 }
 
@@ -87,10 +95,18 @@ class SessionActionRecord {
 }
 
 /// La dernière réponse de Nalvium : détermine l'écran.
+/// Provenance : la réponse s'appuie réellement sur ces pages de la notice constructeur.
+class ManualCitation {
+  const ManualCitation({required this.pages, this.manufacturer});
+  final List<int> pages;
+  final String? manufacturer;
+}
+
 class NextStep {
   const NextStep({
     required this.actionType,
     required this.message,
+    this.manual,
     this.choices = const [],
     this.requiredItems = const [],
     this.observations = const [],
@@ -105,6 +121,7 @@ class NextStep {
   final List<String> observations;
   final int? stepNumber;
   final bool? diyAllowed;
+  final ManualCitation? manual;
 
   factory NextStep.fromJson(Map<String, dynamic> j) => NextStep(
     actionType: NextActionType.fromWire(j['action_type'] as String),
@@ -122,6 +139,7 @@ class NextStep {
     ],
     stepNumber: j['step_number'] as int?,
     diyAllowed: j['diy_allowed'] as bool?,
+    manual: _citation(j['manual']),
   );
 }
 
@@ -136,6 +154,7 @@ class SessionSummary {
     this.firstMediaId,
     this.subcategory,
     this.lastMessage,
+    this.equipmentId,
   });
 
   final String id;
@@ -144,6 +163,7 @@ class SessionSummary {
   final String? title;
   final String? category;
   final DateTime updatedAt;
+  final String? equipmentId;
   final String? firstMediaId;
   final String? subcategory;
   final String? lastMessage;
@@ -162,6 +182,7 @@ class SessionSummary {
     lastMessage: (j['last_message'] as String?) == null
         ? null
         : cleanText(j['last_message'] as String),
+    equipmentId: j['equipment_id'] as String?,
   );
 }
 
@@ -209,4 +230,11 @@ class ActionResultTurn extends TurnInput {
     'kind': 'action_result',
     'choice': choice.name,
   };
+}
+
+ManualCitation? _citation(Object? raw) {
+  if (raw is! Map<String, dynamic>) return null;
+  final pages = [for (final p in raw['pages'] as List? ?? const []) p as int];
+  // Jamais de citation sans page réellement utilisée.
+  return pages.isEmpty ? null : ManualCitation(pages: pages, manufacturer: raw['manufacturer'] as String?);
 }

@@ -6,18 +6,23 @@ from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFil
 from fastapi.concurrency import run_in_threadpool
 
 from app.ai.provider import AIProviderError, AIProviderNotConfigured
-from app.api.deps import current_user_id, get_session_service
+from app.api.deps import current_user_id, get_equipment_service, get_session_service
 from app.api.schemas import (
+    CreateSessionRequest,
+    EquipmentSuggestionsOut,
+    LinkEquipmentRequest,
     MediaOut,
     SessionOut,
     SessionSummary,
     TurnRequest,
+    equipment_summary,
     session_out,
     summary_out,
 )
 from app.config import get_settings
 from app.media.pipeline import InvalidImageError, process_photo
 from app.media.video import InvalidVideoError, VideoTooLongError, process_video
+from app.services.equipment_service import EquipmentService
 from app.services.session_service import InvalidTurn, NotFound, SessionService, TurnInput
 
 log = logging.getLogger("nalvium.api")
@@ -26,10 +31,16 @@ router = APIRouter(prefix="/v1", tags=["sessions"])
 
 @router.post("/sessions", response_model=SessionOut, status_code=201)
 def create_session(
-    user_id: uuid.UUID = Depends(current_user_id), svc: SessionService = Depends(get_session_service)
+    body: CreateSessionRequest | None = None,
+    user_id: uuid.UUID = Depends(current_user_id),
+    svc: SessionService = Depends(get_session_service),
 ):
-    session = svc.create(user_id)
-    log.info("session created id=%s", session.id)
+    """Corps facultatif : `equipment_id` lie le diagnostic à un équipement de la Maison dès la création."""
+    try:
+        session = svc.create(user_id, body.equipment_id if body else None)
+    except NotFound as exc:
+        raise HTTPException(404, "equipment_not_found") from exc
+    log.info("session created id=%s linked=%s", session.id, session.equipment_id is not None)
     return session_out(session)
 
 
@@ -52,6 +63,41 @@ def get_session(
         return session_out(svc.get(user_id, session_id))
     except NotFound as exc:
         raise HTTPException(404, "session_not_found") from exc
+
+
+@router.post("/sessions/{session_id}/equipment", response_model=SessionOut)
+def link_equipment(
+    session_id: uuid.UUID,
+    body: LinkEquipmentRequest,
+    user_id: uuid.UUID = Depends(current_user_id),
+    svc: SessionService = Depends(get_session_service),
+):
+    """Rattache un diagnostic existant à un équipement (null = détacher). L'app ne l'appelle qu'après
+    confirmation explicite de l'utilisateur : Nalvium ne lie jamais sur une simple supposition."""
+    try:
+        session = svc.link_equipment(user_id, session_id, body.equipment_id)
+    except NotFound as exc:
+        raise HTTPException(404, "session_or_equipment_not_found") from exc
+    log.info("session %s linked=%s", session_id, session.equipment_id is not None)
+    return session_out(session)
+
+
+@router.get("/sessions/{session_id}/equipment/suggestions", response_model=EquipmentSuggestionsOut)
+def equipment_suggestions(
+    session_id: uuid.UUID,
+    user_id: uuid.UUID = Depends(current_user_id),
+    svc: SessionService = Depends(get_session_service),
+    equipment: EquipmentService = Depends(get_equipment_service),
+):
+    """Propositions seulement (type probable + équipements du même type) : rien n'est lié ici."""
+    try:
+        session = svc.get(user_id, session_id)
+    except NotFound as exc:
+        raise HTTPException(404, "session_not_found") from exc
+    found = equipment.suggestions(user_id, session)
+    return EquipmentSuggestionsOut(
+        detected_type=found.detected_type, matches=[equipment_summary(e) for e in found.matches]
+    )
 
 
 @router.post("/sessions/{session_id}/media", response_model=MediaOut, status_code=201)

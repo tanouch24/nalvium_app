@@ -7,10 +7,14 @@ import '../../services/photo_capture_service.dart';
 import '../../services/providers.dart';
 
 /// CAMÉRA = ACTION (pas un onglet) : ouvre directement la caméra puis l'aperçu.
-Future<void> startPhotoCapture(BuildContext context, WidgetRef ref) async {
+/// [equipmentId] : diagnostic lancé depuis une fiche équipement (la session sera liée à cet équipement).
+Future<void> startPhotoCapture(BuildContext context, WidgetRef ref, {String? equipmentId}) async {
   final photo = await _capture(context, ref);
   if (photo == null || !context.mounted) return;
-  context.push('/capture/preview', extra: photo.path);
+  context.push(
+    equipmentId == null ? '/capture/preview' : '/capture/preview?equipment=$equipmentId',
+    extra: photo.path,
+  );
 }
 
 Future<CapturedPhoto?> capturePhoto(BuildContext context, WidgetRef ref) =>

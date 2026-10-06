@@ -13,6 +13,12 @@ class UnconfiguredProvider:
     async def analyze(self, context):
         raise AIProviderNotConfigured(self._reason)
 
+    async def identify_equipment(self, image, mime):
+        raise AIProviderNotConfigured(self._reason)
+
+    async def find_manual(self, brand, model):
+        raise AIProviderNotConfigured(self._reason)
+
 
 def build_provider(settings: Settings) -> AIProvider:
     if settings.ai_provider == "openai":

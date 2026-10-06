@@ -251,11 +251,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get resumeLastStep => 'Dernière étape';
 
   @override
-  String get houseEmptyTitle => 'Votre maison prendra forme ici';
+  String get houseEmptyTitle => 'Votre maison';
 
   @override
   String get houseEmptyBody =>
-      'Les équipements que vous ajoutez apparaîtront ici.';
+      'Ajoutez vos équipements pour que Nalvium se souvienne de ce qu\'il y a chez vous.';
 
   @override
   String get repairEmptyBody =>
@@ -529,4 +529,419 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get yourVideo => 'Votre vidéo';
+
+  @override
+  String get houseEmptyHint =>
+      'Vos diagnostics pourront ensuite être rattachés automatiquement à vos équipements.';
+
+  @override
+  String get houseAdd => 'Ajouter un équipement';
+
+  @override
+  String get houseNoRoom => 'Sans pièce';
+
+  @override
+  String get houseNoIssue => 'Aucun problème';
+
+  @override
+  String get houseDiagnosticsOne => '1 diagnostic';
+
+  @override
+  String get houseLoadError => 'Impossible d\'afficher votre maison';
+
+  @override
+  String get eqAddTitle => 'Ajouter un équipement';
+
+  @override
+  String get eqEditTitle => 'Modifier l\'équipement';
+
+  @override
+  String get eqStepType => 'Quel équipement ?';
+
+  @override
+  String get eqSearchHint => 'Rechercher un équipement';
+
+  @override
+  String get eqSearchEmpty =>
+      'Aucun équipement ne correspond. Choisissez « Autre » pour le nommer vous-même.';
+
+  @override
+  String get eqIdentifyPhoto => 'Identifier avec une photo';
+
+  @override
+  String get eqStepRoom => 'Où se trouve-t-il ?';
+
+  @override
+  String get eqRoomSkip => 'Je ne sais pas / Passer';
+
+  @override
+  String get eqStepDetails => 'Quelques précisions';
+
+  @override
+  String get eqDetailsHint =>
+      'Tout est facultatif : vous pourrez compléter plus tard.';
+
+  @override
+  String get eqName => 'Nom';
+
+  @override
+  String get eqNameHint => 'Ex. Lave-vaisselle du fond';
+
+  @override
+  String get eqBrand => 'Marque';
+
+  @override
+  String get eqBrandHint => 'Facultatif';
+
+  @override
+  String get eqModel => 'Modèle / référence';
+
+  @override
+  String get eqModelHint => 'Facultatif';
+
+  @override
+  String get eqPhoto => 'Photo';
+
+  @override
+  String get eqPhotoAdd => 'Ajouter une photo';
+
+  @override
+  String get eqPhotoChange => 'Changer la photo';
+
+  @override
+  String get eqPhotoRemove => 'Retirer la photo';
+
+  @override
+  String get eqPhotoPrivate => 'Votre photo reste privée.';
+
+  @override
+  String get eqPhotoFail =>
+      'La photo n\'a pas pu être enregistrée. Votre saisie est conservée : réessayez.';
+
+  @override
+  String get eqSave => 'Enregistrer';
+
+  @override
+  String get eqSaveFail =>
+      'L\'équipement n\'a pas pu être enregistré. Votre saisie est conservée : réessayez.';
+
+  @override
+  String get eqNext => 'Continuer';
+
+  @override
+  String get eqRoomLabel => 'Pièce';
+
+  @override
+  String get eqType => 'Type';
+
+  @override
+  String get eqNoBrand => 'Marque non renseignée';
+
+  @override
+  String get eqIdentifyTitle => 'Identifier avec une photo';
+
+  @override
+  String get eqIdentifyTip =>
+      'Photographiez l\'équipement entier, ou son étiquette si vous la trouvez.';
+
+  @override
+  String get eqIdentifyTake => 'Prendre la photo';
+
+  @override
+  String get eqIdentifyWorking => 'Nalvium regarde votre photo…';
+
+  @override
+  String get eqIdentifyNotSure =>
+      'Nalvium n\'en est pas certain : vérifiez avant de confirmer.';
+
+  @override
+  String get eqIdentifyConfirm => 'Oui, c\'est ça';
+
+  @override
+  String get eqIdentifyCorrect => 'Corriger';
+
+  @override
+  String get eqIdentifyUnknownTitle => 'Nalvium n\'a pas pu l\'identifier';
+
+  @override
+  String get eqIdentifyUnknownBody =>
+      'Ce n\'est pas grave : choisissez vous-même le type d\'équipement. Votre photo est conservée.';
+
+  @override
+  String get eqIdentifyChoose => 'Choisir moi-même';
+
+  @override
+  String get eqIdentifyFailTitle => 'L\'identification n\'est pas disponible';
+
+  @override
+  String get eqIdentifyFailBody =>
+      'Vous pouvez continuer sans : votre photo est conservée.';
+
+  @override
+  String get eqIdentifyContinue => 'Continuer sans identification';
+
+  @override
+  String get eqIdentifyReadable => 'Texte lu sur l\'appareil';
+
+  @override
+  String get eqDetailTitle => 'Équipement';
+
+  @override
+  String get eqProblems => 'Problèmes traités';
+
+  @override
+  String get eqNoProblems => 'Aucun problème enregistré pour cet équipement.';
+
+  @override
+  String get eqDiagnose => 'Diagnostiquer un problème';
+
+  @override
+  String get eqDiagnoseHow => 'Comment voulez-vous montrer le problème ?';
+
+  @override
+  String get eqEdit => 'Modifier';
+
+  @override
+  String get eqDelete => 'Supprimer';
+
+  @override
+  String get eqDeleteTitle => 'Supprimer cet équipement ?';
+
+  @override
+  String get eqDeleteBody =>
+      'Ses diagnostics ne seront pas supprimés : ils seront simplement détachés de cet équipement. Sa photo sera supprimée.';
+
+  @override
+  String get eqDeleteConfirm => 'Supprimer l\'équipement';
+
+  @override
+  String get eqDeleteFail =>
+      'L\'équipement n\'a pas pu être supprimé. Réessayez.';
+
+  @override
+  String get eqGone => 'Cet équipement n\'existe plus.';
+
+  @override
+  String get eqBackToHouse => 'Retour à la maison';
+
+  @override
+  String get eqLinkAdd => 'Ajouter à votre maison';
+
+  @override
+  String get eqLinkSave => 'Enregistrer cet équipement';
+
+  @override
+  String get eqLinkTitle => 'Ajouter à votre maison';
+
+  @override
+  String get eqLinkChoose => 'Choisir un équipement existant';
+
+  @override
+  String get eqLinkNew => 'Créer un nouvel équipement';
+
+  @override
+  String get eqLinkYes => 'Oui, c\'est lui';
+
+  @override
+  String get eqLinkNo => 'Non';
+
+  @override
+  String get eqLinkDone => 'Ce diagnostic est rattaché à votre équipement.';
+
+  @override
+  String get eqLinkFail =>
+      'Le rattachement n\'a pas pu être enregistré. Réessayez.';
+
+  @override
+  String get eqLinkedTo => 'Équipement';
+
+  @override
+  String get eqLinkDetach => 'Détacher de cet équipement';
+
+  @override
+  String get eqLinkNothing =>
+      'Vous n\'avez pas encore d\'équipement enregistré.';
+
+  @override
+  String get eqSessionGone => 'Ce diagnostic est introuvable.';
+
+  @override
+  String eqDiagnosticsCount(int count) {
+    return '$count diagnostics';
+  }
+
+  @override
+  String eqLinkAsk(String name) {
+    return 'Est-ce votre $name ?';
+  }
+
+  @override
+  String eqIdentifyResult(String what) {
+    return 'Cela ressemble à $what.';
+  }
+
+  @override
+  String eqSemanticsEquipment(String name, String where) {
+    return '$name, $where';
+  }
+
+  @override
+  String get eqRefLabel => 'Référence';
+
+  @override
+  String get eqRefNone => 'Référence non renseignée';
+
+  @override
+  String get eqRefWhere => 'Où trouver la référence ?';
+
+  @override
+  String get eqRefHelpTitle => 'Où trouver la référence ?';
+
+  @override
+  String get eqRefHelpBody =>
+      'C\'est une série de lettres et de chiffres (par exemple SMS46GI01E). Elle figure sur la plaque signalétique : à l\'intérieur de la porte d\'un lave-vaisselle ou d\'un lave-linge, sur le côté ou au dos d\'un four ou d\'un réfrigérateur, sous ou sur le côté d\'une chaudière. Elle est aussi dans la notice et sur la facture. Si vous ne la trouvez pas, ce n\'est pas grave : elle reste facultative.';
+
+  @override
+  String get eqRefHelpClose => 'J\'ai compris';
+
+  @override
+  String get eqIdentifyCloser =>
+      'Pour la référence, photographiez la plaque signalétique de plus près : Nalvium n\'invente jamais les caractères illisibles.';
+
+  @override
+  String get manualTitle => 'Notice';
+
+  @override
+  String get manualZone => 'Notice constructeur';
+
+  @override
+  String get manualNeedRef => 'Référence nécessaire';
+
+  @override
+  String get manualNeedRefBody =>
+      'Ajoutez la marque et la référence pour que Nalvium cherche la notice exacte de votre appareil.';
+
+  @override
+  String get manualSearch => 'Rechercher la notice';
+
+  @override
+  String get manualSearching => 'Recherche en cours';
+
+  @override
+  String get manualSearchingBody =>
+      'Nalvium cherche la notice officielle de votre appareil. Cela peut prendre une minute.';
+
+  @override
+  String get manualAvailable => 'Notice disponible';
+
+  @override
+  String get manualAvailableBody =>
+      'Nalvium s\'appuiera sur cette notice pour les prochains diagnostics de cet équipement.';
+
+  @override
+  String get manualConsult => 'Consulter';
+
+  @override
+  String get manualUpdate => 'Mettre à jour';
+
+  @override
+  String get manualNotFound => 'Notice exacte introuvable';
+
+  @override
+  String get manualNotFoundBody =>
+      'Aucune notice officielle correspondant exactement à cette référence n\'a été trouvée. Vous pouvez utiliser l\'équipement normalement.';
+
+  @override
+  String get manualError => 'Erreur de récupération';
+
+  @override
+  String get manualErrorBody =>
+      'La notice n\'a pas pu être récupérée pour le moment. Réessayez plus tard.';
+
+  @override
+  String get manualApprox => 'Une notice proche a été trouvée';
+
+  @override
+  String get manualApproxBody =>
+      'Sa référence est légèrement différente de la vôtre. Nalvium ne l\'utilisera que si vous confirmez qu\'elle convient.';
+
+  @override
+  String get manualApproxYes => 'Elle convient';
+
+  @override
+  String get manualApproxNo => 'Ignorer cette notice';
+
+  @override
+  String get manualOfficial => 'Source officielle du fabricant';
+
+  @override
+  String get manualRetry => 'Réessayer';
+
+  @override
+  String get manualUpToDate => 'La notice est déjà à jour.';
+
+  @override
+  String get manualKept =>
+      'La recherche a échoué : votre notice actuelle est conservée.';
+
+  @override
+  String get manualPrivate =>
+      'Cette notice reste privée : elle n\'est accessible que depuis votre appareil.';
+
+  @override
+  String get manualPageNext => 'Page suivante';
+
+  @override
+  String get manualPagePrev => 'Page précédente';
+
+  @override
+  String get manualPageEmpty =>
+      'Cette page ne contient pas de texte exploitable.';
+
+  @override
+  String get manualLoadFail => 'La page n\'a pas pu être chargée.';
+
+  @override
+  String get manualConfirmFail =>
+      'L\'action n\'a pas pu être enregistrée. Réessayez.';
+
+  @override
+  String manualPages(int count) {
+    return '$count pages';
+  }
+
+  @override
+  String manualSource(String domain) {
+    return 'Source : $domain';
+  }
+
+  @override
+  String manualPageOf(int page, int total) {
+    return 'Page $page sur $total';
+  }
+
+  @override
+  String manualCite(String brand) {
+    return 'D\'après la notice $brand de votre appareil';
+  }
+
+  @override
+  String get manualCiteGeneric => 'D\'après la notice de votre appareil';
+
+  @override
+  String manualCitePage(String pages) {
+    return 'Notice · page $pages';
+  }
+
+  @override
+  String manualCitePages(String pages) {
+    return 'Notice · pages $pages';
+  }
+
+  @override
+  String get manualIdle => 'Notice non récupérée';
+
+  @override
+  String get manualIdleBody =>
+      'Nalvium peut chercher la notice officielle de votre appareil.';
 }
