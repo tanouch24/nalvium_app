@@ -20,6 +20,7 @@ class SessionState {
     this.updatedAt,
     this.latestMediaIsVideo = false,
     this.equipment,
+    this.mediaItems = const [],
   });
 
   final String id;
@@ -38,6 +39,9 @@ class SessionState {
 
   /// La dernière pièce jointe est une vidéo (vignette = image extraite de la vidéo).
   final bool latestMediaIsVideo;
+
+  /// Médias du diagnostic (id + vidéo ou non), pour que l'utilisateur CHOISISSE ce qu'il joint à une demande.
+  final List<({String id, bool video})> mediaItems;
 
   /// Équipement de la Maison auquel ce diagnostic est lié (null si aucun).
   final EquipmentRef? equipment;
@@ -69,6 +73,10 @@ class SessionState {
         : DateTime.parse(j['updated_at'] as String),
     latestMediaIsVideo: (j['media'] as List? ?? const []).isNotEmpty &&
         ((j['media'] as List).last as Map<String, dynamic>)['media_type'] == 'video',
+    mediaItems: [
+      for (final m in j['media'] as List? ?? const [])
+        (id: (m as Map<String, dynamic>)['id'] as String, video: m['media_type'] == 'video'),
+    ],
     equipment: j['equipment'] == null
         ? null
         : EquipmentRef.fromJson(j['equipment'] as Map<String, dynamic>),

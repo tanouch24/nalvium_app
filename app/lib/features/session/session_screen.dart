@@ -165,7 +165,7 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
       onActionResult: _actionResult,
       onTakePhoto: _takePhoto,
       onHome: _home,
-      onRepairOptions: () => context.go('/repair'),
+      onRepairOptions: () => context.push('/help/new?session=${widget.sessionId}'),
       onSummary: () => context.push('/session/${widget.sessionId}/summary'),
       onSaveEquipment: state != null && state.equipment == null && !_linked
           ? () async {
@@ -328,6 +328,22 @@ class _Content extends StatelessWidget {
               child: view,
             ),
           ),
+          // Action secondaire discrète, commune à tous les écrans de guidage (une seule définition).
+          if (const {
+            NextActionType.askQuestion,
+            NextActionType.requestPhoto,
+            NextActionType.instruction,
+            NextActionType.verification,
+          }.contains(type))
+            Padding(
+              padding: const EdgeInsets.only(top: Space.x4),
+              child: TertiaryButton(
+                key: const Key('ask-for-help'),
+                label: AppLocalizations.of(context).helpAsk,
+                color: NalviumColors.textSecondary,
+                onPressed: actions.onRepairOptions,
+              ),
+            ),
         ],
       ),
     );

@@ -39,6 +39,11 @@ class Settings(BaseSettings):
     max_video_seconds: float = 16.0
     video_frames_max: int = 6
 
+    # Notification interne des nouvelles demandes (serveur uniquement ; absent = « non configurée »).
+    telegram_bot_token: str | None = None
+    telegram_chat_id: str | None = None
+    telegram_timeout_s: float = 5.0
+
     media_root: str = "./var/media"
 
     @property

@@ -944,4 +944,286 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get manualIdleBody =>
       'Nalvium peut chercher la notice officielle de votre appareil.';
+
+  @override
+  String get repairHeadline => 'Besoin d\'un coup de main ?';
+
+  @override
+  String get repairHeadlineBody =>
+      'Nalvium peut préparer votre demande pour que vous n\'ayez pas à tout réexpliquer.';
+
+  @override
+  String get repairAsk => 'Demander une intervention';
+
+  @override
+  String get repairYourRequests => 'Vos demandes';
+
+  @override
+  String get repairNoRequests => 'Vous n\'avez aucune demande pour le moment.';
+
+  @override
+  String get repairLoadFail => 'Vos demandes n\'ont pas pu être chargées';
+
+  @override
+  String get helpAsk => 'Demander de l\'aide';
+
+  @override
+  String get helpNewTitle => 'Votre demande d\'intervention';
+
+  @override
+  String get helpIntro =>
+      'Nalvium a déjà compris le problème : vous n\'avez pas à tout réexpliquer. Vérifiez et corrigez si besoin.';
+
+  @override
+  String get helpSectionProblem => 'Problème';
+
+  @override
+  String get helpProblemHint => 'Décrivez le problème en quelques mots';
+
+  @override
+  String get helpCategory => 'Type de problème';
+
+  @override
+  String get helpCatPlumbing => 'Plomberie';
+
+  @override
+  String get helpCatAppliance => 'Électroménager';
+
+  @override
+  String get helpCatHandyman => 'Bricolage';
+
+  @override
+  String get helpCatElectrical => 'Électricité';
+
+  @override
+  String get helpCatOther => 'Autre';
+
+  @override
+  String get helpSectionEquipment => 'Équipement';
+
+  @override
+  String get helpEquipmentNone => 'Aucun équipement';
+
+  @override
+  String get helpSectionTried => 'Déjà essayé';
+
+  @override
+  String get helpTriedDone => 'fait';
+
+  @override
+  String get helpTriedFailed => 'impossible';
+
+  @override
+  String get helpTriedMismatch => 'ne correspondait pas';
+
+  @override
+  String get helpTriedProposed => 'proposé';
+
+  @override
+  String get helpHypothesisNote =>
+      'Hypothèse de Nalvium, non confirmée par un professionnel :';
+
+  @override
+  String get helpSafetyReason => 'Pourquoi une aide est recommandée';
+
+  @override
+  String get helpManualUsed => 'Notice constructeur consultée';
+
+  @override
+  String get helpSectionMedia => 'Photos et vidéos';
+
+  @override
+  String get helpMediaPrivacy =>
+      'Seuls les éléments sélectionnés seront transmis avec votre demande. Les autres restent privés.';
+
+  @override
+  String get helpMediaNone => 'Aucune photo ou vidéo jointe.';
+
+  @override
+  String get helpMediaAdd => 'Ajouter une photo';
+
+  @override
+  String get helpMediaJoin => 'Joindre à ma demande';
+
+  @override
+  String get helpMediaVideo => 'Vidéo';
+
+  @override
+  String get helpSectionContact => 'Vos informations';
+
+  @override
+  String get helpFirstName => 'Prénom';
+
+  @override
+  String get helpPhone => 'Téléphone';
+
+  @override
+  String get helpCity => 'Ville';
+
+  @override
+  String get helpPostal => 'Code postal';
+
+  @override
+  String get helpEmail => 'E-mail (facultatif)';
+
+  @override
+  String get helpNoAddress =>
+      'Pas d\'adresse précise : seulement votre ville et votre code postal.';
+
+  @override
+  String get helpSectionWhen => 'Disponibilité';
+
+  @override
+  String get helpWhenNote => 'C\'est une préférence, pas une réservation.';
+
+  @override
+  String get helpAsap => 'Dès que possible';
+
+  @override
+  String get helpToday => 'Aujourd\'hui';
+
+  @override
+  String get helpTomorrow => 'Demain';
+
+  @override
+  String get helpThisWeek => 'Cette semaine';
+
+  @override
+  String get helpCustom => 'Choisir un créneau';
+
+  @override
+  String get helpPickDate => 'Choisir une date';
+
+  @override
+  String get helpMorning => 'Matin';
+
+  @override
+  String get helpAfternoon => 'Après-midi';
+
+  @override
+  String get helpEvening => 'Soir';
+
+  @override
+  String get helpConsent =>
+      'J\'accepte que les informations sélectionnées dans cette demande soient transmises à un professionnel susceptible de m\'aider.';
+
+  @override
+  String get helpSend => 'Envoyer ma demande';
+
+  @override
+  String get helpSending => 'Envoi en cours';
+
+  @override
+  String get helpErrRequired => 'Ce champ est nécessaire.';
+
+  @override
+  String get helpErrPhone =>
+      'Entrez un numéro valide, par exemple 06 12 34 56 78.';
+
+  @override
+  String get helpErrPostal => 'Entrez un code postal à 5 chiffres.';
+
+  @override
+  String get helpErrEmail => 'Cette adresse e-mail semble incorrecte.';
+
+  @override
+  String get helpErrDate => 'Choisissez une date et une plage horaire.';
+
+  @override
+  String get helpErrConsent => 'Vous devez accepter pour envoyer la demande.';
+
+  @override
+  String get helpErrSend =>
+      'La demande n\'a pas pu être envoyée. Vos informations sont conservées : réessayez.';
+
+  @override
+  String get helpErrPrepare => 'La demande n\'a pas pu être préparée.';
+
+  @override
+  String get helpEmergency =>
+      'En cas de danger immédiat, appelez les secours (18 ou 112). Une demande Nalvium ne les remplace pas.';
+
+  @override
+  String get helpDoneTitle => 'Votre demande est envoyée';
+
+  @override
+  String get helpDoneBody =>
+      'Nous avons enregistré votre demande avec les informations que vous avez choisies de partager. Elle pourra être transmise à un professionnel adapté lorsqu\'il sera disponible.';
+
+  @override
+  String get helpSeeRequest => 'Voir ma demande';
+
+  @override
+  String get helpBackHome => 'Retour à l\'accueil';
+
+  @override
+  String get requestTitle => 'Ma demande';
+
+  @override
+  String get requestStatusSubmitted => 'Demande envoyée';
+
+  @override
+  String get requestStatusPending => 'En attente de contact';
+
+  @override
+  String get requestStatusContacted => 'Contact pris';
+
+  @override
+  String get requestStatusClosed => 'Clôturée';
+
+  @override
+  String get requestStatusCancelled => 'Annulée';
+
+  @override
+  String get requestStatusDraft => 'Brouillon';
+
+  @override
+  String get requestShared => 'Informations partagées';
+
+  @override
+  String get requestCancel => 'Annuler la demande';
+
+  @override
+  String get requestCancelTitle => 'Annuler cette demande ?';
+
+  @override
+  String get requestCancelBody =>
+      'Elle ne sera plus transmise à un professionnel.';
+
+  @override
+  String get requestCancelConfirm => 'Annuler la demande';
+
+  @override
+  String get requestKeep => 'Conserver';
+
+  @override
+  String get requestCancelFail =>
+      'La demande n\'a pas pu être annulée. Réessayez.';
+
+  @override
+  String get requestMedia => 'Médias joints';
+
+  @override
+  String get requestSentOn => 'Envoyée le';
+
+  @override
+  String get requestHonest =>
+      'Nalvium n\'a pas encore transmis votre demande à un professionnel : elle est enregistrée avec les informations que vous avez choisies.';
+
+  @override
+  String requestMediaCount(int count) {
+    return '$count élément(s)';
+  }
+
+  @override
+  String helpManualPages(String pages) {
+    return 'pages $pages';
+  }
+
+  @override
+  String get helpIntroDirect =>
+      'Dites-nous simplement ce qui se passe : quelques informations suffisent. Pas besoin de faire d\'abord un diagnostic.';
+
+  @override
+  String get helpSectionNoticed => 'Ce que Nalvium a constaté';
 }

@@ -23,7 +23,8 @@ void main() {
 
     await tester.tap(find.byKey(const Key('nav-repair')));
     await tester.pumpAndSettle();
-    expect(find.text('Aucune demande en cours'), findsOneWidget);
+    expect(find.text("Besoin d'un coup de main ?"), findsOneWidget);
+    expect(find.byKey(const Key('repair-empty')), findsOneWidget); // aucune fausse demande
 
     await tester.tap(find.byKey(const Key('nav-community')));
     await tester.pumpAndSettle();

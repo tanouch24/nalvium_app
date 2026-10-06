@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import date, datetime
 from typing import Literal
 
 from pydantic import BaseModel, Field
@@ -331,4 +331,77 @@ def manual_out(doc) -> ManualOut | None:
         model_reference=doc.model_reference, source_url=doc.source_url, source_domain=doc.source_domain,
         source_is_official=doc.source_is_official, page_count=doc.page_count, file_size=doc.file_size,
         match_level=doc.match_level, retrieved_at=doc.retrieved_at,
+    )
+
+
+# ---- Demandes d'intervention ---------------------------------------------------
+class ServiceRequestCreate(BaseModel):
+    session_id: uuid.UUID | None = None
+    equipment_id: uuid.UUID | None = None
+    problem_summary: str | None = Field(default=None, max_length=1000)
+    category: str | None = Field(default=None, max_length=32)
+
+
+class ServiceRequestUpdate(BaseModel):
+    """Seuls les champs présents sont modifiés (brouillon uniquement)."""
+
+    problem_summary: str | None = Field(default=None, max_length=1000)
+    category: str | None = Field(default=None, max_length=32)
+    equipment_id: uuid.UUID | None = None
+    first_name: str | None = Field(default=None, max_length=60)
+    phone: str | None = Field(default=None, max_length=30)
+    email: str | None = Field(default=None, max_length=120)
+    city: str | None = Field(default=None, max_length=80)
+    postal_code: str | None = Field(default=None, max_length=10)
+    availability_type: str | None = Field(default=None, max_length=16)
+    preferred_date: date | None = None
+    preferred_time_window: str | None = Field(default=None, max_length=16)
+
+
+class ServiceRequestMediaSelection(BaseModel):
+    media_ids: list[uuid.UUID] = Field(default_factory=list, max_length=10)
+
+
+class ServiceRequestSubmit(BaseModel):
+    consent: bool = False  # jamais précoché : l'utilisateur doit l'accepter explicitement
+    consent_version: str = ""
+
+
+class ServiceRequestOut(BaseModel):
+    id: uuid.UUID
+    status: str
+    diagnostic_session_id: uuid.UUID | None
+    equipment_id: uuid.UUID | None
+    problem_category: str | None
+    problem_summary: str | None
+    first_name: str | None
+    phone: str | None
+    email: str | None
+    city: str | None
+    postal_code: str | None
+    availability_type: str | None
+    preferred_date: date | None
+    preferred_time_window: str | None
+    media_ids: list[uuid.UUID]
+    consent_version: str | None
+    consented_at: datetime | None
+    submitted_at: datetime | None
+    created_at: datetime
+    updated_at: datetime
+    context: dict | None = None
+    equipment_label: str | None = None
+
+
+def service_request_out(req, context: dict | None = None) -> ServiceRequestOut:
+    eq = (context or {}).get("equipment") or {}
+    label = " ".join(x for x in (eq.get("name"), eq.get("brand")) if x) or None
+    return ServiceRequestOut(
+        id=req.id, status=req.status, diagnostic_session_id=req.diagnostic_session_id, equipment_id=req.equipment_id,
+        problem_category=req.problem_category, problem_summary=req.problem_summary, first_name=req.first_name,
+        phone=req.phone, email=req.email, city=req.city, postal_code=req.postal_code,
+        availability_type=req.availability_type,
+        preferred_date=req.preferred_date.date() if req.preferred_date else None,
+        preferred_time_window=req.preferred_time_window, media_ids=[m.media_asset_id for m in req.media],
+        consent_version=req.consent_version, consented_at=req.consented_at, submitted_at=req.submitted_at,
+        created_at=req.created_at, updated_at=req.updated_at, context=context, equipment_label=label,
     )

@@ -72,6 +72,16 @@ class ApiClient {
         timeout,
       );
 
+  Future<dynamic> putJson(String path, {required Object body}) => _send(
+        'PUT',
+        path,
+        (headers) => http.Request('PUT', config.uri(path))
+          ..headers.addAll(headers)
+          ..headers['Content-Type'] = 'application/json'
+          ..body = jsonEncode(body),
+        timeout,
+      );
+
   Future<dynamic> deleteJson(String path) =>
       _send('DELETE', path, (headers) => http.Request('DELETE', config.uri(path))..headers.addAll(headers), timeout);
 

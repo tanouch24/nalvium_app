@@ -1827,6 +1827,534 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Nalvium peut chercher la notice officielle de votre appareil.'**
   String get manualIdleBody;
+
+  /// No description provided for @repairHeadline.
+  ///
+  /// In fr, this message translates to:
+  /// **'Besoin d\'un coup de main ?'**
+  String get repairHeadline;
+
+  /// No description provided for @repairHeadlineBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nalvium peut préparer votre demande pour que vous n\'ayez pas à tout réexpliquer.'**
+  String get repairHeadlineBody;
+
+  /// No description provided for @repairAsk.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demander une intervention'**
+  String get repairAsk;
+
+  /// No description provided for @repairYourRequests.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos demandes'**
+  String get repairYourRequests;
+
+  /// No description provided for @repairNoRequests.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous n\'avez aucune demande pour le moment.'**
+  String get repairNoRequests;
+
+  /// No description provided for @repairLoadFail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos demandes n\'ont pas pu être chargées'**
+  String get repairLoadFail;
+
+  /// No description provided for @helpAsk.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demander de l\'aide'**
+  String get helpAsk;
+
+  /// No description provided for @helpNewTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre demande d\'intervention'**
+  String get helpNewTitle;
+
+  /// No description provided for @helpIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nalvium a déjà compris le problème : vous n\'avez pas à tout réexpliquer. Vérifiez et corrigez si besoin.'**
+  String get helpIntro;
+
+  /// No description provided for @helpSectionProblem.
+  ///
+  /// In fr, this message translates to:
+  /// **'Problème'**
+  String get helpSectionProblem;
+
+  /// No description provided for @helpProblemHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Décrivez le problème en quelques mots'**
+  String get helpProblemHint;
+
+  /// No description provided for @helpCategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Type de problème'**
+  String get helpCategory;
+
+  /// No description provided for @helpCatPlumbing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plomberie'**
+  String get helpCatPlumbing;
+
+  /// No description provided for @helpCatAppliance.
+  ///
+  /// In fr, this message translates to:
+  /// **'Électroménager'**
+  String get helpCatAppliance;
+
+  /// No description provided for @helpCatHandyman.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bricolage'**
+  String get helpCatHandyman;
+
+  /// No description provided for @helpCatElectrical.
+  ///
+  /// In fr, this message translates to:
+  /// **'Électricité'**
+  String get helpCatElectrical;
+
+  /// No description provided for @helpCatOther.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autre'**
+  String get helpCatOther;
+
+  /// No description provided for @helpSectionEquipment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Équipement'**
+  String get helpSectionEquipment;
+
+  /// No description provided for @helpEquipmentNone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun équipement'**
+  String get helpEquipmentNone;
+
+  /// No description provided for @helpSectionTried.
+  ///
+  /// In fr, this message translates to:
+  /// **'Déjà essayé'**
+  String get helpSectionTried;
+
+  /// No description provided for @helpTriedDone.
+  ///
+  /// In fr, this message translates to:
+  /// **'fait'**
+  String get helpTriedDone;
+
+  /// No description provided for @helpTriedFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'impossible'**
+  String get helpTriedFailed;
+
+  /// No description provided for @helpTriedMismatch.
+  ///
+  /// In fr, this message translates to:
+  /// **'ne correspondait pas'**
+  String get helpTriedMismatch;
+
+  /// No description provided for @helpTriedProposed.
+  ///
+  /// In fr, this message translates to:
+  /// **'proposé'**
+  String get helpTriedProposed;
+
+  /// No description provided for @helpHypothesisNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hypothèse de Nalvium, non confirmée par un professionnel :'**
+  String get helpHypothesisNote;
+
+  /// No description provided for @helpSafetyReason.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pourquoi une aide est recommandée'**
+  String get helpSafetyReason;
+
+  /// No description provided for @helpManualUsed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notice constructeur consultée'**
+  String get helpManualUsed;
+
+  /// No description provided for @helpSectionMedia.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photos et vidéos'**
+  String get helpSectionMedia;
+
+  /// No description provided for @helpMediaPrivacy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Seuls les éléments sélectionnés seront transmis avec votre demande. Les autres restent privés.'**
+  String get helpMediaPrivacy;
+
+  /// No description provided for @helpMediaNone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune photo ou vidéo jointe.'**
+  String get helpMediaNone;
+
+  /// No description provided for @helpMediaAdd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter une photo'**
+  String get helpMediaAdd;
+
+  /// No description provided for @helpMediaJoin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Joindre à ma demande'**
+  String get helpMediaJoin;
+
+  /// No description provided for @helpMediaVideo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vidéo'**
+  String get helpMediaVideo;
+
+  /// No description provided for @helpSectionContact.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos informations'**
+  String get helpSectionContact;
+
+  /// No description provided for @helpFirstName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prénom'**
+  String get helpFirstName;
+
+  /// No description provided for @helpPhone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone'**
+  String get helpPhone;
+
+  /// No description provided for @helpCity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ville'**
+  String get helpCity;
+
+  /// No description provided for @helpPostal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code postal'**
+  String get helpPostal;
+
+  /// No description provided for @helpEmail.
+  ///
+  /// In fr, this message translates to:
+  /// **'E-mail (facultatif)'**
+  String get helpEmail;
+
+  /// No description provided for @helpNoAddress.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas d\'adresse précise : seulement votre ville et votre code postal.'**
+  String get helpNoAddress;
+
+  /// No description provided for @helpSectionWhen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Disponibilité'**
+  String get helpSectionWhen;
+
+  /// No description provided for @helpWhenNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'C\'est une préférence, pas une réservation.'**
+  String get helpWhenNote;
+
+  /// No description provided for @helpAsap.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dès que possible'**
+  String get helpAsap;
+
+  /// No description provided for @helpToday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aujourd\'hui'**
+  String get helpToday;
+
+  /// No description provided for @helpTomorrow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demain'**
+  String get helpTomorrow;
+
+  /// No description provided for @helpThisWeek.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette semaine'**
+  String get helpThisWeek;
+
+  /// No description provided for @helpCustom.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir un créneau'**
+  String get helpCustom;
+
+  /// No description provided for @helpPickDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir une date'**
+  String get helpPickDate;
+
+  /// No description provided for @helpMorning.
+  ///
+  /// In fr, this message translates to:
+  /// **'Matin'**
+  String get helpMorning;
+
+  /// No description provided for @helpAfternoon.
+  ///
+  /// In fr, this message translates to:
+  /// **'Après-midi'**
+  String get helpAfternoon;
+
+  /// No description provided for @helpEvening.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soir'**
+  String get helpEvening;
+
+  /// No description provided for @helpConsent.
+  ///
+  /// In fr, this message translates to:
+  /// **'J\'accepte que les informations sélectionnées dans cette demande soient transmises à un professionnel susceptible de m\'aider.'**
+  String get helpConsent;
+
+  /// No description provided for @helpSend.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyer ma demande'**
+  String get helpSend;
+
+  /// No description provided for @helpSending.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoi en cours'**
+  String get helpSending;
+
+  /// No description provided for @helpErrRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce champ est nécessaire.'**
+  String get helpErrRequired;
+
+  /// No description provided for @helpErrPhone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entrez un numéro valide, par exemple 06 12 34 56 78.'**
+  String get helpErrPhone;
+
+  /// No description provided for @helpErrPostal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entrez un code postal à 5 chiffres.'**
+  String get helpErrPostal;
+
+  /// No description provided for @helpErrEmail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette adresse e-mail semble incorrecte.'**
+  String get helpErrEmail;
+
+  /// No description provided for @helpErrDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez une date et une plage horaire.'**
+  String get helpErrDate;
+
+  /// No description provided for @helpErrConsent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous devez accepter pour envoyer la demande.'**
+  String get helpErrConsent;
+
+  /// No description provided for @helpErrSend.
+  ///
+  /// In fr, this message translates to:
+  /// **'La demande n\'a pas pu être envoyée. Vos informations sont conservées : réessayez.'**
+  String get helpErrSend;
+
+  /// No description provided for @helpErrPrepare.
+  ///
+  /// In fr, this message translates to:
+  /// **'La demande n\'a pas pu être préparée.'**
+  String get helpErrPrepare;
+
+  /// No description provided for @helpEmergency.
+  ///
+  /// In fr, this message translates to:
+  /// **'En cas de danger immédiat, appelez les secours (18 ou 112). Une demande Nalvium ne les remplace pas.'**
+  String get helpEmergency;
+
+  /// No description provided for @helpDoneTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre demande est envoyée'**
+  String get helpDoneTitle;
+
+  /// No description provided for @helpDoneBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nous avons enregistré votre demande avec les informations que vous avez choisies de partager. Elle pourra être transmise à un professionnel adapté lorsqu\'il sera disponible.'**
+  String get helpDoneBody;
+
+  /// No description provided for @helpSeeRequest.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir ma demande'**
+  String get helpSeeRequest;
+
+  /// No description provided for @helpBackHome.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour à l\'accueil'**
+  String get helpBackHome;
+
+  /// No description provided for @requestTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ma demande'**
+  String get requestTitle;
+
+  /// No description provided for @requestStatusSubmitted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande envoyée'**
+  String get requestStatusSubmitted;
+
+  /// No description provided for @requestStatusPending.
+  ///
+  /// In fr, this message translates to:
+  /// **'En attente de contact'**
+  String get requestStatusPending;
+
+  /// No description provided for @requestStatusContacted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Contact pris'**
+  String get requestStatusContacted;
+
+  /// No description provided for @requestStatusClosed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Clôturée'**
+  String get requestStatusClosed;
+
+  /// No description provided for @requestStatusCancelled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulée'**
+  String get requestStatusCancelled;
+
+  /// No description provided for @requestStatusDraft.
+  ///
+  /// In fr, this message translates to:
+  /// **'Brouillon'**
+  String get requestStatusDraft;
+
+  /// No description provided for @requestShared.
+  ///
+  /// In fr, this message translates to:
+  /// **'Informations partagées'**
+  String get requestShared;
+
+  /// No description provided for @requestCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler la demande'**
+  String get requestCancel;
+
+  /// No description provided for @requestCancelTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler cette demande ?'**
+  String get requestCancelTitle;
+
+  /// No description provided for @requestCancelBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Elle ne sera plus transmise à un professionnel.'**
+  String get requestCancelBody;
+
+  /// No description provided for @requestCancelConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler la demande'**
+  String get requestCancelConfirm;
+
+  /// No description provided for @requestKeep.
+  ///
+  /// In fr, this message translates to:
+  /// **'Conserver'**
+  String get requestKeep;
+
+  /// No description provided for @requestCancelFail.
+  ///
+  /// In fr, this message translates to:
+  /// **'La demande n\'a pas pu être annulée. Réessayez.'**
+  String get requestCancelFail;
+
+  /// No description provided for @requestMedia.
+  ///
+  /// In fr, this message translates to:
+  /// **'Médias joints'**
+  String get requestMedia;
+
+  /// No description provided for @requestSentOn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyée le'**
+  String get requestSentOn;
+
+  /// No description provided for @requestHonest.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nalvium n\'a pas encore transmis votre demande à un professionnel : elle est enregistrée avec les informations que vous avez choisies.'**
+  String get requestHonest;
+
+  /// No description provided for @requestMediaCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} élément(s)'**
+  String requestMediaCount(int count);
+
+  /// No description provided for @helpManualPages.
+  ///
+  /// In fr, this message translates to:
+  /// **'pages {pages}'**
+  String helpManualPages(String pages);
+
+  /// No description provided for @helpIntroDirect.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dites-nous simplement ce qui se passe : quelques informations suffisent. Pas besoin de faire d\'abord un diagnostic.'**
+  String get helpIntroDirect;
+
+  /// No description provided for @helpSectionNoticed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce que Nalvium a constaté'**
+  String get helpSectionNoticed;
 }
 
 class _AppLocalizationsDelegate

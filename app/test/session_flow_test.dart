@@ -185,9 +185,10 @@ void main() {
     expect(find.byKey(const Key('safety-title')), findsOneWidget);
     expect(find.text('Arrêtez-vous ici'), findsOneWidget);
     expect(find.text('Ça sent le gaz : sortez et appelez le 112.'), findsOneWidget); // préfixe non répété
-    expect(find.byType(DangerButton), findsOneWidget);
-    expect(find.byType(PrimaryButton), findsNothing);
-    expect(find.byType(SecondaryButton), findsNothing);
+    // Phase 5 : « Demander de l'aide » est l'action principale ; aucune action de réparation.
+    expect(find.byKey(const Key('safety-find-pro')), findsOneWidget);
+    expect(find.byType(PrimaryButton), findsOneWidget);
+    expect(find.byType(DangerButton), findsNothing);
     expect(find.byType(ChoiceTile), findsNothing);
     for (final k in ['action-done', 'action-cannot', 'take-requested-photo', 'send-answer', 'verify-with-photo']) {
       expect(find.byKey(Key(k)), findsNothing);
@@ -202,7 +203,7 @@ void main() {
     expect(find.text('Un problème à la maison ?'), findsOneWidget);
   });
 
-  testWidgets('RECOMMEND_PROFESSIONAL : calme, « Demander de l\'aide » → Dépannage', (tester) async {
+  testWidgets('RECOMMEND_PROFESSIONAL : calme, « Demander de l\'aide » → demande d\'intervention', (tester) async {
     await openSession(
       tester,
       sessionState(action: NextActionType.recommendProfessional, message: 'Le moteur doit être démonté.', status: 'referred'),
@@ -211,7 +212,7 @@ void main() {
     expect(find.text('Le moteur doit être démonté.'), findsOneWidget);
     await tester.tap(find.byKey(const Key('see-repair-options')));
     await tester.pumpAndSettle();
-    expect(find.text('Aucune demande en cours'), findsOneWidget);
+    expect(find.byKey(const Key('help-intro')), findsOneWidget); // formulaire de demande avec le contexte du diagnostic
   });
 
   testWidgets('reprise : une session pendante relance l\'analyse sans dupliquer l\'entrée', (tester) async {

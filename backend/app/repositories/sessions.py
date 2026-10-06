@@ -43,6 +43,9 @@ class MediaRepository:
         asset = self._db.get(MediaAsset, media_id)
         return asset if asset and asset.user_id == user_id else None
 
+    def get_any(self, media_id: uuid.UUID) -> MediaAsset | None:
+        return self._db.get(MediaAsset, media_id)
+
     def delete(self, asset: MediaAsset) -> None:
         self._db.delete(asset)
         self._db.flush()

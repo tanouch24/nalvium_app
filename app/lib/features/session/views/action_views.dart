@@ -598,17 +598,17 @@ class SafetyStopView extends StatelessWidget {
           style: NalviumText.bodyLarge.copyWith(height: 1.5),
         ),
         const SizedBox(height: Space.x10),
-        DangerButton(
+        // Une intervention humaine est appropriée : « Demander de l'aide » est l'action principale.
+        PrimaryButton(
+          key: const Key('safety-find-pro'),
+          label: l10n.helpAsk,
+          onPressed: actions.onRepairOptions,
+        ),
+        const SizedBox(height: Space.x2),
+        SecondaryButton(
           key: const Key('safety-understood'),
           label: l10n.understoodShort,
           onPressed: actions.onHome,
-        ),
-        const SizedBox(height: Space.x2),
-        TertiaryButton(
-          key: const Key('safety-find-pro'),
-          label: l10n.findProfessional,
-          color: NalviumColors.textSecondary,
-          onPressed: actions.onRepairOptions,
         ),
       ],
     );

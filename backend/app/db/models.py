@@ -14,7 +14,7 @@ from sqlalchemy import (
     func,
     text,
 )
-from sqlalchemy.dialects.postgresql import ARRAY, TSVECTOR, UUID
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB, TSVECTOR, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -278,3 +278,59 @@ class DocumentChunk(Base):
     tsv: Mapped[str] = mapped_column(
         TSVECTOR, Computed("to_tsvector('french', text)", persisted=True)
     )
+
+
+class ServiceRequest(Base):
+    """Demande d'intervention (lead qualifié). Aucun réseau de professionnels en V1 : `provider_id` est réservé pour
+    une affectation future (V2), sans clé étrangère pour l'instant."""
+
+    __tablename__ = "service_requests"
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    diagnostic_session_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("diagnostic_sessions.id", ondelete="SET NULL"), index=True
+    )
+    equipment_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("equipment.id", ondelete="SET NULL"))
+    # DRAFT | SUBMITTED | CONTACT_PENDING | CONTACTED | CLOSED | CANCELLED
+    status: Mapped[str] = mapped_column(String(20), default="DRAFT")
+    problem_category: Mapped[str | None] = mapped_column(String(32))
+    problem_summary: Mapped[str | None] = mapped_column(Text)
+    # Figé à l'envoi : ce que l'utilisateur a réellement validé (pas de transcript brut).
+    structured_context: Mapped[dict | None] = mapped_column(JSONB)
+    first_name: Mapped[str | None] = mapped_column(String(60))
+    phone: Mapped[str | None] = mapped_column(String(20))
+    email: Mapped[str | None] = mapped_column(String(120))
+    city: Mapped[str | None] = mapped_column(String(80))
+    postal_code: Mapped[str | None] = mapped_column(String(5))
+    availability_type: Mapped[str | None] = mapped_column(String(16))
+    preferred_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    preferred_time_window: Mapped[str | None] = mapped_column(String(16))
+    consent_version: Mapped[str | None] = mapped_column(String(16))
+    consented_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    consented_categories: Mapped[list[str] | None] = mapped_column(ARRAY(String(24)))
+    submitted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    provider_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))  # réservé V2
+    # Notification interne : NULL (pas encore) | sending | sent | failed | not_configured — claim atomique = idempotence.
+    notification_status: Mapped[str | None] = mapped_column(String(16))
+    notification_error: Mapped[str | None] = mapped_column(String(48))
+    notification_attempted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    notification_sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = _now()
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+    media: Mapped[list["ServiceRequestMedia"]] = relationship(
+        order_by="ServiceRequestMedia.consented_at", cascade="all, delete-orphan"
+    )
+
+
+class ServiceRequestMedia(Base):
+    """Média SÉLECTIONNÉ par l'utilisateur pour une demande (référence, jamais une copie du fichier)."""
+
+    __tablename__ = "service_request_media"
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    service_request_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("service_requests.id", ondelete="CASCADE"), index=True
+    )
+    media_asset_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("media_assets.id", ondelete="CASCADE"))
+    consented_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

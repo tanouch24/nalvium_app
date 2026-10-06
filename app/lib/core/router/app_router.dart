@@ -4,6 +4,10 @@ import 'package:go_router/go_router.dart';
 import '../../features/capture/analysis_screen.dart';
 import '../../features/capture/photo_preview_screen.dart';
 import '../../features/describe/describe_screen.dart';
+import '../../features/help/help_done_screen.dart';
+import '../../features/help/help_request_screen.dart';
+import '../../features/help/repair_screen.dart';
+import '../../features/help/request_detail_screen.dart';
 import '../../features/history/history_screen.dart';
 import '../../features/house/add_equipment_screen.dart';
 import '../../features/house/edit_equipment_screen.dart';
@@ -46,18 +50,7 @@ GoRouter buildRouter({
         ),
         StatefulShellBranch(
           routes: [
-            GoRoute(
-              path: '/repair',
-              builder: (context, _) {
-                final l = AppLocalizations.of(context);
-                return EmptyScreen(
-                  title: l.repairTitle,
-                  icon: Icons.build_circle_outlined,
-                  emptyTitle: l.repairEmptyTitle,
-                  emptyBody: l.repairEmptyBody,
-                );
-              },
-            ),
+            GoRoute(path: '/repair', builder: (_, _) => const RepairScreen()),
           ],
         ),
         StatefulShellBranch(
@@ -177,6 +170,21 @@ GoRouter buildRouter({
           pageBuilder: (_, state) => nalviumPage(state, EditEquipmentScreen(equipment: state.extra! as EquipmentSummary)),
         ),
       ],
+    ),
+    GoRoute(
+      path: '/help/new',
+      pageBuilder: (_, state) => nalviumPage(
+        state,
+        HelpRequestScreen(sessionId: state.uri.queryParameters['session']),
+      ),
+    ),
+    GoRoute(
+      path: '/help/:id/done',
+      pageBuilder: (_, state) => nalviumPage(state, HelpDoneScreen(requestId: state.pathParameters['id']!)),
+    ),
+    GoRoute(
+      path: '/requests/:id',
+      pageBuilder: (_, state) => nalviumPage(state, RequestDetailScreen(requestId: state.pathParameters['id']!)),
     ),
     GoRoute(
       path: '/history',

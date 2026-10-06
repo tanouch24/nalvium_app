@@ -10,8 +10,10 @@ import '../core/config/api_config.dart';
 import '../core/network/api_client.dart';
 import '../core/network/api_exceptions.dart';
 import '../data/home_repository.dart';
+import '../data/service_requests_repository.dart';
 import '../data/sessions_repository.dart';
 import '../domain/equipment.dart';
+import '../domain/service_request.dart';
 import '../domain/session.dart';
 import 'install_id_store.dart';
 import 'photo_capture_service.dart';
@@ -59,6 +61,29 @@ class SessionsRevision extends Notifier<int> {
 final sessionsRevisionProvider = NotifierProvider<SessionsRevision, int>(
   SessionsRevision.new,
 );
+
+final serviceRequestsRepositoryProvider = Provider<ServiceRequestsRepository>(
+  (ref) => HttpServiceRequestsRepository(ref.watch(apiClientProvider)),
+);
+
+/// Incrémenté quand une demande change (envoi, annulation) : les listes se rechargent.
+class RequestsRevision extends Notifier<int> {
+  @override
+  int build() => 0;
+  void bump() => state++;
+}
+
+final requestsRevisionProvider = NotifierProvider<RequestsRevision, int>(RequestsRevision.new);
+
+final requestsProvider = FutureProvider.autoDispose<List<ServiceRequest>>((ref) {
+  ref.watch(requestsRevisionProvider);
+  return ref.watch(serviceRequestsRepositoryProvider).list();
+});
+
+final requestProvider = FutureProvider.autoDispose.family<ServiceRequest, String>((ref, id) {
+  ref.watch(requestsRevisionProvider);
+  return ref.watch(serviceRequestsRepositoryProvider).get(id);
+});
 
 final homeRepositoryProvider = Provider<HomeRepository>(
   (ref) => HttpHomeRepository(ref.watch(apiClientProvider)),

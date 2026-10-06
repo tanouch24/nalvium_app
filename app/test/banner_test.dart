@@ -17,7 +17,7 @@ Finder get ad => find.byKey(_ad).hitTestable();
 void main() {
   group('BannerPolicy', () {
     test('autorisée : navigation et consultation', () {
-      for (final p in ['/home', '/house', '/repair', '/community', '/history', '/settings', '/equipment/abc', '/session/abc/summary']) {
+      for (final p in ['/home', '/house', '/repair', '/community', '/history', '/settings', '/equipment/abc', '/session/abc/summary', '/requests/abc']) {
         expect(BannerPolicy.allowedFor(p), isTrue, reason: p);
       }
     });
@@ -25,6 +25,7 @@ void main() {
       for (final p in [
         '/capture/preview', '/video/capture', '/video/preview', '/describe', '/analyze', '/session/abc',
         '/session/abc/house', '/equipment/add', '/equipment/identify', '/equipment/abc/edit',
+        '/help/new', '/help/abc/done', '/equipment/abc/manual',
       ]) {
         expect(BannerPolicy.allowedFor(p), isFalse, reason: p);
       }

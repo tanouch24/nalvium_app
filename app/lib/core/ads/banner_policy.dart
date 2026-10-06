@@ -13,6 +13,8 @@ abstract final class BannerPolicy {
     if (isTab(path)) return true;
     if (path == '/history' || path == '/settings') return true;
     final segments = Uri.parse(path).pathSegments;
+    // Détail d'une demande d'intervention : /requests/<id> (jamais les écrans de création /help/*)
+    if (segments.length == 2 && segments[0] == 'requests') return true;
     // Fiche équipement : /equipment/<id> (pas add, identify, ni <id>/edit)
     if (segments.length == 2 && segments[0] == 'equipment') {
       return segments[1] != 'add' && segments[1] != 'identify';

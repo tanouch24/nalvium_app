@@ -22,6 +22,7 @@ SessionState sessionState({
   List<Map<String, dynamic>> actions = const [],
   Map<String, dynamic>? equipment,
   Map<String, dynamic>? manual,
+  List<Map<String, dynamic>> media = const [],
 }) {
   final wire = switch (action) {
     NextActionType.askQuestion => 'ASK_QUESTION',
@@ -44,6 +45,7 @@ SessionState sessionState({
     'pending_analysis': pending,
     'latest_media_id': mediaId,
     'equipment': equipment,
+    'media': media,
     'messages': List.generate(messages, (_) => {}),
     'next': {
       'action_type': wire,

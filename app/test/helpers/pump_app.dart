@@ -12,6 +12,7 @@ import 'package:nalvium/services/video_recorder_service.dart';
 
 import 'fakes.dart';
 import 'fake_home.dart';
+import 'fake_requests.dart';
 import 'package:nalvium/core/ads/ads_service.dart';
 
 class FakePhotoCaptureService implements PhotoCaptureService {
@@ -53,6 +54,7 @@ Future<FakePhotoCaptureService> pumpApp(
   FakeVideoRecorder? recorder,
   int fileSize = 5 * 1024 * 1024,
   FakeHomeRepository? home,
+  FakeServiceRequestsRepository? requests,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = dpr;
@@ -72,6 +74,7 @@ Future<FakePhotoCaptureService> pumpApp(
       photoCaptureServiceProvider.overrideWithValue(fake),
       sessionsRepositoryProvider.overrideWithValue(repo ?? FakeSessionsRepository()),
       homeRepositoryProvider.overrideWithValue(home ?? FakeHomeRepository()),
+      serviceRequestsRepositoryProvider.overrideWithValue(requests ?? FakeServiceRequestsRepository()),
       adsServiceProvider.overrideWithValue(ads ?? FakeAdsService()),
       videoRecorderFactoryProvider.overrideWithValue(() => recorder ?? FakeVideoRecorder()),
       videoFileSizeProvider.overrideWithValue((_) async => fileSize),
