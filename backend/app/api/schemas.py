@@ -494,3 +494,19 @@ def community_post_out(row, viewer) -> CommunityPostOut:
         photo_height=photo.height if photo else None, mine=p.owner_user_id == viewer, helpful=row.my_helpful,
         saved=row.my_saved,
     )
+
+
+# ---- Zone de service (interventions) -----------------------------------------------------------
+class ServiceAreaInfo(BaseModel):
+    name: str
+    radius_km: int
+
+
+class ServiceAreaCheckIn(BaseModel):
+    city: str = Field(default="", max_length=80)
+    postal_code: str = Field(default="", max_length=10)
+
+
+class ServiceAreaCheckOut(BaseModel):
+    status: str  # in_zone | out_of_zone | invalid
+    code: str | None = None  # invalid_postal_code | unknown_postal_code | unknown_city | city_postal_mismatch

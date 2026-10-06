@@ -3,8 +3,11 @@ import uuid
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.api.deps import current_user_id, get_service_request_service
+from app.api.deps import current_user_id, get_service_area_policy, get_service_request_service
 from app.api.schemas import (
+    ServiceAreaCheckIn,
+    ServiceAreaCheckOut,
+    ServiceAreaInfo,
     ServiceRequestCreate,
     ServiceRequestMediaSelection,
     ServiceRequestOut,
@@ -12,6 +15,7 @@ from app.api.schemas import (
     ServiceRequestUpdate,
     service_request_out,
 )
+from app.service_area.policy import AreaError, ServiceAreaPolicy
 from app.service_requests.validation import CONSENT_VERSION, InvalidField
 from app.services.service_request_service import InvalidState, ServiceRequestService
 from app.services.session_service import NotFound
@@ -34,6 +38,28 @@ def _guard(call):
         raise HTTPException(422, exc.code) from exc
     except InvalidState as exc:
         raise HTTPException(409, exc.code) from exc
+
+
+@router.get("/service-area", response_model=ServiceAreaInfo)
+def service_area(policy: ServiceAreaPolicy = Depends(get_service_area_policy)):
+    """Zone où les interventions humaines sont disponibles (info d'affichage). Nalvium reste utilisable partout."""
+    a = policy.areas[0]
+    return ServiceAreaInfo(name=a.name, radius_km=round(a.radius_km))
+
+
+@router.post("/service-area/check", response_model=ServiceAreaCheckOut)
+def check_service_area(
+    body: ServiceAreaCheckIn,
+    user_id: uuid.UUID = Depends(current_user_id),
+    policy: ServiceAreaPolicy = Depends(get_service_area_policy),
+):
+    """Éligibilité rapide (ville + code postal) pour le parcours. Informatif : le contrôle définitif est refait à
+    l'envoi. Rien n'est stocké, aucune coordonnée d'utilisateur n'existe."""
+    try:
+        d = policy.evaluate(body.city, body.postal_code)
+    except AreaError as exc:
+        return ServiceAreaCheckOut(status="invalid", code=exc.code)
+    return ServiceAreaCheckOut(status="in_zone" if d.in_zone else "out_of_zone")
 
 
 @router.get("/service-requests/consent-version")

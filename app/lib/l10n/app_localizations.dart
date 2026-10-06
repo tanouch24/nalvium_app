@@ -2847,6 +2847,60 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'{count} commentaire(s)'**
   String cmCommentCount(int count);
+
+  /// No description provided for @oozTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nalvium arrive bientôt dans votre secteur'**
+  String get oozTitle;
+
+  /// No description provided for @oozContinue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continuer avec Nalvium'**
+  String get oozContinue;
+
+  /// No description provided for @oozBack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour'**
+  String get oozBack;
+
+  /// No description provided for @oozSafety.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nalvium ne peut actuellement pas organiser d\'intervention dans votre secteur.'**
+  String get oozSafety;
+
+  /// No description provided for @helpErrCityPostal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette ville et ce code postal ne correspondent pas.'**
+  String get helpErrCityPostal;
+
+  /// No description provided for @helpErrCityUnknown.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nous ne trouvons pas cette ville. Vérifiez son orthographe.'**
+  String get helpErrCityUnknown;
+
+  /// No description provided for @helpErrPostalUnknown.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce code postal est inconnu.'**
+  String get helpErrPostalUnknown;
+
+  /// No description provided for @helpAreaNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Service actuellement disponible à {name} et dans un rayon de {km} km.'**
+  String helpAreaNote(String name, int km);
+
+  /// No description provided for @oozBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les interventions sont actuellement disponibles à {name} et dans un rayon de {km} km. Vous pouvez continuer à utiliser gratuitement le diagnostic Nalvium.'**
+  String oozBody(String name, int km);
 }
 
 class _AppLocalizationsDelegate

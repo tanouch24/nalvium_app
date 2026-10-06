@@ -576,5 +576,34 @@
         "type": "int"
       }
     }
+  },
+  "oozTitle": "Nalvium arrive bientôt dans votre secteur",
+  "oozContinue": "Continuer avec Nalvium",
+  "oozBack": "Retour",
+  "oozSafety": "Nalvium ne peut actuellement pas organiser d'intervention dans votre secteur.",
+  "helpErrCityPostal": "Cette ville et ce code postal ne correspondent pas.",
+  "helpErrCityUnknown": "Nous ne trouvons pas cette ville. Vérifiez son orthographe.",
+  "helpErrPostalUnknown": "Ce code postal est inconnu.",
+  "helpAreaNote": "Service actuellement disponible à {name} et dans un rayon de {km} km.",
+  "@helpAreaNote": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "km": {
+        "type": "int"
+      }
+    }
+  },
+  "oozBody": "Les interventions sont actuellement disponibles à {name} et dans un rayon de {km} km. Vous pouvez continuer à utiliser gratuitement le diagnostic Nalvium.",
+  "@oozBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "km": {
+        "type": "int"
+      }
+    }
   }
 }

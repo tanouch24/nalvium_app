@@ -14,6 +14,10 @@ abstract interface class ServiceRequestsRepository {
   Future<ServiceRequest> cancel(String id);
   Future<ServiceRequest> get(String id);
   Future<List<ServiceRequest>> list();
+
+  /// Zone de service (affichage) et éligibilité rapide ville + code postal. Aucune position GPS.
+  Future<ServiceAreaInfo> serviceArea();
+  Future<AreaCheck> checkArea(String city, String postalCode);
 }
 
 class HttpServiceRequestsRepository implements ServiceRequestsRepository {
@@ -54,6 +58,20 @@ class HttpServiceRequestsRepository implements ServiceRequestsRepository {
     } catch (_) {
       throw const ApiProtocolException();
     }
+  }
+
+  @override
+  Future<ServiceAreaInfo> serviceArea() async {
+    final json = await _api.getJson('/v1/service-area');
+    if (json is! Map<String, dynamic>) throw const ApiProtocolException();
+    return ServiceAreaInfo.fromJson(json);
+  }
+
+  @override
+  Future<AreaCheck> checkArea(String city, String postalCode) async {
+    final json = await _api.postJson('/v1/service-area/check', body: {'city': city, 'postal_code': postalCode});
+    if (json is! Map<String, dynamic>) throw const ApiProtocolException();
+    return AreaCheck.fromJson(json);
   }
 
   Future<ServiceRequest> _one(Future<dynamic> call) async {

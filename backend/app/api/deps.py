@@ -17,6 +17,7 @@ from app.repositories.documents import DocumentRepository
 from app.repositories.equipment import EquipmentRepository, HomeRepository
 from app.repositories.service_requests import ServiceRequestRepository
 from app.repositories.sessions import MediaRepository, SessionRepository, UserRepository
+from app.service_area.policy import ServiceAreaPolicy
 from app.services.community_service import CommunityService
 from app.services.diagnostic_service import DiagnosticService
 from app.services.equipment_service import EquipmentService
@@ -102,15 +103,21 @@ def optional_user_id(x_nalvium_install_id: str | None = Header(default=None)) ->
         return None
 
 
+def get_service_area_policy() -> ServiceAreaPolicy:
+    return ServiceAreaPolicy()
+
+
 def get_request_notifier() -> ServiceRequestNotifier:
     s = get_settings()
     return build_notifier(s.telegram_bot_token, s.telegram_chat_id, s.telegram_timeout_s)
 
 
 def get_service_request_service(
-    db: Session = Depends(get_db), notifier: ServiceRequestNotifier = Depends(get_request_notifier)
+    db: Session = Depends(get_db),
+    notifier: ServiceRequestNotifier = Depends(get_request_notifier),
+    area: ServiceAreaPolicy = Depends(get_service_area_policy),
 ) -> Iterator[ServiceRequestService]:
     yield ServiceRequestService(
         UserRepository(db), ServiceRequestRepository(db), SessionRepository(db), EquipmentRepository(db),
-        MediaRepository(db), notifier,
+        MediaRepository(db), notifier, area,
     )

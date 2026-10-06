@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nalvium/core/network/api_exceptions.dart';
 import 'package:nalvium/domain/diagnosis.dart';
+import 'package:nalvium/domain/service_request.dart';
 import 'package:nalvium/domain/session.dart';
 
 import 'helpers/fake_requests.dart';
@@ -11,7 +12,7 @@ import 'helpers/pump_app.dart';
 Finder k(String key) => find.byKey(Key(key));
 
 /// Appels qui ÉCRIVENT (la liste et la relecture ne comptent pas).
-List<String> writes(FakeServiceRequestsRepository r) => [for (final c in r.calls) if (!c.startsWith('get') && c != 'list') c];
+List<String> writes(FakeServiceRequestsRepository r) => [for (final c in r.calls) if (!c.startsWith('get') && c != 'list' && c != 'area') c];
 Finder get ad => find.byKey(const Key('ad-slot')).hitTestable();
 
 Future<void> see(WidgetTester t, String key) async {
@@ -413,5 +414,185 @@ void main() {
       expect(find.byIcon(Icons.check_rounded), findsWidgets); // indication visuelle non colorée
       handle.dispose();
     });
+  });
+
+  areaTests();
+}
+
+// ── Zone pilote : service d'intervention uniquement ─────────────────────────────────────────────
+void areaTests() {
+  const out = AreaCheck(status: 'out_of_zone');
+
+  group('ZONE DE SERVICE', () {
+    testWidgets('note discrète « Lyon et dans un rayon de 50 km » (valeurs du serveur), sans limiter Nalvium', (tester) async {
+      await startFromDiagnostic(tester);
+      expect(find.text('Service actuellement disponible à Lyon et dans un rayon de 50 km.'), findsOneWidget);
+      expect(find.textContaining('Nalvium est disponible uniquement'), findsNothing);
+    });
+
+    testWidgets('dans la zone : le parcours continue exactement comme avant', (tester) async {
+      final reqs = await startFromDiagnostic(tester);
+      await fillContact(tester);
+      await tapK(tester, 'help-when-asap');
+      await tapK(tester, 'help-consent');
+      await tapK(tester, 'help-send');
+      expect(k('ooz-title'), findsNothing);
+      expect(k('help-done-title'), findsOneWidget);
+      expect(writes(reqs), ['from-session', 'update', 'media', 'submit']);
+      expect(reqs.areaChecks, isNotEmpty);
+    });
+
+    testWidgets('hors zone (en quittant le champ) : écran dédié, rien d\'envoyé, aucune confirmation d\'intervention', (tester) async {
+      final reqs = FakeServiceRequestsRepository(draftContext: Map<String, dynamic>.of(_ctx))..areaByPostal['38000'] = out;
+      await startFromDiagnostic(tester, requests: reqs);
+      await typeK(tester, 'help-first', 'Camille');
+      await typeK(tester, 'help-phone', '06 12 34 56 78');
+      await typeK(tester, 'help-city', 'Grenoble');
+      await typeK(tester, 'help-postal', '38000');
+      await tapK(tester, 'help-first'); // quitter le champ code postal
+      expect(k('ooz-title'), findsOneWidget);
+      expect(find.text('Nalvium arrive bientôt dans votre secteur'), findsOneWidget);
+      expect(find.text('Les interventions sont actuellement disponibles à Lyon et dans un rayon de 50 km. Vous pouvez continuer à utiliser gratuitement le diagnostic Nalvium.'), findsOneWidget);
+      expect(find.textContaining('arrive'), findsOneWidget);
+      expect(find.textContaining('garanti'), findsNothing);
+      expect(find.textContaining('envoyée'), findsNothing);
+      expect(ad, findsNothing);
+      expect(writes(reqs), ['from-session']); // aucune écriture, aucun envoi
+    });
+
+    testWidgets('hors zone à l\'envoi : écran dédié, pas de update/submit ; « Retour » conserve la saisie', (tester) async {
+      final reqs = FakeServiceRequestsRepository(draftContext: Map<String, dynamic>.of(_ctx))..areaByPostal['38000'] = out;
+      await startFromDiagnostic(tester, requests: reqs);
+      await fillContact(tester, postal: '38000');
+      await tapK(tester, 'help-when-asap');
+      await tapK(tester, 'help-consent');
+      await tapK(tester, 'help-send');
+      expect(k('ooz-title'), findsOneWidget);
+      expect(writes(reqs), ['from-session']);
+      await tapK(tester, 'ooz-back');
+      expect(tester.widget<TextField>(k('help-first')).controller!.text, 'Camille');
+      expect(tester.widget<TextField>(k('help-postal')).controller!.text, '38000');
+    });
+
+    testWidgets('depuis un diagnostic : « Continuer avec Nalvium » revient au diagnostic, intact', (tester) async {
+      final reqs = FakeServiceRequestsRepository(draftContext: Map<String, dynamic>.of(_ctx))..areaByPostal['38000'] = out;
+      await startFromDiagnostic(tester, requests: reqs);
+      await fillContact(tester, postal: '38000');
+      await tapK(tester, 'help-when-asap');
+      await tapK(tester, 'help-consent');
+      await tapK(tester, 'help-send');
+      await tapK(tester, 'ooz-continue');
+      expect(find.text('Q ?'), findsOneWidget); // le diagnostic est toujours là
+      expect(k('ask-for-help'), findsOneWidget);
+      expect(reqs.items, isEmpty); // aucune demande
+    });
+
+    testWidgets('depuis Dépannage : « Continuer avec Nalvium » → accueil ; aucune demande listée', (tester) async {
+      final reqs = FakeServiceRequestsRepository()..areaByPostal['38000'] = out;
+      await pumpApp(tester, requests: reqs, location: '/repair');
+      await tapK(tester, 'repair-ask');
+      await typeK(tester, 'help-summary', 'Mon volet roulant est bloqué');
+      await fillContact(tester, postal: '38000');
+      await tapK(tester, 'help-when-asap');
+      await tapK(tester, 'help-consent');
+      await tapK(tester, 'help-send');
+      expect(k('ooz-title'), findsOneWidget);
+      await tapK(tester, 'ooz-continue');
+      expect(find.text('Un problème à la maison ?'), findsOneWidget);
+      expect(reqs.items, isEmpty);
+    });
+
+    testWidgets('Safety Stop hors zone : la sécurité reste prioritaire, aucune fausse intervention', (tester) async {
+      final ctx = {..._ctx, 'safety_stop_reason': 'Arrêtez-vous ici. Gaz : sortez et appelez le 112.'};
+      final reqs = FakeServiceRequestsRepository(draftContext: ctx)..areaByPostal['38000'] = out;
+      await pumpApp(tester, repo: FakeSessionsRepository(stored: sessionState(action: NextActionType.safetyStop, status: 'stopped', message: 'Arrêtez-vous ici. Gaz : sortez et appelez le 112.')), requests: reqs, location: '/session/s1');
+      expect(find.text('Arrêtez-vous ici'), findsOneWidget);
+      await tapK(tester, 'safety-find-pro');
+      await fillContact(tester, postal: '38000');
+      await tapK(tester, 'help-when-asap');
+      await tapK(tester, 'help-consent');
+      await tapK(tester, 'help-send');
+      expect(k('ooz-safety'), findsOneWidget);
+      expect(find.text("Nalvium ne peut actuellement pas organiser d'intervention dans votre secteur."), findsOneWidget);
+      expect(k('ooz-emergency'), findsOneWidget);
+      expect(find.textContaining('18 ou 112'), findsOneWidget);
+      expect(find.textContaining('en cours'), findsNothing);
+      await tapK(tester, 'ooz-continue');
+      expect(find.text('Arrêtez-vous ici'), findsOneWidget); // retour à l'écran de sécurité
+    });
+
+    testWidgets('rejet serveur « out_of_zone » à l\'envoi (contrôle définitif) : même écran', (tester) async {
+      final reqs = await startFromDiagnostic(tester);
+      reqs.submitCode = const ApiHttpException(422, 'out_of_zone');
+      await fillContact(tester);
+      await tapK(tester, 'help-when-asap');
+      await tapK(tester, 'help-consent');
+      await tapK(tester, 'help-send');
+      expect(k('ooz-title'), findsOneWidget);
+      expect(reqs.items, isEmpty);
+    });
+
+    testWidgets('ville et code postal incohérents : message clair, pas d\'écran hors zone', (tester) async {
+      final reqs = FakeServiceRequestsRepository(draftContext: Map<String, dynamic>.of(_ctx))..areaByPostal['75001'] = const AreaCheck(status: 'invalid', code: 'city_postal_mismatch');
+      await startFromDiagnostic(tester, requests: reqs);
+      await fillContact(tester, postal: '75001');
+      await tapK(tester, 'help-when-asap');
+      await tapK(tester, 'help-consent');
+      await tapK(tester, 'help-send');
+      expect(find.text('Cette ville et ce code postal ne correspondent pas.'), findsOneWidget);
+      expect(k('ooz-title'), findsNothing);
+      expect(writes(reqs), ['from-session']);
+      await typeK(tester, 'help-postal', '69003'); // corriger efface l'erreur
+      expect(find.text('Cette ville et ce code postal ne correspondent pas.'), findsNothing);
+    });
+
+    testWidgets('ville inconnue / code postal inconnu : erreurs propres', (tester) async {
+      final reqs = FakeServiceRequestsRepository(draftContext: Map<String, dynamic>.of(_ctx))
+        ..areaByPostal['69100'] = const AreaCheck(status: 'invalid', code: 'unknown_city')
+        ..areaByPostal['95999'] = const AreaCheck(status: 'invalid', code: 'unknown_postal_code');
+      await startFromDiagnostic(tester, requests: reqs);
+      await fillContact(tester, postal: '69100');
+      await tapK(tester, 'help-when-asap');
+      await tapK(tester, 'help-consent');
+      await tapK(tester, 'help-send');
+      expect(find.text('Nous ne trouvons pas cette ville. Vérifiez son orthographe.'), findsOneWidget);
+      await typeK(tester, 'help-postal', '95999');
+      await tapK(tester, 'help-send');
+      expect(find.text('Ce code postal est inconnu.'), findsOneWidget);
+    });
+
+    testWidgets('contrôle indisponible (réseau) : on ne bloque pas, le serveur décidera à l\'envoi', (tester) async {
+      final reqs = await startFromDiagnostic(tester);
+      reqs.areaError = const ApiNetworkException();
+      await fillContact(tester);
+      await tapK(tester, 'help-when-asap');
+      await tapK(tester, 'help-consent');
+      await tapK(tester, 'help-send');
+      expect(k('help-done-title'), findsOneWidget);
+    });
+
+    for (final scale in [1.0, 1.5, 2.0]) {
+      testWidgets('écran hors zone 320 dp · ×$scale (sécurité) sans overflow, CTA atteignable', (tester) async {
+        final ctx = {..._ctx, 'safety_stop_reason': 'Arrêtez-vous ici. Gaz : sortez et appelez le 112.'};
+        final reqs = FakeServiceRequestsRepository(draftContext: ctx)..areaByPostal['38000'] = out;
+        await pumpApp(
+          tester,
+          repo: FakeSessionsRepository(stored: sessionState(action: NextActionType.safetyStop, status: 'stopped', message: 'Arrêtez-vous ici. Gaz : sortez.')),
+          requests: reqs,
+          size: const Size(960, 1704),
+          textScale: scale,
+          location: '/session/s1',
+        );
+        await tapK(tester, 'safety-find-pro');
+        await fillContact(tester, postal: '38000');
+        await tapK(tester, 'help-when-asap');
+        await tapK(tester, 'help-consent');
+        await tapK(tester, 'help-send');
+        expect(tester.takeException(), isNull);
+        await see(tester, 'ooz-continue');
+        expect(tester.getSize(k('ooz-continue')).height, greaterThanOrEqualTo(48));
+        expect(tester.takeException(), isNull);
+      });
+    }
   });
 }

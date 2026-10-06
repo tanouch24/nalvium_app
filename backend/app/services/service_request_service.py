@@ -15,6 +15,7 @@ from app.notifications.service_requests import (
 from app.repositories.equipment import EquipmentRepository
 from app.repositories.service_requests import ServiceRequestRepository
 from app.repositories.sessions import MediaRepository, SessionRepository, UserRepository
+from app.service_area.policy import AreaError, ServiceAreaPolicy
 from app.service_requests.handoff import handoff_payload
 from app.service_requests.snapshot import build_snapshot
 from app.service_requests.validation import (
@@ -48,7 +49,9 @@ class ServiceRequestService:
         equipment: EquipmentRepository,
         media: MediaRepository,
         notifier: ServiceRequestNotifier | None = None,
+        area: ServiceAreaPolicy | None = None,
     ) -> None:
+        self._area = area or ServiceAreaPolicy()
         self._notifier = notifier or NotConfiguredNotifier()
         self._users, self._requests, self._sessions = users, requests, sessions
         self._equipment, self._media = equipment, media
@@ -176,6 +179,14 @@ class ServiceRequestService:
                             (req.availability_type, "availability_required")):
             if not value:
                 raise InvalidField(code)
+        # CONTRÔLE SERVEUR DÉFINITIF de la zone de service (ville + code postal, jamais de GPS). Hors zone ou
+        # référentiel inexploitable : la demande reste DRAFT, n'est jamais SUBMITTED et ne notifie rien.
+        try:
+            decision = self._area.evaluate(req.city or "", req.postal_code or "")
+        except AreaError as exc:
+            raise InvalidField(exc.code) from exc
+        if not decision.in_zone:
+            raise InvalidField("out_of_zone")
         now = datetime.now(UTC)
         snapshot = self._snapshot(user_id, req)  # figé : le diagnostic peut évoluer ensuite
         req.structured_context = snapshot

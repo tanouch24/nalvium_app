@@ -41,6 +41,22 @@ class FakeServiceRequestsRepository implements ServiceRequestsRepository {
   Object? cancelError;
   String? lastSessionId;
   Map<String, dynamic>? created;
+  final areaChecks = <(String, String)>[];
+  final Map<String, AreaCheck> areaByPostal = {};
+  Object? areaError;
+  AreaCheck defaultArea = const AreaCheck(status: 'in_zone');
+  Object? submitCode; // ApiHttpException à lever à l'envoi (ex. out_of_zone)
+
+  @override
+  Future<ServiceAreaInfo> serviceArea() async => const ServiceAreaInfo(name: 'Lyon', radiusKm: 50);
+
+  @override
+  Future<AreaCheck> checkArea(String city, String postalCode) async {
+    calls.add('area');
+    areaChecks.add((city, postalCode));
+    if (areaError case final ApiException e) throw e;
+    return areaByPostal[postalCode] ?? defaultArea;
+  }
 
   @override
   Future<ServiceRequest> createDraft({String? equipmentId, String? summary, String? category}) async {
@@ -76,6 +92,7 @@ class FakeServiceRequestsRepository implements ServiceRequestsRepository {
   Future<ServiceRequest> submit(String id) async {
     calls.add('submit');
     if (submitError case final ApiException e) throw e;
+    if (submitCode case final ApiException e) throw e;
     final u = updates.isEmpty ? <String, dynamic>{} : updates.last;
     final r = ServiceRequest.fromJson(requestJson(
       id: id, summary: (u['problem_summary'] as String?) ?? 'x', media: mediaSelections.isEmpty ? const [] : mediaSelections.last,

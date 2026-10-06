@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+
 import '../../core/network/api_exceptions.dart';
 import '../../core/theme/nalvium_colors.dart';
 import '../../core/theme/nalvium_spacing.dart';
@@ -15,6 +16,7 @@ import '../../l10n/app_localizations.dart';
 import '../../services/providers.dart';
 import '../capture/capture_flow.dart';
 import '../house/add_equipment_screen.dart' show EquipmentNotice;
+import 'out_of_zone_screen.dart';
 
 /// « Votre demande d'intervention » : un écran simple, sections claires, une action principale.
 /// Depuis un diagnostic, le contexte est déjà prêt (rien à réexpliquer). Aucun média n'est joint sans choix explicite ;
@@ -46,6 +48,11 @@ class _HelpRequestScreenState extends ConsumerState<HelpRequestScreen> {
   bool _photoBusy = false;
   bool _submitted = false; // tentative d'envoi faite : les erreurs s'affichent
   String? _sendError;
+  final _cityFocus = FocusNode();
+  final _postalFocus = FocusNode();
+  final _areaErrors = <String, String>{}; // incohérence ville / code postal détectée par le serveur
+  String? _checkedKey;
+  String? _areaErrorKey;
   final _selected = <String>{};
   final _extraMedia = <String>[]; // photos ajoutées hors diagnostic
 
@@ -55,6 +62,21 @@ class _HelpRequestScreenState extends ConsumerState<HelpRequestScreen> {
   void initState() {
     super.initState();
     _prepare();
+    // Contrôle d'éligibilité calme : quand l'utilisateur QUITTE le champ, jamais pendant la frappe.
+    _postalFocus.addListener(() {
+      if (!_postalFocus.hasFocus) _checkArea();
+    });
+    _cityFocus.addListener(() {
+      if (!_cityFocus.hasFocus) _checkArea();
+    });
+    // Une erreur de zone ne reste affichée que pour la saisie qui l'a produite.
+    for (final c in [_city, _postal]) {
+      c.addListener(() {
+        if (_areaErrors.isNotEmpty && _areaErrorKey != '${_city.text.trim().toLowerCase()}|${_postal.text.trim()}') {
+          setState(_areaErrors.clear);
+        }
+      });
+    }
   }
 
   @override
@@ -62,6 +84,8 @@ class _HelpRequestScreenState extends ConsumerState<HelpRequestScreen> {
     for (final c in [_summary, _first, _phone, _city, _postal, _email]) {
       c.dispose();
     }
+    _cityFocus.dispose();
+    _postalFocus.dispose();
     super.dispose();
   }
 
@@ -80,6 +104,53 @@ class _HelpRequestScreenState extends ConsumerState<HelpRequestScreen> {
     } on ApiException catch (e) {
       if (mounted) setState(() => _loadError = e);
     }
+  }
+
+  /// Éligibilité (informative) : le SERVEUR décide ; Flutter affiche. Retourne le résultat ou null si pas évaluable.
+  Future<AreaCheck?> _checkArea({bool force = false}) async {
+    final city = _city.text.trim();
+    final postal = _postal.text.trim();
+    if (city.isEmpty || RequestValidation.postalCode(postal) != null) return null;
+    final key = '${city.toLowerCase()}|$postal';
+    if (!force && key == _checkedKey) return null;
+    _checkedKey = key;
+    try {
+      final r = await ref.read(serviceRequestsRepositoryProvider).checkArea(city, postal);
+      if (!mounted) return r;
+      setState(() => _applyArea(r));
+      if (r.outOfZone) _openOutOfZone();
+      return r;
+    } on ApiException {
+      return null; // le contrôle définitif aura lieu à l'envoi
+    }
+  }
+
+  void _applyArea(AreaCheck r) {
+    final l10n = AppLocalizations.of(context);
+    _areaErrors.clear();
+    _areaErrorKey = '${_city.text.trim().toLowerCase()}|${_postal.text.trim()}';
+    if (r.status != 'invalid') return;
+    switch (r.code) {
+      case 'unknown_city':
+        _areaErrors['city'] = l10n.helpErrCityUnknown;
+      case 'unknown_postal_code':
+        _areaErrors['postal'] = l10n.helpErrPostalUnknown;
+      case 'city_postal_mismatch':
+        _areaErrors['postal'] = l10n.helpErrCityPostal;
+    }
+  }
+
+  void _openOutOfZone() {
+    final area = ref.read(serviceAreaProvider).value;
+    context.push(
+      '/help/out-of-zone',
+      extra: OutOfZoneArgs(
+        areaName: area?.name ?? '',
+        radiusKm: area?.radiusKm ?? 0,
+        fromSession: _fromSession,
+        safety: _req?.safetyReason != null,
+      ),
+    );
   }
 
   // ── validation ─────────────────────────────────────────────────────────
@@ -114,6 +185,10 @@ class _HelpRequestScreenState extends ConsumerState<HelpRequestScreen> {
     if (_errors(l10n).isNotEmpty || _req == null || _sending) return;
     setState(() => _sending = true);
     try {
+      // Éligibilité avant tout enregistrement ; le serveur la REFAIT à l'envoi (source de vérité).
+      final area = await _checkArea(force: true);
+      if (area != null && !area.inZone) return; // hors zone : écran dédié déjà ouvert ; ou incohérence affichée
+      if (!mounted) return;
       final repo = ref.read(serviceRequestsRepositoryProvider);
       final id = _req!.id;
       await repo.update(id, {
@@ -135,6 +210,15 @@ class _HelpRequestScreenState extends ConsumerState<HelpRequestScreen> {
       await repo.submit(id);
       ref.read(requestsRevisionProvider.notifier).bump();
       if (mounted) context.pushReplacement('/help/$id/done');
+    } on ApiHttpException catch (e) {
+      if (!mounted) return;
+      if (e.code == 'out_of_zone') {
+        _openOutOfZone();
+      } else if (e.code == 'city_postal_mismatch' || e.code == 'unknown_city' || e.code == 'unknown_postal_code') {
+        setState(() => _applyArea(AreaCheck(status: 'invalid', code: e.code)));
+      } else {
+        setState(() => _sendError = l10n.helpErrSend);
+      }
     } on ApiException {
       // Rien n'est perdu : tout reste saisi, on peut réessayer.
       if (mounted) setState(() => _sendError = l10n.helpErrSend);
@@ -205,7 +289,8 @@ class _HelpRequestScreenState extends ConsumerState<HelpRequestScreen> {
 
   Widget _form(AppLocalizations l10n) {
     final req = _req!;
-    final errors = _submitted ? _errors(l10n) : const <String, String>{};
+    final errors = {if (_submitted) ..._errors(l10n), ..._areaErrors};
+    final area = ref.watch(serviceAreaProvider).value;
     final session = _fromSession ? ref.watch(sessionProvider(widget.sessionId!)).value : null;
     final sessionMedia = session?.mediaItems ?? const <({String id, bool video})>[];
     final stopReason = req.safetyReason ?? req.professionalReason;
@@ -216,6 +301,10 @@ class _HelpRequestScreenState extends ConsumerState<HelpRequestScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(_fromSession ? l10n.helpIntro : l10n.helpIntroDirect, key: const Key('help-intro'), style: NalviumText.body),
+          if (area != null) ...[
+            const SizedBox(height: Space.x2),
+            Text(l10n.helpAreaNote(area.name, area.radiusKm), key: const Key('help-area-note'), style: NalviumText.caption.copyWith(color: NalviumColors.textMuted)),
+          ],
           if (req.safetyReason != null) ...[
             const SizedBox(height: Space.x3),
             Text(l10n.helpEmergency, key: const Key('help-emergency'), style: NalviumText.caption.copyWith(color: NalviumColors.dangerText, fontWeight: FontWeight.w600)),
@@ -305,8 +394,8 @@ class _HelpRequestScreenState extends ConsumerState<HelpRequestScreen> {
           _heading(l10n.helpSectionContact),
           _field('help-first', l10n.helpFirstName, _first, errors['first'], autofill: const [AutofillHints.givenName], caps: TextCapitalization.words),
           _field('help-phone', l10n.helpPhone, _phone, errors['phone'], keyboard: TextInputType.phone, autofill: const [AutofillHints.telephoneNumber]),
-          _field('help-city', l10n.helpCity, _city, errors['city'], caps: TextCapitalization.words),
-          _field('help-postal', l10n.helpPostal, _postal, errors['postal'], keyboard: TextInputType.number, maxLength: 5),
+          _field('help-city', l10n.helpCity, _city, errors['city'], caps: TextCapitalization.words, focus: _cityFocus),
+          _field('help-postal', l10n.helpPostal, _postal, errors['postal'], keyboard: TextInputType.number, maxLength: 5, focus: _postalFocus),
           _field('help-email', l10n.helpEmail, _email, errors['email'], keyboard: TextInputType.emailAddress, optional: true),
           Row(children: [
             const Icon(Icons.lock_outline_rounded, size: 15, color: NalviumColors.textMuted),
@@ -416,7 +505,7 @@ class _HelpRequestScreenState extends ConsumerState<HelpRequestScreen> {
   );
 
   Widget _field(String key, String label, TextEditingController c, String? error,
-      {TextInputType? keyboard, TextCapitalization caps = TextCapitalization.none, int? maxLength, bool optional = false, List<String>? autofill}) =>
+      {TextInputType? keyboard, TextCapitalization caps = TextCapitalization.none, int? maxLength, bool optional = false, List<String>? autofill, FocusNode? focus}) =>
     Padding(
       padding: const EdgeInsets.only(bottom: Space.x3),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -425,6 +514,7 @@ class _HelpRequestScreenState extends ConsumerState<HelpRequestScreen> {
         TextField(
           key: Key(key),
           controller: c,
+          focusNode: focus,
           keyboardType: keyboard,
           textCapitalization: caps,
           maxLength: maxLength ?? 120,

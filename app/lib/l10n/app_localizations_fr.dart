@@ -1491,4 +1491,38 @@ class AppLocalizationsFr extends AppLocalizations {
   String cmCommentCount(int count) {
     return '$count commentaire(s)';
   }
+
+  @override
+  String get oozTitle => 'Nalvium arrive bientôt dans votre secteur';
+
+  @override
+  String get oozContinue => 'Continuer avec Nalvium';
+
+  @override
+  String get oozBack => 'Retour';
+
+  @override
+  String get oozSafety =>
+      'Nalvium ne peut actuellement pas organiser d\'intervention dans votre secteur.';
+
+  @override
+  String get helpErrCityPostal =>
+      'Cette ville et ce code postal ne correspondent pas.';
+
+  @override
+  String get helpErrCityUnknown =>
+      'Nous ne trouvons pas cette ville. Vérifiez son orthographe.';
+
+  @override
+  String get helpErrPostalUnknown => 'Ce code postal est inconnu.';
+
+  @override
+  String helpAreaNote(String name, int km) {
+    return 'Service actuellement disponible à $name et dans un rayon de $km km.';
+  }
+
+  @override
+  String oozBody(String name, int km) {
+    return 'Les interventions sont actuellement disponibles à $name et dans un rayon de $km km. Vous pouvez continuer à utiliser gratuitement le diagnostic Nalvium.';
+  }
 }

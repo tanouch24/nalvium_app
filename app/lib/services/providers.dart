@@ -160,6 +160,15 @@ class RequestsRevision extends Notifier<int> {
 
 final requestsRevisionProvider = NotifierProvider<RequestsRevision, int>(RequestsRevision.new);
 
+/// Zone de service (nom + rayon) fournie par le serveur ; null si indisponible (la note n'est alors pas affichée).
+final serviceAreaProvider = FutureProvider<ServiceAreaInfo?>((ref) async {
+  try {
+    return await ref.watch(serviceRequestsRepositoryProvider).serviceArea();
+  } on ApiException {
+    return null;
+  }
+});
+
 final requestsProvider = FutureProvider.autoDispose<List<ServiceRequest>>((ref) {
   ref.watch(requestsRevisionProvider);
   return ref.watch(serviceRequestsRepositoryProvider).list();

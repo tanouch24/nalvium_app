@@ -3,6 +3,24 @@ import 'text.dart';
 /// Version du consentement affiché à l'utilisateur (doit correspondre au backend).
 const kConsentVersion = '2026-10';
 
+/// Zone où les interventions humaines sont disponibles (info d'affichage venant du SERVEUR).
+class ServiceAreaInfo {
+  const ServiceAreaInfo({required this.name, required this.radiusKm});
+  final String name;
+  final int radiusKm;
+  factory ServiceAreaInfo.fromJson(Map<String, dynamic> j) => ServiceAreaInfo(name: j['name'] as String, radiusKm: j['radius_km'] as int);
+}
+
+/// Résultat d'éligibilité (informatif : le contrôle définitif est fait par le serveur à l'envoi).
+class AreaCheck {
+  const AreaCheck({required this.status, this.code});
+  final String status; // in_zone | out_of_zone | invalid
+  final String? code; // invalid_postal_code | unknown_postal_code | unknown_city | city_postal_mismatch
+  bool get inZone => status == 'in_zone';
+  bool get outOfZone => status == 'out_of_zone';
+  factory AreaCheck.fromJson(Map<String, dynamic> j) => AreaCheck(status: j['status'] as String, code: j['code'] as String?);
+}
+
 enum RequestStatus {
   draft,
   submitted,

@@ -11,6 +11,7 @@ import '../../features/community/saved_screen.dart';
 import '../../domain/community.dart';
 import '../../features/help/help_done_screen.dart';
 import '../../features/help/help_request_screen.dart';
+import '../../features/help/out_of_zone_screen.dart';
 import '../../features/help/repair_screen.dart';
 import '../../features/help/request_detail_screen.dart';
 import '../../features/history/history_screen.dart';
@@ -192,6 +193,10 @@ GoRouter buildRouter({
         state,
         HelpRequestScreen(sessionId: state.uri.queryParameters['session']),
       ),
+    ),
+    GoRoute(
+      path: '/help/out-of-zone',
+      pageBuilder: (_, state) => nalviumPage(state, OutOfZoneScreen(args: state.extra! as OutOfZoneArgs)),
     ),
     GoRoute(
       path: '/help/:id/done',
