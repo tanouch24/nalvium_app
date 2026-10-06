@@ -15,6 +15,9 @@ abstract final class BannerPolicy {
     final segments = Uri.parse(path).pathSegments;
     // Détail d'une demande d'intervention : /requests/<id> (jamais les écrans de création /help/*)
     if (segments.length == 2 && segments[0] == 'requests') return true;
+    // Communauté : enregistrés et détail d'une publication (jamais la création, l'aperçu ni l'édition).
+    if (path == '/community/saved') return true;
+    if (segments.length == 3 && segments[0] == 'community' && segments[1] == 'post') return true;
     // Fiche équipement : /equipment/<id> (pas add, identify, ni <id>/edit)
     if (segments.length == 2 && segments[0] == 'equipment') {
       return segments[1] != 'add' && segments[1] != 'identify';

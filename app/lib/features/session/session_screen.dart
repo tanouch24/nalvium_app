@@ -17,6 +17,8 @@ import '../capture/analysis_wait.dart';
 import '../capture/capture_flow.dart';
 import '../history/session_labels.dart';
 import 'context_header.dart';
+import '../../domain/community.dart';
+import '../community/compose_post_screen.dart';
 import '../house/manual_citation.dart';
 import 'views/action_views.dart';
 
@@ -167,6 +169,7 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
       onHome: _home,
       onRepairOptions: () => context.push('/help/new?session=${widget.sessionId}'),
       onSummary: () => context.push('/session/${widget.sessionId}/summary'),
+      onShareSolution: state == null ? null : () => context.push('/community/new', extra: ComposeArgs(draft: CommunityDraft.fromSession(state))),
       onSaveEquipment: state != null && state.equipment == null && !_linked
           ? () async {
               final linked = await context.push<bool>('/session/${widget.sessionId}/house');

@@ -22,6 +22,7 @@ class SessionActions {
     required this.onRepairOptions,
     required this.onSummary,
     this.onSaveEquipment,
+    this.onShareSolution,
   });
   final void Function(String text) onAnswer;
   final void Function(ActionChoice choice) onActionResult;
@@ -32,6 +33,9 @@ class SessionActions {
 
   /// Proposition SECONDAIRE après résolution (null = déjà lié à un équipement : rien à proposer).
   final VoidCallback? onSaveEquipment;
+
+  /// Proposition SECONDAIRE après résolution : partager la solution à la Communauté (jamais automatique).
+  final VoidCallback? onShareSolution;
 }
 
 /// « Arrêtez-vous ici. » est déjà le titre de l'écran : on le retire du corps pour ne pas le répéter.
@@ -868,6 +872,13 @@ class _ResolvedViewState extends State<ResolvedView>
           label: l10n.seeSummary,
           onPressed: widget.actions.onSummary,
         ),
+        if (widget.actions.onShareSolution != null)
+          TertiaryButton(
+            key: const Key('resolved-share'),
+            label: l10n.cmShareSolution,
+            color: NalviumColors.textSecondary,
+            onPressed: widget.actions.onShareSolution,
+          ),
         if (widget.actions.onSaveEquipment != null)
           TertiaryButton(
             key: const Key('resolved-save-equipment'),

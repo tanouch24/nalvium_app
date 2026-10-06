@@ -1,1 +1,1 @@
-"""Domaine community : à construire dans une phase ultérieure."""
+"""Communauté V1 : solutions partagées entre membres. Aucune donnée privée n'est jamais exposée."""

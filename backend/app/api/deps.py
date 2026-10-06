@@ -12,10 +12,12 @@ from app.db.session import get_db
 from app.manuals.fetcher import HttpxPdfFetcher, PdfFetcher
 from app.media.storage import LocalMediaStorage, MediaStorage
 from app.notifications.service_requests import ServiceRequestNotifier, build_notifier
+from app.repositories.community import CommunityRepository
 from app.repositories.documents import DocumentRepository
 from app.repositories.equipment import EquipmentRepository, HomeRepository
 from app.repositories.service_requests import ServiceRequestRepository
 from app.repositories.sessions import MediaRepository, SessionRepository, UserRepository
+from app.services.community_service import CommunityService
 from app.services.diagnostic_service import DiagnosticService
 from app.services.equipment_service import EquipmentService
 from app.services.manual_service import ManualRetriever, ManualService
@@ -84,6 +86,20 @@ def get_manual_service(
     fetcher: PdfFetcher = Depends(get_pdf_fetcher),
 ) -> Iterator[ManualService]:
     yield ManualService(EquipmentRepository(db), DocumentRepository(db), storage, provider, fetcher)
+
+
+def get_community_service(
+    db: Session = Depends(get_db), storage: MediaStorage = Depends(get_storage)
+) -> Iterator[CommunityService]:
+    yield CommunityService(UserRepository(db), CommunityRepository(db), MediaRepository(db), storage)
+
+
+def optional_user_id(x_nalvium_install_id: str | None = Header(default=None)) -> uuid.UUID | None:
+    """Identité facultative (images publiques de la Communauté) ; un identifiant invalide est ignoré."""
+    try:
+        return uuid.UUID(x_nalvium_install_id) if x_nalvium_install_id else None
+    except ValueError:
+        return None
 
 
 def get_request_notifier() -> ServiceRequestNotifier:

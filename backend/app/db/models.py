@@ -9,6 +9,7 @@ from sqlalchemy import (
     Float,
     ForeignKey,
     Integer,
+    PrimaryKeyConstraint,
     String,
     Text,
     func,
@@ -334,3 +335,85 @@ class ServiceRequestMedia(Base):
     )
     media_asset_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("media_assets.id", ondelete="CASCADE"))
     consented_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class CommunityPost(Base):
+    """Publication communautaire (PUBLIQUE). Aucune donnée privée : l'auteur n'est jamais exposé."""
+
+    __tablename__ = "community_posts"
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    owner_user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    title: Mapped[str] = mapped_column(String(120))
+    solution: Mapped[str] = mapped_column(Text)
+    category: Mapped[str | None] = mapped_column(String(16))
+    materials: Mapped[str | None] = mapped_column(String(200))
+    status: Mapped[str] = mapped_column(String(12), default="PUBLISHED", index=True)  # PUBLISHED | REMOVED
+    created_at: Mapped[datetime] = _now()
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+    media: Mapped[list["CommunityMedia"]] = relationship(order_by="CommunityMedia.created_at")
+
+
+class CommunityMedia(Base):
+    """COPIE PUBLIQUE dérivée (EXIF/GPS retirés). Jamais l'asset privé d'origine, seulement sa référence d'origine."""
+
+    __tablename__ = "community_media"
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    owner_user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    post_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("community_posts.id", ondelete="CASCADE"), index=True
+    )  # NULL = brouillon visible de son seul auteur
+    source_private_media_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("media_assets.id", ondelete="SET NULL")
+    )
+    storage_key: Mapped[str] = mapped_column(String(512), unique=True)  # variante détail
+    thumb_key: Mapped[str] = mapped_column(String(512), unique=True)  # variante liste
+    mime_type: Mapped[str] = mapped_column(String(32), default="image/jpeg")
+    width: Mapped[int | None] = mapped_column(Integer)
+    height: Mapped[int | None] = mapped_column(Integer)
+    created_at: Mapped[datetime] = _now()
+
+
+class CommunityHelpful(Base):
+    __tablename__ = "community_helpful"
+    __table_args__ = (PrimaryKeyConstraint("post_id", "owner_user_id"),)
+    post_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("community_posts.id", ondelete="CASCADE"))
+    owner_user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    created_at: Mapped[datetime] = _now()
+
+
+class CommunitySave(Base):
+    """Sauvegarde PRIVÉE : personne d'autre ne voit ce qu'un utilisateur enregistre."""
+
+    __tablename__ = "community_saves"
+    __table_args__ = (PrimaryKeyConstraint("post_id", "owner_user_id"),)
+    post_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("community_posts.id", ondelete="CASCADE"))
+    owner_user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    created_at: Mapped[datetime] = _now()
+
+
+class CommunityComment(Base):
+    __tablename__ = "community_comments"
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    post_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("community_posts.id", ondelete="CASCADE"), index=True)
+    owner_user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    body: Mapped[str] = mapped_column(String(500))
+    status: Mapped[str] = mapped_column(String(12), default="PUBLISHED")  # PUBLISHED | REMOVED
+    created_at: Mapped[datetime] = _now()
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+
+class CommunityReport(Base):
+    """Signalement structuré. Un seul par (auteur du signalement, cible)."""
+
+    __tablename__ = "community_reports"
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    reporter_user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    post_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("community_posts.id", ondelete="CASCADE"))
+    comment_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("community_comments.id", ondelete="CASCADE"))
+    reason: Mapped[str] = mapped_column(String(24))
+    details: Mapped[str | None] = mapped_column(String(300))
+    created_at: Mapped[datetime] = _now()

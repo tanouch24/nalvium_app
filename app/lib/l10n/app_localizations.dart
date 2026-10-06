@@ -2355,6 +2355,498 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Ce que Nalvium a constaté'**
   String get helpSectionNoticed;
+
+  /// No description provided for @cmTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Communauté'**
+  String get cmTitle;
+
+  /// No description provided for @cmIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les solutions partagées par la communauté Nalvium.'**
+  String get cmIntro;
+
+  /// No description provided for @cmShare.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager une solution'**
+  String get cmShare;
+
+  /// No description provided for @cmSaved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrés'**
+  String get cmSaved;
+
+  /// No description provided for @cmEmptyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les premières solutions arriveront bientôt.'**
+  String get cmEmptyTitle;
+
+  /// No description provided for @cmEmptyBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous avez réglé un problème chez vous ? Votre expérience peut aider quelqu\'un d\'autre.'**
+  String get cmEmptyBody;
+
+  /// No description provided for @cmSavedEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous n\'avez encore enregistré aucune solution.'**
+  String get cmSavedEmpty;
+
+  /// No description provided for @cmLoadFail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger la Communauté'**
+  String get cmLoadFail;
+
+  /// No description provided for @cmLoadMore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir plus'**
+  String get cmLoadMore;
+
+  /// No description provided for @cmEnd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous avez tout vu.'**
+  String get cmEnd;
+
+  /// No description provided for @cmHelpful.
+  ///
+  /// In fr, this message translates to:
+  /// **'Utile'**
+  String get cmHelpful;
+
+  /// No description provided for @cmComment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commenter'**
+  String get cmComment;
+
+  /// No description provided for @cmSave.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer'**
+  String get cmSave;
+
+  /// No description provided for @cmUnsave.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer des enregistrés'**
+  String get cmUnsave;
+
+  /// No description provided for @cmMember.
+  ///
+  /// In fr, this message translates to:
+  /// **'Membre Nalvium'**
+  String get cmMember;
+
+  /// No description provided for @cmNotOfficial.
+  ///
+  /// In fr, this message translates to:
+  /// **'Solution partagée par un membre de la communauté.'**
+  String get cmNotOfficial;
+
+  /// No description provided for @cmMaterials.
+  ///
+  /// In fr, this message translates to:
+  /// **'Matériel'**
+  String get cmMaterials;
+
+  /// No description provided for @cmComments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commentaires'**
+  String get cmComments;
+
+  /// No description provided for @cmNoComments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun commentaire pour le moment.'**
+  String get cmNoComments;
+
+  /// No description provided for @cmCommentHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un commentaire'**
+  String get cmCommentHint;
+
+  /// No description provided for @cmCommentSend.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyer'**
+  String get cmCommentSend;
+
+  /// No description provided for @cmCommentDelete.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer mon commentaire'**
+  String get cmCommentDelete;
+
+  /// No description provided for @cmCommentFail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le commentaire n\'a pas pu être envoyé. Réessayez.'**
+  String get cmCommentFail;
+
+  /// No description provided for @cmCommentTooLong.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commentaire trop long (500 caractères maximum).'**
+  String get cmCommentTooLong;
+
+  /// No description provided for @cmCommentUnsafe.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce commentaire ne peut pas être publié : il touche à un sujet dangereux.'**
+  String get cmCommentUnsafe;
+
+  /// No description provided for @cmActionFail.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'action n\'a pas pu être enregistrée. Réessayez.'**
+  String get cmActionFail;
+
+  /// No description provided for @cmReport.
+  ///
+  /// In fr, this message translates to:
+  /// **'Signaler'**
+  String get cmReport;
+
+  /// No description provided for @cmReportTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pourquoi signalez-vous ceci ?'**
+  String get cmReportTitle;
+
+  /// No description provided for @cmReasonDangerous.
+  ///
+  /// In fr, this message translates to:
+  /// **'Contenu dangereux'**
+  String get cmReasonDangerous;
+
+  /// No description provided for @cmReasonSpam.
+  ///
+  /// In fr, this message translates to:
+  /// **'Spam / publicité'**
+  String get cmReasonSpam;
+
+  /// No description provided for @cmReasonInappropriate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Contenu inapproprié'**
+  String get cmReasonInappropriate;
+
+  /// No description provided for @cmReasonPersonal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Informations personnelles'**
+  String get cmReasonPersonal;
+
+  /// No description provided for @cmReasonOther.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autre'**
+  String get cmReasonOther;
+
+  /// No description provided for @cmReported.
+  ///
+  /// In fr, this message translates to:
+  /// **'Merci. Votre signalement a été enregistré.'**
+  String get cmReported;
+
+  /// No description provided for @cmReportedAlready.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous avez déjà signalé ceci. Merci.'**
+  String get cmReportedAlready;
+
+  /// No description provided for @cmEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier'**
+  String get cmEdit;
+
+  /// No description provided for @cmDelete.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer'**
+  String get cmDelete;
+
+  /// No description provided for @cmDeleteTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer cette publication ?'**
+  String get cmDeleteTitle;
+
+  /// No description provided for @cmDeleteBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Elle disparaîtra de la Communauté. Cette action est définitive.'**
+  String get cmDeleteBody;
+
+  /// No description provided for @cmDeleteConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer la publication'**
+  String get cmDeleteConfirm;
+
+  /// No description provided for @cmDeleteFail.
+  ///
+  /// In fr, this message translates to:
+  /// **'La publication n\'a pas pu être supprimée. Réessayez.'**
+  String get cmDeleteFail;
+
+  /// No description provided for @cmGone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette publication n\'existe plus.'**
+  String get cmGone;
+
+  /// No description provided for @cmBack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour'**
+  String get cmBack;
+
+  /// No description provided for @cmNewTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager une solution'**
+  String get cmNewTitle;
+
+  /// No description provided for @cmEditTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier ma publication'**
+  String get cmEditTitle;
+
+  /// No description provided for @cmFieldTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Titre'**
+  String get cmFieldTitle;
+
+  /// No description provided for @cmFieldTitleHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex. Mon lave-vaisselle ne vidangeait plus'**
+  String get cmFieldTitleHint;
+
+  /// No description provided for @cmFieldSolution.
+  ///
+  /// In fr, this message translates to:
+  /// **'Solution'**
+  String get cmFieldSolution;
+
+  /// No description provided for @cmFieldSolutionHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex. J\'ai nettoyé le filtre et retiré un morceau de verre qui bloquait la pompe.'**
+  String get cmFieldSolutionHint;
+
+  /// No description provided for @cmFieldCategory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catégorie'**
+  String get cmFieldCategory;
+
+  /// No description provided for @cmFieldMaterials.
+  ///
+  /// In fr, this message translates to:
+  /// **'Matériel utilisé (facultatif)'**
+  String get cmFieldMaterials;
+
+  /// No description provided for @cmFieldMaterialsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex. Tournevis cruciforme, chiffon'**
+  String get cmFieldMaterialsHint;
+
+  /// No description provided for @cmCatPlumbing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plomberie'**
+  String get cmCatPlumbing;
+
+  /// No description provided for @cmCatAppliance.
+  ///
+  /// In fr, this message translates to:
+  /// **'Électroménager'**
+  String get cmCatAppliance;
+
+  /// No description provided for @cmCatHandyman.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bricolage'**
+  String get cmCatHandyman;
+
+  /// No description provided for @cmCatOther.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autre'**
+  String get cmCatOther;
+
+  /// No description provided for @cmPhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo'**
+  String get cmPhoto;
+
+  /// No description provided for @cmPhotoRecommended.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recommandée mais facultative.'**
+  String get cmPhotoRecommended;
+
+  /// No description provided for @cmPhotoTake.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prendre une photo'**
+  String get cmPhotoTake;
+
+  /// No description provided for @cmPhotoFromDiagnostic.
+  ///
+  /// In fr, this message translates to:
+  /// **'Utiliser une photo de mon diagnostic'**
+  String get cmPhotoFromDiagnostic;
+
+  /// No description provided for @cmPhotoPublicNotice.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette photo sera visible publiquement dans la Communauté Nalvium.'**
+  String get cmPhotoPublicNotice;
+
+  /// No description provided for @cmPhotoRemove.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer la photo'**
+  String get cmPhotoRemove;
+
+  /// No description provided for @cmPhotoConfirmTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rendre cette photo publique ?'**
+  String get cmPhotoConfirmTitle;
+
+  /// No description provided for @cmPhotoConfirmBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une copie nettoyée de cette photo (sans localisation) sera visible publiquement dans la Communauté Nalvium. L\'original reste privé.'**
+  String get cmPhotoConfirmBody;
+
+  /// No description provided for @cmPhotoConfirmYes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Oui, utiliser cette photo'**
+  String get cmPhotoConfirmYes;
+
+  /// No description provided for @cmPhotoFail.
+  ///
+  /// In fr, this message translates to:
+  /// **'La photo n\'a pas pu être préparée. Réessayez.'**
+  String get cmPhotoFail;
+
+  /// No description provided for @cmReview.
+  ///
+  /// In fr, this message translates to:
+  /// **'Relisez avant de publier : n\'ajoutez aucune information personnelle (nom, adresse, téléphone).'**
+  String get cmReview;
+
+  /// No description provided for @cmPreview.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aperçu'**
+  String get cmPreview;
+
+  /// No description provided for @cmPreviewTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voici votre publication'**
+  String get cmPreviewTitle;
+
+  /// No description provided for @cmConsent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Je comprends que cette publication sera visible publiquement dans la Communauté Nalvium.'**
+  String get cmConsent;
+
+  /// No description provided for @cmPublish.
+  ///
+  /// In fr, this message translates to:
+  /// **'Publier'**
+  String get cmPublish;
+
+  /// No description provided for @cmContinue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir l\'aperçu'**
+  String get cmContinue;
+
+  /// No description provided for @cmBackEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier'**
+  String get cmBackEdit;
+
+  /// No description provided for @cmErrTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoutez un titre (3 caractères minimum).'**
+  String get cmErrTitle;
+
+  /// No description provided for @cmErrSolution.
+  ///
+  /// In fr, this message translates to:
+  /// **'Décrivez la solution (10 caractères minimum).'**
+  String get cmErrSolution;
+
+  /// No description provided for @cmErrConsent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous devez accepter pour publier.'**
+  String get cmErrConsent;
+
+  /// No description provided for @cmErrUnsafe.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette solution touche à un sujet dangereux (gaz, électricité, produits chimiques…). Elle ne peut pas être publiée.'**
+  String get cmErrUnsafe;
+
+  /// No description provided for @cmErrPublish.
+  ///
+  /// In fr, this message translates to:
+  /// **'La publication n\'a pas pu être envoyée. Votre texte est conservé : réessayez.'**
+  String get cmErrPublish;
+
+  /// No description provided for @cmPublished.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre solution est publiée.'**
+  String get cmPublished;
+
+  /// No description provided for @cmShareSolution.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager cette solution'**
+  String get cmShareSolution;
+
+  /// No description provided for @cmHelpfulCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} Utile'**
+  String cmHelpfulCount(int count);
+
+  /// No description provided for @cmCommentCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} commentaire(s)'**
+  String cmCommentCount(int count);
 }
 
 class _AppLocalizationsDelegate

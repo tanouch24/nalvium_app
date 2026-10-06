@@ -45,11 +45,11 @@ THUMB_SIDE = 480
 THUMB_QUALITY = 78
 
 
-def make_thumbnail(image: ProcessedImage) -> bytes:
-    """Vignette (côté ≤ 480 px) dérivée d'une image DÉJÀ nettoyée : listes légères, aucune métadonnée."""
+def make_thumbnail(image: ProcessedImage, side: int = THUMB_SIDE, quality: int = THUMB_QUALITY) -> bytes:
+    """Variante réduite (côté ≤ `side` px) d'une image DÉJÀ nettoyée : listes légères, aucune métadonnée."""
     with Image.open(io.BytesIO(image.data)) as img:
         thumb = img.convert("RGB")
-        thumb.thumbnail((THUMB_SIDE, THUMB_SIDE), Image.Resampling.LANCZOS)
+        thumb.thumbnail((side, side), Image.Resampling.LANCZOS)
         out = io.BytesIO()
-        thumb.save(out, format="JPEG", quality=THUMB_QUALITY, optimize=True)
+        thumb.save(out, format="JPEG", quality=quality, optimize=True)
         return out.getvalue()

@@ -2,7 +2,7 @@ import logging
 
 from fastapi import FastAPI
 
-from app.api.routes import diagnostic, equipment, health, service_requests, sessions
+from app.api.routes import community, diagnostic, equipment, health, service_requests, sessions
 from app.config import get_settings
 
 
@@ -21,6 +21,7 @@ def create_app() -> FastAPI:
     app.include_router(sessions.router)
     app.include_router(equipment.router)
     app.include_router(service_requests.router)
+    app.include_router(community.router)
     return app
 
 

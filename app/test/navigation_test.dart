@@ -28,7 +28,7 @@ void main() {
 
     await tester.tap(find.byKey(const Key('nav-community')));
     await tester.pumpAndSettle();
-    expect(find.text('Les réparations des autres, bientôt ici'), findsOneWidget);
+    expect(find.text('Les premières solutions arriveront bientôt.'), findsOneWidget); // Communauté vide, sans faux post
 
     await tester.tap(find.byKey(const Key('nav-home')));
     await tester.pumpAndSettle();

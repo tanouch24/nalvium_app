@@ -405,3 +405,92 @@ def service_request_out(req, context: dict | None = None) -> ServiceRequestOut:
         consent_version=req.consent_version, consented_at=req.consented_at, submitted_at=req.submitted_at,
         created_at=req.created_at, updated_at=req.updated_at, context=context, equipment_label=label,
     )
+
+
+# ---- Communauté (DTO PUBLICS : jamais d'identifiant d'auteur ni de donnée privée) -------------------
+class CommunityPostCreate(BaseModel):
+    title: str = Field(default="", max_length=400)
+    solution: str = Field(default="", max_length=4000)
+    category: str | None = Field(default=None, max_length=16)
+    materials: str | None = Field(default=None, max_length=400)
+    media_id: uuid.UUID | None = None
+    consent_public: bool = False  # jamais précoché
+    consent_version: str = ""
+
+
+class CommunityPostUpdate(BaseModel):
+    title: str | None = Field(default=None, max_length=400)
+    solution: str | None = Field(default=None, max_length=4000)
+    category: str | None = Field(default=None, max_length=16)
+    materials: str | None = Field(default=None, max_length=400)
+    media_id: uuid.UUID | None = None
+
+
+class CommunityFromPrivate(BaseModel):
+    media_id: uuid.UUID
+    consent_public: bool = False
+
+
+class CommunityPostOut(BaseModel):
+    id: uuid.UUID
+    title: str
+    solution: str
+    category: str | None
+    materials: str | None
+    created_at: datetime
+    helpful_count: int
+    comment_count: int
+    photo_id: uuid.UUID | None  # asset COMMUNAUTAIRE public (jamais un média privé)
+    photo_width: int | None
+    photo_height: int | None
+    mine: bool
+    helpful: bool
+    saved: bool
+
+
+class CommunityPage(BaseModel):
+    items: list[CommunityPostOut]
+    next_cursor: str | None
+
+
+class CommunityMediaOut(BaseModel):
+    id: uuid.UUID
+    width: int | None
+    height: int | None
+
+
+class CommunityCommentCreate(BaseModel):
+    body: str = Field(default="", max_length=800)
+
+
+class CommunityCommentOut(BaseModel):
+    id: uuid.UUID
+    body: str
+    created_at: datetime
+    mine: bool
+
+
+class CommunityCommentPage(BaseModel):
+    items: list[CommunityCommentOut]
+    next_cursor: str | None
+
+
+class CommunityReportIn(BaseModel):
+    reason: str = Field(default="", max_length=24)
+    details: str | None = Field(default=None, max_length=400)
+
+
+class CommunityReportOut(BaseModel):
+    created: bool  # False : déjà signalé par ce membre (aucun doublon)
+
+
+def community_post_out(row, viewer) -> CommunityPostOut:
+    p = row.post
+    photo = p.media[0] if p.media else None
+    return CommunityPostOut(
+        id=p.id, title=p.title, solution=p.solution, category=p.category, materials=p.materials,
+        created_at=p.created_at, helpful_count=row.helpful, comment_count=row.comments,
+        photo_id=photo.id if photo else None, photo_width=photo.width if photo else None,
+        photo_height=photo.height if photo else None, mine=p.owner_user_id == viewer, helpful=row.my_helpful,
+        saved=row.my_saved,
+    )
