@@ -26,3 +26,7 @@ app/android/key.properties
 var/
 # captures de validation visuelle (peuvent contenir des données de test)
 validation/
+
+# livrables de release (AAB signés) : jamais dans Git
+release/
+*.aab

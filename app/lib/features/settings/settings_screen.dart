@@ -15,7 +15,12 @@ import 'legal_texts.dart';
 AppBar _bar(BuildContext context, String title) => AppBar(
   automaticallyImplyLeading: false,
   leading: BackButton(onPressed: () => context.pop()),
-  title: Text(title, style: NalviumText.title, maxLines: 2, overflow: TextOverflow.ellipsis),
+  title: Text(
+    title,
+    style: NalviumText.title,
+    maxLines: 2,
+    overflow: TextOverflow.ellipsis,
+  ),
   toolbarHeight: 72,
 );
 
@@ -257,20 +262,6 @@ class LegalScreen extends StatelessWidget {
             Space.x8,
           ),
           children: [
-            Container(
-              padding: const EdgeInsets.all(Space.x3),
-              decoration: BoxDecoration(
-                color: NalviumColors.warningSoft,
-                borderRadius: BorderRadius.circular(Corner.small),
-              ),
-              child: Text(
-                l.stProvisional,
-                key: const Key('legal-provisional'),
-                style: NalviumText.caption.copyWith(
-                  color: NalviumColors.warning,
-                ),
-              ),
-            ),
             for (final s in doc.sections) ...[
               const SizedBox(height: Space.x6),
               Semantics(

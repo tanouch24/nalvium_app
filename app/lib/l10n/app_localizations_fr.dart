@@ -1587,10 +1587,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get stVersion => 'Version';
 
   @override
-  String get stProvisional =>
-      'Texte provisoire, en cours de relecture avant publication.';
-
-  @override
   String get stContactBody =>
       'Écrivez-nous. Nous lisons chaque message, sans engagement de délai de réponse.';
 
@@ -1652,7 +1648,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get stDelStays =>
-      'Ne peut pas être rappelé : un message déjà envoyé à l\'exploitant à la suite d\'une demande d\'intervention. Vos publications seront supprimées, pas anonymisées.';
+      'Ne peut pas être rappelée : une demande déjà transmise à un opérateur ou partenaire à la suite d\'une demande d\'intervention. Vos publications seront supprimées, pas anonymisées.';
 
   @override
   String get stDelAfter =>

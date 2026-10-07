@@ -7,6 +7,21 @@ val keystoreProps = Properties().apply {
 }
 val hasReleaseKey = keystoreProps.getProperty("storeFile") != null
 
+// Un AAB destiné au Play Store ne doit JAMAIS être signé avec la clé de debug : on refuse de le construire
+// tant que key.properties (storeFile, storePassword, keyAlias, keyPassword) n'est pas complet.
+gradle.taskGraph.whenReady {
+    if (hasTask(":app:bundleRelease")) {
+        val missing = listOf("storeFile", "storePassword", "keyAlias", "keyPassword")
+            .filter { keystoreProps.getProperty(it).isNullOrBlank() }
+        if (missing.isNotEmpty()) {
+            throw GradleException(
+                "AAB release refusé : android/key.properties incomplet (manquant : ${missing.joinToString()}). " +
+                    "Voir docs/PLAY_STORE_RELEASE.md."
+            )
+        }
+    }
+}
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.

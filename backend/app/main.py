@@ -9,6 +9,7 @@ from app.api.routes import (
     diagnostic,
     equipment,
     health,
+    legal,
     service_requests,
     sessions,
 )
@@ -43,6 +44,7 @@ def create_app() -> FastAPI:
         logging.getLogger("nalvium.api").error("unhandled error type=%s path=%s", type(exc).__name__, request.url.path)
         return JSONResponse({"detail": "internal_error"}, status_code=500)
     app.include_router(health.router)
+    app.include_router(legal.router)
     app.include_router(diagnostic.router)
     app.include_router(sessions.router)
     app.include_router(equipment.router)

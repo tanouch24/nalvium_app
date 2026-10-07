@@ -3022,12 +3022,6 @@ abstract class AppLocalizations {
   /// **'Version'**
   String get stVersion;
 
-  /// No description provided for @stProvisional.
-  ///
-  /// In fr, this message translates to:
-  /// **'Texte provisoire, en cours de relecture avant publication.'**
-  String get stProvisional;
-
   /// No description provided for @stContactBody.
   ///
   /// In fr, this message translates to:
@@ -3139,7 +3133,7 @@ abstract class AppLocalizations {
   /// No description provided for @stDelStays.
   ///
   /// In fr, this message translates to:
-  /// **'Ne peut pas être rappelé : un message déjà envoyé à l\'exploitant à la suite d\'une demande d\'intervention. Vos publications seront supprimées, pas anonymisées.'**
+  /// **'Ne peut pas être rappelée : une demande déjà transmise à un opérateur ou partenaire à la suite d\'une demande d\'intervention. Vos publications seront supprimées, pas anonymisées.'**
   String get stDelStays;
 
   /// No description provided for @stDelAfter.

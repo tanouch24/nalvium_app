@@ -1,8 +1,7 @@
-/// Textes PRODUIT provisoires, centralisés et versionnés. Ils décrivent le fonctionnement RÉEL de Nalvium.
+/// Textes juridiques et d'information de Nalvium, centralisés et versionnés. Ils décrivent le fonctionnement RÉEL de Nalvium.
 ///
-/// ⚠ Ils n'ont PAS été relus par un juriste : ils doivent l'être avant toute publication publique.
-/// Pour les remplacer : modifier ce fichier (ou charger ces documents depuis une autre source) et changer [kLegalVersion].
-const kLegalVersion = '2026-10-provisoire';
+/// Pour les modifier : modifier ce fichier (ou charger ces documents depuis une autre source) et changer [kLegalVersion].
+const kLegalVersion = '2026-10';
 const kLegalContact = 'contact@nalvium.com';
 
 /// Identité de l'exploitant (entrepreneur individuel : ce n'est PAS une société, aucun capital social).
@@ -31,9 +30,6 @@ class LegalDocument {
   final String title;
   final List<LegalSection> sections;
 }
-
-/// Seul champ encore à renseigner après le déploiement de production : l'hébergeur du backend.
-const _todo = '[À COMPLÉTER AVANT PUBLICATION]';
 
 const privacyPolicy = LegalDocument(
   id: 'privacy',
@@ -72,7 +68,9 @@ const privacyPolicy = LegalDocument(
     LegalSection("Demandes d'intervention", [
       "Avant l'envoi, vous voyez exactement ce qui sera transmis et vous donnez un consentement explicite. Seules les informations sélectionnées sont concernées.",
       "Pendant le pilote, ce service est disponible à Lyon et dans un rayon de 50 km. Nous n'utilisons PAS votre position GPS : seuls la ville et le code postal que vous saisissez servent à vérifier la zone. Aucune adresse complète n'est demandée.",
-      "Une notification interne est envoyée à l'exploitant de Nalvium lorsqu'une demande est envoyée. Elle ne contient que les informations consenties ; les photos ne sont pas transmises par ce canal.",
+      "Lorsque vous envoyez une demande, Nalvium enregistre la demande sur ses serveurs (source de vérité) et envoie une notification interne à l'exploitant via la messagerie Telegram. Ce message peut contenir : prénom, téléphone, ville, code postal, disponibilité, catégorie, résumé du problème et, si vous y avez consenti, certaines informations du diagnostic (équipement, constats, hypothèses non confirmées, actions déjà essayées).",
+      "Vos photos et vidéos ne sont PAS envoyées à Telegram : seul leur nombre peut apparaître dans la notification. Votre e-mail (facultatif) n'y figure pas non plus.",
+      "Votre demande peut ensuite être transmise aux opérateurs ou partenaires concernés lorsqu'elle est effectivement prise en charge, et uniquement après votre consentement explicite. Seules les informations que vous avez choisi de transmettre sont concernées.",
     ]),
     LegalSection("Communauté", [
       "Une publication ou un commentaire est visible par tous les membres, sous le nom « Membre Nalvium ». Votre identifiant n'est jamais affiché. Ne publiez pas d'information personnelle.",
@@ -81,14 +79,17 @@ const privacyPolicy = LegalDocument(
       "Nalvium affiche de la publicité via Google AdMob. Dans l'Espace économique européen, un message de consentement (Google UMP) vous est proposé et vous pouvez modifier vos choix à tout moment dans Réglages › Confidentialité et publicité. Aucune donnée de diagnostic n'est transmise aux annonceurs.",
     ]),
     LegalSection("Durées de conservation", [
-      "Vos données sont conservées tant que vous ne les supprimez pas. Les brouillons et fichiers temporaires abandonnés sont nettoyés automatiquement après quelques heures ou jours.",
+      "Vos données sont conservées tant que vous ne les supprimez pas depuis Réglages › Mes données. Les brouillons et fichiers temporaires abandonnés peuvent être supprimés lors d'opérations de maintenance.",
+      "Les notifications Telegram sont conservées dans la conversation Telegram de l'exploitant jusqu'à leur suppression par celui-ci.",
     ]),
     LegalSection("Vos droits", [
-      "Vous pouvez supprimer toutes vos données depuis Réglages › Mes données › Supprimer mes données. Cette suppression est définitive. Une notification déjà envoyée à l'exploitant à la suite d'une demande d'intervention ne peut pas être rappelée.",
+      "Vous pouvez supprimer toutes vos données depuis Réglages › Mes données › Supprimer mes données. Cette suppression est définitive et efface les données rattachées à votre identifiant anonyme sur nos serveurs. Elle ne peut pas rappeler une notification Telegram déjà envoyée à l'exploitant, ni une demande d'intervention déjà transmise à un opérateur ou partenaire.",
       "Pour exercer vos droits d'accès, de rectification ou d'export, ou pour toute question : $kLegalContact.",
     ]),
-    LegalSection("Sous-traitants", [
-      "Fournisseur d'IA : OpenAI. Publicité : Google (AdMob / UMP). Hébergement : $_todo. Notification interne : service de messagerie de l'exploitant.",
+    LegalSection("Sous-traitants et destinataires", [
+      "Fournisseur d'IA : OpenAI. Publicité : Google (AdMob / UMP). Hébergement : Railway Corp., 548 Market St PMB 68956, San Francisco, California 94104, États-Unis. Les services applicatifs et volumes persistants de Nalvium sont actuellement déployés dans la région EU West (Amsterdam, Pays-Bas).",
+      "Notification interne : Telegram, utilisé uniquement comme canal d'alerte à l'exploitant lors d'une demande d'intervention (contenu décrit plus haut). Telegram ne reçoit ni votre diagnostic complet, ni vos photos ou vidéos : il ne porte que le texte de la notification. La base de données de Nalvium reste la source de vérité.",
+      "Plusieurs de ces prestataires (OpenAI, Google, Railway, Telegram) peuvent traiter des données en dehors de l'Union européenne, notamment aux États-Unis. Nalvium ne garantit donc pas que vos données restent limitées à l'Union européenne ; les transferts concernés reposent sur les mécanismes prévus par le RGPD lorsqu'ils sont applicables.",
     ]),
   ],
 );
@@ -110,7 +111,7 @@ const termsOfUse = LegalDocument(
       "Vous restez responsable de ce que vous faites chez vous. N'intervenez jamais sur le gaz, l'électricité sous tension ou une structure.",
     ]),
     LegalSection("Demandes d'intervention", [
-      "Nalvium transmet votre demande, avec votre accord, à un professionnel susceptible de vous aider. Nalvium ne garantit ni qu'un professionnel soit disponible, ni un délai, ni un prix. Le service est actuellement limité à Lyon et à un rayon de 50 km.",
+      "Avec votre accord explicite, votre demande peut être transmise à un opérateur ou partenaire susceptible de vous aider, lorsqu'elle est effectivement prise en charge. Nalvium ne garantit ni qu'un professionnel soit disponible, ni un délai, ni un prix. Le service est actuellement limité à Lyon et à un rayon de 50 km.",
     ]),
     LegalSection("Communauté", [
       "Les solutions de la Communauté sont partagées par des membres. Elles ne sont ni validées par Nalvium, ni garanties, ni recommandées par un professionnel. Vous êtes responsable de ce que vous publiez : pas de contenu dangereux, illicite, trompeur, publicitaire ou contenant des informations personnelles. Nous pouvons retirer un contenu signalé.",
@@ -137,7 +138,7 @@ const legalNotice = LegalDocument(
     ]),
     LegalSection('Contact', [kLegalContact]),
     LegalSection('Hébergement', [
-      "$_todo (nom et adresse de l'hébergeur du service).",
+      "Railway Corp., 548 Market St PMB 68956, San Francisco, California 94104, États-Unis. Les services applicatifs et volumes persistants de Nalvium sont actuellement déployés dans la région EU West (Amsterdam, Pays-Bas).",
     ]),
     LegalSection('Propriété', [
       "Nalvium, son logo et ses contenus sont protégés. Les contenus publiés par les membres restent la responsabilité de leurs auteurs.",
