@@ -32,7 +32,10 @@ class _NalviumAppState extends ConsumerState<NalviumApp> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback(
-      (_) => ref.read(analyticsProvider).log(AnalyticsEvent.appOpened),
+      (_) {
+        ref.read(analyticsProvider).log(AnalyticsEvent.appOpened);
+        ref.read(tipsServiceProvider); // écoute des achats en attente dès l'ouverture
+      },
     );
   }
 

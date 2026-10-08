@@ -1901,4 +1901,47 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get mtMarked => 'Entretien noté. Nalvium vous le rappellera.';
+
+  @override
+  String get supportTitle => 'Nalvium reste gratuit grâce à vous';
+
+  @override
+  String get supportBody =>
+      'Pas de publicité, pas d\'abonnement. Si Nalvium vous a aidé, offrez-nous un café : cela finance l\'app et ses améliorations.';
+
+  @override
+  String get supportNoReward =>
+      'C\'est un don sans contrepartie : rien n\'est débloqué, tout reste gratuit.';
+
+  @override
+  String get supportCoffee => 'Un café';
+
+  @override
+  String get supportTwoCoffees => 'Deux cafés';
+
+  @override
+  String get supportMeal => 'Un repas';
+
+  @override
+  String get supportCta => 'Soutenir Nalvium';
+
+  @override
+  String get supportLater => 'Pas maintenant';
+
+  @override
+  String get supportThanks => 'Merci infiniment pour votre soutien !';
+
+  @override
+  String get supportPending => 'Paiement en attente de validation. Merci !';
+
+  @override
+  String get supportFailed =>
+      'Le paiement n\'a pas abouti. Aucun montant n\'a été débité.';
+
+  @override
+  String get supportUnavailable =>
+      'Le soutien n\'est pas disponible pour le moment sur cet appareil.';
+
+  @override
+  String get stSupport => 'Soutenir Nalvium';
 }

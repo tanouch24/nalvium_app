@@ -1,3 +1,4 @@
+import '../../support/support_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -909,6 +910,8 @@ class _ResolvedViewState extends State<ResolvedView>
             color: NalviumColors.textSecondary,
             onPressed: widget.actions.onSaveEquipment,
           ),
+        const SizedBox(height: Space.x6),
+        const SupportCard(),
       ],
     );
   }

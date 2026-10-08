@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import '../core/analytics/analytics.dart';
 import '../domain/home_profile.dart';
 import 'local_store.dart';
+import 'tips_service.dart';
 import '../core/config/api_config.dart';
 import '../core/network/api_client.dart';
 import '../core/network/api_exceptions.dart';
@@ -68,6 +69,13 @@ final vitalPhotoSaverProvider = Provider<Future<String> Function(String tempPath
     return target;
   },
 );
+
+/// Pourboires (achats intégrés). Créé au démarrage pour finaliser tout achat resté en attente.
+final tipsServiceProvider = Provider<TipsService>((ref) {
+  final s = StoreTipsService();
+  ref.onDispose(s.dispose);
+  return s;
+});
 
 final homeProfileProvider = NotifierProvider<HomeProfileNotifier, HomeProfile>(HomeProfileNotifier.new);
 

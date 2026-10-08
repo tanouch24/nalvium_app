@@ -1,3 +1,4 @@
+import '../support/support_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -180,6 +181,12 @@ class SettingsScreen extends ConsumerWidget {
             ]),
             _Header(l.stSecHelp),
             _Group([
+              _Row(
+                key: const Key('st-support'),
+                icon: Icons.favorite_border_rounded,
+                label: l.stSupport,
+                onTap: () => showSupportSheet(context, ref),
+              ),
               _Row(
                 key: const Key('st-about'),
                 icon: Icons.info_outline_rounded,

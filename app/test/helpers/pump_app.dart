@@ -10,6 +10,7 @@ import 'package:nalvium/domain/video.dart';
 import 'package:nalvium/features/emergency/emergency_screen.dart';
 import 'package:nalvium/services/local_store.dart';
 import 'package:nalvium/services/providers.dart';
+import 'package:nalvium/services/tips_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nalvium/services/video_recorder_service.dart';
 
@@ -63,6 +64,7 @@ Future<FakePhotoCaptureService> pumpApp(
   Map<String, Object>? prefs,
   bool guard = false,
   Future<void> Function(String number)? dialer,
+  FakeTipsService? tips,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = dpr;
@@ -87,6 +89,7 @@ Future<FakePhotoCaptureService> pumpApp(
     overrides: [
       localStoreProvider.overrideWithValue(store),
       phoneDialerProvider.overrideWithValue(dialer ?? (_) async {}),
+      tipsServiceProvider.overrideWithValue(tips ?? FakeTipsService()),
       vitalPhotoSaverProvider.overrideWithValue((path, _) async => path),
       photoCaptureServiceProvider.overrideWithValue(fake),
       sessionsRepositoryProvider.overrideWithValue(repo ?? FakeSessionsRepository()),
@@ -160,4 +163,28 @@ class FakeVideoRecorder implements VideoRecorder {
   Future<void> cancel() async => cancels++;
   @override
   Future<void> dispose() async => disposed = true;
+}
+
+
+/// Faux store de TEST : aucun paiement réel.
+class FakeTipsService implements TipsService {
+  FakeTipsService({this.available = true, this.outcome = TipOutcome.thanks});
+  final bool available;
+  final TipOutcome outcome;
+  final bought = <String>[];
+
+  @override
+  Future<List<TipProduct>> products() async => available
+      ? const [
+          TipProduct(id: 'nalvium.tip.coffee', price: '2,99 €'),
+          TipProduct(id: 'nalvium.tip.two_coffees', price: '4,99 €'),
+          TipProduct(id: 'nalvium.tip.meal', price: '9,99 €'),
+        ]
+      : const [];
+
+  @override
+  Future<TipOutcome> tip(String productId) async {
+    bought.add(productId);
+    return outcome;
+  }
 }

@@ -3549,6 +3549,84 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Entretien noté. Nalvium vous le rappellera.'**
   String get mtMarked;
+
+  /// No description provided for @supportTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nalvium reste gratuit grâce à vous'**
+  String get supportTitle;
+
+  /// No description provided for @supportBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas de publicité, pas d\'abonnement. Si Nalvium vous a aidé, offrez-nous un café : cela finance l\'app et ses améliorations.'**
+  String get supportBody;
+
+  /// No description provided for @supportNoReward.
+  ///
+  /// In fr, this message translates to:
+  /// **'C\'est un don sans contrepartie : rien n\'est débloqué, tout reste gratuit.'**
+  String get supportNoReward;
+
+  /// No description provided for @supportCoffee.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un café'**
+  String get supportCoffee;
+
+  /// No description provided for @supportTwoCoffees.
+  ///
+  /// In fr, this message translates to:
+  /// **'Deux cafés'**
+  String get supportTwoCoffees;
+
+  /// No description provided for @supportMeal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un repas'**
+  String get supportMeal;
+
+  /// No description provided for @supportCta.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soutenir Nalvium'**
+  String get supportCta;
+
+  /// No description provided for @supportLater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas maintenant'**
+  String get supportLater;
+
+  /// No description provided for @supportThanks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Merci infiniment pour votre soutien !'**
+  String get supportThanks;
+
+  /// No description provided for @supportPending.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paiement en attente de validation. Merci !'**
+  String get supportPending;
+
+  /// No description provided for @supportFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le paiement n\'a pas abouti. Aucun montant n\'a été débité.'**
+  String get supportFailed;
+
+  /// No description provided for @supportUnavailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le soutien n\'est pas disponible pour le moment sur cet appareil.'**
+  String get supportUnavailable;
+
+  /// No description provided for @stSupport.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soutenir Nalvium'**
+  String get stSupport;
 }
 
 class _AppLocalizationsDelegate

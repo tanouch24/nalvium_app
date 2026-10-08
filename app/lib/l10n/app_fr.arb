@@ -741,5 +741,18 @@
   "mtVmcBody": "À nettoyer pour garder un air sain.",
   "mtSmokeAlarm": "Détecteur de fumée",
   "mtSmokeAlarmBody": "Testez-le en appuyant sur son bouton.",
-  "mtMarked": "Entretien noté. Nalvium vous le rappellera."
+  "mtMarked": "Entretien noté. Nalvium vous le rappellera.",
+  "supportTitle": "Nalvium reste gratuit grâce à vous",
+  "supportBody": "Pas de publicité, pas d'abonnement. Si Nalvium vous a aidé, offrez-nous un café : cela finance l'app et ses améliorations.",
+  "supportNoReward": "C'est un don sans contrepartie : rien n'est débloqué, tout reste gratuit.",
+  "supportCoffee": "Un café",
+  "supportTwoCoffees": "Deux cafés",
+  "supportMeal": "Un repas",
+  "supportCta": "Soutenir Nalvium",
+  "supportLater": "Pas maintenant",
+  "supportThanks": "Merci infiniment pour votre soutien !",
+  "supportPending": "Paiement en attente de validation. Merci !",
+  "supportFailed": "Le paiement n'a pas abouti. Aucun montant n'a été débité.",
+  "supportUnavailable": "Le soutien n'est pas disponible pour le moment sur cet appareil.",
+  "stSupport": "Soutenir Nalvium"
 }
