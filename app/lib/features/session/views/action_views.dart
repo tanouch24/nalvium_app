@@ -716,10 +716,14 @@ class ResolvedView extends StatefulWidget {
     required this.step,
     required this.actions,
     this.problemTitle,
+    this.savings,
   });
   final NextStep step;
   final SessionActions actions;
   final String? problemTitle;
+
+  /// Économie estimée (artisan − vous-même), affichée seulement si l'estimation la rend crédible.
+  final int? savings;
 
   @override
   State<ResolvedView> createState() => _ResolvedViewState();
@@ -858,6 +862,15 @@ class _ResolvedViewState extends State<ResolvedView>
                             fontSize: 17,
                             color: NalviumColors.success,
                           ),
+                        ),
+                      ],
+                      if (widget.savings != null) ...[
+                        const SizedBox(height: Space.x4),
+                        Text(
+                          l10n.estSavedTitle('${widget.savings} €'),
+                          key: const Key('resolved-savings'),
+                          textAlign: TextAlign.center,
+                          style: NalviumText.titleLarge.copyWith(fontSize: 24),
                         ),
                       ],
                       const SizedBox(height: Space.x3),

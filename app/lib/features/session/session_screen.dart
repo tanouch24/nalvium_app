@@ -17,6 +17,8 @@ import '../capture/analysis_wait.dart';
 import '../capture/capture_flow.dart';
 import '../history/session_labels.dart';
 import 'context_header.dart';
+import 'estimate_card.dart';
+import 'report_sheet.dart';
 import '../house/manual_citation.dart';
 import 'views/action_views.dart';
 import '../../core/analytics/analytics.dart';
@@ -279,6 +281,7 @@ class _Content extends StatelessWidget {
         step: step,
         actions: actions,
         problemTitle: state.title,
+        savings: (state.estimate?.diyFeasibility ?? 0) > 3 ? state.estimate?.savings : null,
       ),
     };
     // Contexte constant (vignette + titre + catégorie). REQUEST_PHOTO montre déjà la photo (paire), RESOLVED
@@ -364,6 +367,13 @@ class _Content extends StatelessWidget {
                 onPressed: actions.onRepairOptions,
               ),
             ),
+          // Carte résultat chiffrée : dès que Nalvium a une estimation (jamais sur un arrêt de sécurité).
+          if (state.estimate != null && type != NextActionType.safetyStop) ...[
+            const SizedBox(height: Space.x6),
+            EstimateCard(estimate: state.estimate!),
+          ],
+          const SizedBox(height: Space.x4),
+          ReportResultLink(sessionId: state.id),
         ],
       ),
     );

@@ -552,6 +552,38 @@
   "stDataRow": "Consulter et supprimer mes données",
   "preparingNext": "Je prépare la suite…",
   "historyRepairTitle": "Besoin d'un artisan ?",
-  "historyRepairBody": "Tes demandes d'intervention et l'aide d'un professionnel.",
-  "historySessions": "Tes diagnostics"
+  "historyRepairBody": "Vos demandes d'intervention et l'aide d'un professionnel.",
+  "historySessions": "Vos diagnostics",
+  "errDailyLimitTitle": "Beaucoup de diagnostics aujourd'hui",
+  "errDailyLimitBody": "Pour que Nalvium reste gratuit, le nombre de nouveaux diagnostics est limité par jour. Revenez demain : vos diagnostics en cours restent accessibles.",
+  "estTitle": "Estimation",
+  "estFeasible": "Faisable",
+  "estDuration": "Durée",
+  "estLevel": "Niveau",
+  "estEasy": "Facile",
+  "estMedium": "Moyen",
+  "estHard": "Difficile",
+  "estYourself": "Vous-même",
+  "estPro": "Artisan",
+  "estDisclaimer": "Estimation indicative, prix moyens en France. Ce n'est pas un devis.",
+  "estParts": "À acheter",
+  "estNotDiy": "À confier à un professionnel",
+  "estSavedTitle": "Vous avez économisé environ {amount}",
+  "@estSavedTitle": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "reportResult": "Signaler ce résultat",
+  "reportTitle": "Qu'est-ce qui ne va pas ?",
+  "reportWrong": "La réponse est fausse",
+  "reportDangerous": "Le conseil me semble dangereux",
+  "reportOffensive": "Contenu choquant ou inapproprié",
+  "reportOther": "Autre chose",
+  "reportDetailsHint": "Précisez si vous le souhaitez (facultatif)",
+  "reportSend": "Envoyer le signalement",
+  "reportThanks": "Merci, votre signalement a été envoyé. Il nous aide à améliorer Nalvium.",
+  "reportFailed": "Le signalement n'a pas pu être envoyé. Vous pouvez aussi écrire à contact@nalvium.com."
 }

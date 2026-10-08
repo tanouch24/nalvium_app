@@ -13,6 +13,9 @@ abstract interface class SessionsRepository {
   Future<SessionState> sendTurn(String sessionId, TurnInput? input);
   Future<SessionState> getSession(String sessionId);
   Future<List<SessionSummary>> listSessions({bool activeOnly = false});
+
+  /// Signaler une réponse de Nalvium : [reason] = wrong | dangerous | offensive | other.
+  Future<void> reportResult(String sessionId, String reason, {String? details});
 }
 
 class HttpSessionsRepository implements SessionsRepository {
@@ -61,6 +64,14 @@ class HttpSessionsRepository implements SessionsRepository {
     final json = await _api.getJson('/v1/sessions', query: {'active': '$activeOnly'});
     if (json is! List) throw const ApiProtocolException();
     return _parse(() => json.map((e) => SessionSummary.fromJson(e as Map<String, dynamic>)).toList());
+  }
+
+  @override
+  Future<void> reportResult(String sessionId, String reason, {String? details}) async {
+    await _api.postJson('/v1/sessions/$sessionId/report', body: {
+      'reason': reason,
+      if (details != null && details.trim().isNotEmpty) 'details': details.trim(),
+    });
   }
 
   Map<String, dynamic> _map(dynamic json) {

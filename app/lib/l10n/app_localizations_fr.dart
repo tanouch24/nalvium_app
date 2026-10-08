@@ -1397,8 +1397,89 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get historyRepairBody =>
-      'Tes demandes d\'intervention et l\'aide d\'un professionnel.';
+      'Vos demandes d\'intervention et l\'aide d\'un professionnel.';
 
   @override
-  String get historySessions => 'Tes diagnostics';
+  String get historySessions => 'Vos diagnostics';
+
+  @override
+  String get errDailyLimitTitle => 'Beaucoup de diagnostics aujourd\'hui';
+
+  @override
+  String get errDailyLimitBody =>
+      'Pour que Nalvium reste gratuit, le nombre de nouveaux diagnostics est limité par jour. Revenez demain : vos diagnostics en cours restent accessibles.';
+
+  @override
+  String get estTitle => 'Estimation';
+
+  @override
+  String get estFeasible => 'Faisable';
+
+  @override
+  String get estDuration => 'Durée';
+
+  @override
+  String get estLevel => 'Niveau';
+
+  @override
+  String get estEasy => 'Facile';
+
+  @override
+  String get estMedium => 'Moyen';
+
+  @override
+  String get estHard => 'Difficile';
+
+  @override
+  String get estYourself => 'Vous-même';
+
+  @override
+  String get estPro => 'Artisan';
+
+  @override
+  String get estDisclaimer =>
+      'Estimation indicative, prix moyens en France. Ce n\'est pas un devis.';
+
+  @override
+  String get estParts => 'À acheter';
+
+  @override
+  String get estNotDiy => 'À confier à un professionnel';
+
+  @override
+  String estSavedTitle(String amount) {
+    return 'Vous avez économisé environ $amount';
+  }
+
+  @override
+  String get reportResult => 'Signaler ce résultat';
+
+  @override
+  String get reportTitle => 'Qu\'est-ce qui ne va pas ?';
+
+  @override
+  String get reportWrong => 'La réponse est fausse';
+
+  @override
+  String get reportDangerous => 'Le conseil me semble dangereux';
+
+  @override
+  String get reportOffensive => 'Contenu choquant ou inapproprié';
+
+  @override
+  String get reportOther => 'Autre chose';
+
+  @override
+  String get reportDetailsHint => 'Précisez si vous le souhaitez (facultatif)';
+
+  @override
+  String get reportSend => 'Envoyer le signalement';
+
+  @override
+  String get reportThanks =>
+      'Merci, votre signalement a été envoyé. Il nous aide à améliorer Nalvium.';
+
+  @override
+  String get reportFailed =>
+      'Le signalement n\'a pas pu être envoyé. Vous pouvez aussi écrire à contact@nalvium.com.';
 }

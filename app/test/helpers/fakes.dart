@@ -25,6 +25,7 @@ SessionState sessionState({
   Map<String, dynamic>? equipment,
   Map<String, dynamic>? manual,
   List<Map<String, dynamic>> media = const [],
+  Map<String, dynamic>? estimate,
 }) {
   final wire = switch (action) {
     NextActionType.askQuestion => 'ASK_QUESTION',
@@ -47,6 +48,7 @@ SessionState sessionState({
     'pending_analysis': pending,
     'latest_media_id': mediaId,
     'equipment': equipment,
+    'estimate': estimate,
     'media': media,
     'messages': List.generate(messages, (_) => {}),
     'next': {
@@ -90,6 +92,16 @@ class FakeSessionsRepository implements SessionsRepository {
 
   /// Si défini, sendTurn attend ce Completer (permet d'observer l'écran d'attente).
   Completer<void>? turnGate;
+
+  /// Signalements reçus (session, raison, précision) ; [reportError] simule un échec réseau.
+  final reports = <(String, String, String?)>[];
+  Object? reportError;
+
+  @override
+  Future<void> reportResult(String sessionId, String reason, {String? details}) async {
+    if (reportError != null) throw reportError!;
+    reports.add((sessionId, reason, details));
+  }
 
   @override
   Future<String> createSession({String? equipmentId}) async {

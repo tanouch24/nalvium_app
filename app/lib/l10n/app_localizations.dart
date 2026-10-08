@@ -2665,14 +2665,164 @@ abstract class AppLocalizations {
   /// No description provided for @historyRepairBody.
   ///
   /// In fr, this message translates to:
-  /// **'Tes demandes d\'intervention et l\'aide d\'un professionnel.'**
+  /// **'Vos demandes d\'intervention et l\'aide d\'un professionnel.'**
   String get historyRepairBody;
 
   /// No description provided for @historySessions.
   ///
   /// In fr, this message translates to:
-  /// **'Tes diagnostics'**
+  /// **'Vos diagnostics'**
   String get historySessions;
+
+  /// No description provided for @errDailyLimitTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Beaucoup de diagnostics aujourd\'hui'**
+  String get errDailyLimitTitle;
+
+  /// No description provided for @errDailyLimitBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pour que Nalvium reste gratuit, le nombre de nouveaux diagnostics est limité par jour. Revenez demain : vos diagnostics en cours restent accessibles.'**
+  String get errDailyLimitBody;
+
+  /// No description provided for @estTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Estimation'**
+  String get estTitle;
+
+  /// No description provided for @estFeasible.
+  ///
+  /// In fr, this message translates to:
+  /// **'Faisable'**
+  String get estFeasible;
+
+  /// No description provided for @estDuration.
+  ///
+  /// In fr, this message translates to:
+  /// **'Durée'**
+  String get estDuration;
+
+  /// No description provided for @estLevel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Niveau'**
+  String get estLevel;
+
+  /// No description provided for @estEasy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Facile'**
+  String get estEasy;
+
+  /// No description provided for @estMedium.
+  ///
+  /// In fr, this message translates to:
+  /// **'Moyen'**
+  String get estMedium;
+
+  /// No description provided for @estHard.
+  ///
+  /// In fr, this message translates to:
+  /// **'Difficile'**
+  String get estHard;
+
+  /// No description provided for @estYourself.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous-même'**
+  String get estYourself;
+
+  /// No description provided for @estPro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Artisan'**
+  String get estPro;
+
+  /// No description provided for @estDisclaimer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Estimation indicative, prix moyens en France. Ce n\'est pas un devis.'**
+  String get estDisclaimer;
+
+  /// No description provided for @estParts.
+  ///
+  /// In fr, this message translates to:
+  /// **'À acheter'**
+  String get estParts;
+
+  /// No description provided for @estNotDiy.
+  ///
+  /// In fr, this message translates to:
+  /// **'À confier à un professionnel'**
+  String get estNotDiy;
+
+  /// No description provided for @estSavedTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous avez économisé environ {amount}'**
+  String estSavedTitle(String amount);
+
+  /// No description provided for @reportResult.
+  ///
+  /// In fr, this message translates to:
+  /// **'Signaler ce résultat'**
+  String get reportResult;
+
+  /// No description provided for @reportTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Qu\'est-ce qui ne va pas ?'**
+  String get reportTitle;
+
+  /// No description provided for @reportWrong.
+  ///
+  /// In fr, this message translates to:
+  /// **'La réponse est fausse'**
+  String get reportWrong;
+
+  /// No description provided for @reportDangerous.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le conseil me semble dangereux'**
+  String get reportDangerous;
+
+  /// No description provided for @reportOffensive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Contenu choquant ou inapproprié'**
+  String get reportOffensive;
+
+  /// No description provided for @reportOther.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autre chose'**
+  String get reportOther;
+
+  /// No description provided for @reportDetailsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Précisez si vous le souhaitez (facultatif)'**
+  String get reportDetailsHint;
+
+  /// No description provided for @reportSend.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyer le signalement'**
+  String get reportSend;
+
+  /// No description provided for @reportThanks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Merci, votre signalement a été envoyé. Il nous aide à améliorer Nalvium.'**
+  String get reportThanks;
+
+  /// No description provided for @reportFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le signalement n\'a pas pu être envoyé. Vous pouvez aussi écrire à contact@nalvium.com.'**
+  String get reportFailed;
 }
 
 class _AppLocalizationsDelegate

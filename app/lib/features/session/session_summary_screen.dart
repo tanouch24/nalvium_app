@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'estimate_card.dart';
+import 'report_sheet.dart';
 
 import '../../core/theme/nalvium_colors.dart';
 import '../../core/theme/nalvium_spacing.dart';
@@ -202,6 +204,12 @@ class _Body extends StatelessWidget {
             ),
           ),
         ],
+        if (state.estimate != null && !isStop) ...[
+          const SizedBox(height: Space.x8),
+          EstimateCard(estimate: state.estimate!),
+        ],
+        const SizedBox(height: Space.x6),
+        ReportResultLink(sessionId: state.id),
       ],
     );
   }

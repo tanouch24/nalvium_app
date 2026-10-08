@@ -1,5 +1,6 @@
 import 'diagnosis.dart';
 import 'equipment.dart';
+import 'estimate.dart';
 import 'text.dart';
 
 /// État d'une session tel que renvoyé par le backend (source de vérité).
@@ -21,6 +22,7 @@ class SessionState {
     this.latestMediaIsVideo = false,
     this.equipment,
     this.mediaItems = const [],
+    this.estimate,
   });
 
   final String id;
@@ -45,6 +47,9 @@ class SessionState {
 
   /// Équipement de la Maison auquel ce diagnostic est lié (null si aucun).
   final EquipmentRef? equipment;
+
+  /// Dernière estimation indicative connue (null tant que Nalvium n'a pas d'hypothèse plausible).
+  final RepairEstimate? estimate;
 
   bool get isActive => status == 'active';
 
@@ -80,6 +85,7 @@ class SessionState {
     equipment: j['equipment'] == null
         ? null
         : EquipmentRef.fromJson(j['equipment'] as Map<String, dynamic>),
+    estimate: RepairEstimate.maybe(j['estimate']),
   );
 }
 
@@ -163,6 +169,7 @@ class SessionSummary {
     this.subcategory,
     this.lastMessage,
     this.equipmentId,
+    this.estimate,
   });
 
   final String id;
@@ -175,6 +182,7 @@ class SessionSummary {
   final String? firstMediaId;
   final String? subcategory;
   final String? lastMessage;
+  final RepairEstimate? estimate;
 
   factory SessionSummary.fromJson(Map<String, dynamic> j) => SessionSummary(
     id: j['id'] as String,
@@ -191,6 +199,7 @@ class SessionSummary {
         ? null
         : cleanText(j['last_message'] as String),
     equipmentId: j['equipment_id'] as String?,
+    estimate: RepairEstimate.maybe(j['estimate']),
   );
 }
 
