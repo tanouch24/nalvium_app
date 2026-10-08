@@ -74,6 +74,18 @@ const privacyPolicy = LegalDocument(
     LegalSection("Publicité", [
       "Nalvium n'affiche aucune publicité et n'utilise pas votre identifiant publicitaire.",
     ]),
+    LegalSection("Votre accord pour l'IA", [
+      "Avant votre premier diagnostic, Nalvium vous explique ce qui est envoyé à OpenAI et vous demande votre accord. Sans accord, aucune donnée n'est envoyée à l'IA. Vous pouvez retirer votre accord à tout moment : Réglages › Accord pour l'analyse IA.",
+    ]),
+    LegalSection("Ce qui reste sur votre téléphone", [
+      "Le profil de votre logement (type, statut, chauffage, eau chaude, niveau en bricolage), les photos de vos points vitaux (vanne d'eau, tableau électrique, gaz) et vos entretiens notés sont enregistrés uniquement sur votre téléphone. Ils ne sont pas envoyés à Nalvium ni à l'IA, et sont effacés avec « Supprimer mes données » ou en désinstallant l'application.",
+    ]),
+    LegalSection("Signalements", [
+      "Si vous signalez une réponse de Nalvium, nous conservons la raison choisie et la précision que vous écrivez, rattachées au diagnostic, pour améliorer le service. Ils sont supprimés avec vos données.",
+    ]),
+    LegalSection("Soutien (dons)", [
+      "Les dons « Soutenir Nalvium » sont payés via Apple ou Google, selon leurs conditions. Nalvium ne reçoit ni vos coordonnées bancaires, ni votre identité de paiement. Un don ne débloque rien : tout reste gratuit.",
+    ]),
     LegalSection("Durées de conservation", [
       "Vos données sont conservées tant que vous ne les supprimez pas depuis Réglages › Mes données. Les brouillons et fichiers temporaires abandonnés peuvent être supprimés lors d'opérations de maintenance.",
       "Les notifications Telegram sont conservées dans la conversation Telegram de l'exploitant jusqu'à leur suppression par celui-ci.",
@@ -108,6 +120,12 @@ const termsOfUse = LegalDocument(
     ]),
     LegalSection("Demandes d'intervention", [
       "Avec votre accord explicite, votre demande peut être transmise à un opérateur ou partenaire susceptible de vous aider, lorsqu'elle est effectivement prise en charge. Nalvium ne garantit ni qu'un professionnel soit disponible, ni un délai, ni un prix. Le service est actuellement limité à Lyon et à un rayon de 50 km.",
+    ]),
+    LegalSection("Estimations de coût", [
+      "Les durées, difficultés et coûts affichés sont des estimations indicatives (prix moyens en France), calculées par l'IA. Ce ne sont ni des devis ni des engagements : le prix réel dépend de votre situation et du professionnel.",
+    ]),
+    LegalSection("Soutien", [
+      "Nalvium est gratuit. Vous pouvez le soutenir par un don facultatif payé via Apple ou Google, sans aucune contrepartie.",
     ]),
     LegalSection("Disponibilité", [
       "Le service peut être interrompu ou modifié. L'analyse dépend d'un fournisseur d'IA et peut être indisponible.",
@@ -171,6 +189,12 @@ const aiInformation = LegalDocument(
     ]),
     LegalSection("Ce que l'IA peut se tromper", [
       "L'IA peut mal interpréter une photo ou proposer une hypothèse fausse. Chaque hypothèse est présentée avec prudence. Vérifiez et ne prenez aucun risque.",
+    ]),
+    LegalSection("Estimations", [
+      "Les coûts, durées et difficultés sont des estimations indicatives de l'IA, jamais des devis. Elles ne sont jamais affichées lors d'un arrêt de sécurité.",
+    ]),
+    LegalSection("Signaler une réponse", [
+      "Sous chaque réponse, « Signaler ce résultat » permet d'indiquer une réponse fausse, dangereuse ou choquante. Chaque signalement est lu pour améliorer Nalvium.",
     ]),
     LegalSection("Garde-fous", [
       "Des règles de sécurité de Nalvium s'appliquent avant et après l'IA : elles peuvent interrompre une conversation et priment toujours sur l'IA et sur les demandes d'aide.",

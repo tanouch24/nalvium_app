@@ -23,7 +23,7 @@ def test_covers_required_topics_and_identity():
     html = _html()
     for needed in ["509 817 649 00080", "NB CONSULTING", "10 rue d&#x27;Hanoï, 69100 Villeurbanne", "contact@nalvium.com",
                    "2026-10", "octobre 2026", "OpenAI", "Telegram", "Railway", "EU West", "RGPD", "CNIL",
-                   "aucune publicité", "identifiant anonyme", "notices"]:
+                   "aucune publicité", "uniquement sur votre téléphone", "retirer votre accord", "Apple ou Google", "identifiant anonyme", "notices"]:
         assert needed in html, needed
 
 

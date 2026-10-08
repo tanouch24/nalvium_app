@@ -39,6 +39,8 @@ SECTIONS: list[tuple[str, list[str]]] = [
         "pour répondre à vos questions)."),
         ("• Demandes d'intervention : problème, prénom, téléphone, e-mail (facultatif), ville, code postal, "
         "disponibilité, médias que vous avez explicitement choisis, et votre consentement (version, date, catégories)."),
+        ("• Signalements : la raison choisie et la précision écrite lorsque vous signalez une réponse de Nalvium, "
+        "rattachées au diagnostic."),
         "• Données techniques minimales : journaux sans contenu personnel (identifiants techniques, statuts, durées).",
     ]),
     ("Finalités", [
@@ -53,6 +55,17 @@ SECTIONS: list[tuple[str, list[str]]] = [
         ("L'identification d'un équipement sur photo et la recherche de notice envoient aussi une image, ou la seule "
         "marque et référence, au fournisseur, jamais votre identité."),
         "Vos données ne restent donc pas uniquement sur les serveurs de Nalvium.",
+    ]),
+    ("Votre accord pour l'IA", [
+        ("Avant votre premier diagnostic, Nalvium vous explique ce qui est envoyé à OpenAI et vous demande votre accord. "
+        "Sans accord, aucune donnée n'est envoyée à l'IA. Vous pouvez retirer votre accord à tout moment dans "
+        "Réglages › Accord pour l'analyse IA."),
+    ]),
+    ("Ce qui reste sur votre téléphone", [
+        ("Le profil de votre logement (type, statut, chauffage, eau chaude, niveau en bricolage), les photos de vos "
+        "points vitaux (vanne d'eau, tableau électrique, gaz) et vos entretiens notés sont enregistrés uniquement sur "
+        "votre téléphone. Ils ne sont envoyés ni à Nalvium ni à l'IA, et sont effacés avec « Supprimer mes données » "
+        "ou en désinstallant l'application."),
     ]),
     ("Photos et vidéos", [
         ("Les médias de diagnostic restent privés. Leur localisation (GPS) et leurs métadonnées (EXIF) sont supprimées "
@@ -75,6 +88,10 @@ SECTIONS: list[tuple[str, list[str]]] = [
     ]),
     ("Publicité", [
         "Nalvium n'affiche aucune publicité et n'utilise pas votre identifiant publicitaire.",
+    ]),
+    ("Soutien (dons)", [
+        ("Les dons « Soutenir Nalvium » sont payés via Apple ou Google, selon leurs conditions. Nalvium ne reçoit ni "
+        "vos coordonnées bancaires, ni votre identité de paiement. Un don ne débloque rien : tout reste gratuit."),
     ]),
     ("Destinataires et sous-traitants", [
         "• OpenAI : analyse par intelligence artificielle (voir plus haut).",

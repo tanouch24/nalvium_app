@@ -3627,6 +3627,48 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Soutenir Nalvium'**
   String get stSupport;
+
+  /// No description provided for @stAiConsent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Accord pour l\'analyse IA'**
+  String get stAiConsent;
+
+  /// No description provided for @stAiConsentOn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Donné'**
+  String get stAiConsentOn;
+
+  /// No description provided for @stAiConsentOff.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non donné'**
+  String get stAiConsentOff;
+
+  /// No description provided for @stAiWithdrawTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer votre accord ?'**
+  String get stAiWithdrawTitle;
+
+  /// No description provided for @stAiWithdrawBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nalvium n\'enverra plus rien à l\'IA. Pour un nouveau diagnostic, votre accord vous sera redemandé. Vos données déjà envoyées ne sont pas effacées : utilisez « Supprimer mes données » pour cela.'**
+  String get stAiWithdrawBody;
+
+  /// No description provided for @stAiWithdraw.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer mon accord'**
+  String get stAiWithdraw;
+
+  /// No description provided for @stCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get stCancel;
 }
 
 class _AppLocalizationsDelegate

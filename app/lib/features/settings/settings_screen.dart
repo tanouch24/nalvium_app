@@ -148,7 +148,28 @@ class _Row extends StatelessWidget {
   );
 }
 
-/// Réglages : seulement ce qui sert vraiment (données, publicité, aide, légal, version).
+/// Accord IA : le retirer (avec confirmation) ou le donner.
+Future<void> _manageAiConsent(BuildContext context, WidgetRef ref) async {
+  final l = AppLocalizations.of(context);
+  if (!ref.read(aiConsentProvider)) {
+    await context.push('/consent');
+    return;
+  }
+  final ok = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: Text(l.stAiWithdrawTitle),
+      content: Text(l.stAiWithdrawBody),
+      actions: [
+        TextButton(key: const Key('ai-withdraw-cancel'), onPressed: () => Navigator.pop(ctx, false), child: Text(l.stCancel)),
+        TextButton(key: const Key('ai-withdraw-confirm'), onPressed: () => Navigator.pop(ctx, true), child: Text(l.stAiWithdraw)),
+      ],
+    ),
+  );
+  if (ok == true) await ref.read(aiConsentProvider.notifier).withdraw();
+}
+
+/// Réglages : seulement ce qui sert vraiment (données, confidentialité, aide, légal, version).
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
@@ -177,6 +198,13 @@ class SettingsScreen extends ConsumerWidget {
                 icon: Icons.lock_outline_rounded,
                 label: l.stPrivacy,
                 onTap: () => context.push('/settings/legal/privacy'),
+              ),
+              _Row(
+                key: const Key('st-ai-consent'),
+                icon: Icons.auto_awesome_outlined,
+                label: l.stAiConsent,
+                value: ref.watch(aiConsentProvider) ? l.stAiConsentOn : l.stAiConsentOff,
+                onTap: () => _manageAiConsent(context, ref),
               ),
             ]),
             _Header(l.stSecHelp),

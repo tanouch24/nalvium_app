@@ -134,4 +134,18 @@ void main() {
     expect(again.maintenanceDone['boiler'], now);
     expect(again.vitals[VitalPoint.gasMeter]!.absent, isTrue);
   });
+
+  testWidgets('Réglages : retirer l\'accord IA (avec confirmation), puis le redonner', (tester) async {
+    await pumpApp(tester, location: '/settings', guard: true);
+    await tapK(tester, 'st-ai-consent');
+    await tapK(tester, 'ai-withdraw-cancel');
+    expect(find.text('Donné'), findsOneWidget);
+    await tapK(tester, 'st-ai-consent');
+    await tapK(tester, 'ai-withdraw-confirm');
+    expect(find.text('Non donné'), findsOneWidget);
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString('nalvium.ai_consent'), isNull);
+    await tapK(tester, 'st-ai-consent');
+    expect(k('consent-title'), findsOneWidget);
+  });
 }

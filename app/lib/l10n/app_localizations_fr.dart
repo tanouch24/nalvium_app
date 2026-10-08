@@ -1944,4 +1944,26 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get stSupport => 'Soutenir Nalvium';
+
+  @override
+  String get stAiConsent => 'Accord pour l\'analyse IA';
+
+  @override
+  String get stAiConsentOn => 'Donné';
+
+  @override
+  String get stAiConsentOff => 'Non donné';
+
+  @override
+  String get stAiWithdrawTitle => 'Retirer votre accord ?';
+
+  @override
+  String get stAiWithdrawBody =>
+      'Nalvium n\'enverra plus rien à l\'IA. Pour un nouveau diagnostic, votre accord vous sera redemandé. Vos données déjà envoyées ne sont pas effacées : utilisez « Supprimer mes données » pour cela.';
+
+  @override
+  String get stAiWithdraw => 'Retirer mon accord';
+
+  @override
+  String get stCancel => 'Annuler';
 }

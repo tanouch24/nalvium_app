@@ -754,5 +754,12 @@
   "supportPending": "Paiement en attente de validation. Merci !",
   "supportFailed": "Le paiement n'a pas abouti. Aucun montant n'a été débité.",
   "supportUnavailable": "Le soutien n'est pas disponible pour le moment sur cet appareil.",
-  "stSupport": "Soutenir Nalvium"
+  "stSupport": "Soutenir Nalvium",
+  "stAiConsent": "Accord pour l'analyse IA",
+  "stAiConsentOn": "Donné",
+  "stAiConsentOff": "Non donné",
+  "stAiWithdrawTitle": "Retirer votre accord ?",
+  "stAiWithdrawBody": "Nalvium n'enverra plus rien à l'IA. Pour un nouveau diagnostic, votre accord vous sera redemandé. Vos données déjà envoyées ne sont pas effacées : utilisez « Supprimer mes données » pour cela.",
+  "stAiWithdraw": "Retirer mon accord",
+  "stCancel": "Annuler"
 }
