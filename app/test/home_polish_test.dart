@@ -15,7 +15,7 @@ void main() {
             : null;
         await pumpApp(tester, repo: repo, size: const Size(960, 2400), dpr: 3, textScale: scale);
         expect(tester.takeException(), isNull);
-        for (final key in ['open-history', 'open-settings', 'describe-problem', 'film-problem', 'take-photo']) {
+        for (final key in ['open-settings', 'describe-problem', 'film-problem', 'take-photo']) {
           await tester.scrollUntilVisible(k(key), 100, scrollable: find.byType(Scrollable).first);
           expect(k(key), findsOneWidget, reason: key);
           final size = tester.getSize(k(key));

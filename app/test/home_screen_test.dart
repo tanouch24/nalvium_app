@@ -7,7 +7,7 @@ import 'helpers/pump_app.dart';
 void main() {
   testWidgets('HOME sans session : explique l\'app, aucune section ni faux contenu', (tester) async {
     await pumpApp(tester);
-    expect(find.text('NALVIUM'), findsOneWidget);
+    expect(find.text('nalvium'), findsOneWidget);
     expect(find.text('Bonjour'), findsOneWidget);
     expect(find.text('Un problème à la maison ?'), findsOneWidget);
     expect(find.textContaining('Montrez-le à Nalvium.'), findsOneWidget);

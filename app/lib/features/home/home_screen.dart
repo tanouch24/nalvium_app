@@ -39,34 +39,27 @@ class HomeScreen extends ConsumerWidget {
                   Row(
                     children: [
                       Text(
-                        l10n.appName,
+                        l10n.appName.toLowerCase(),
                         style: NalviumText.wordmark,
                         textScaler: TextScaler.noScaling,
                       ),
                       const Spacer(),
-                      IconButton(
-                        key: const Key('open-history'),
-                        tooltip: l10n.history,
-                        icon: const Icon(Icons.history_rounded),
-                        iconSize: 26,
-                        color: NalviumColors.textPrimary,
-                        constraints: const BoxConstraints(
-                          minWidth: 48,
-                          minHeight: 48,
+                      Material(
+                        color: NalviumColors.surface,
+                        shape: const CircleBorder(),
+                        clipBehavior: Clip.antiAlias,
+                        child: IconButton(
+                          key: const Key('open-settings'),
+                          tooltip: l10n.settings,
+                          icon: const Icon(Icons.settings_outlined),
+                          iconSize: 22,
+                          color: NalviumColors.textPrimary,
+                          constraints: const BoxConstraints(
+                            minWidth: 48,
+                            minHeight: 48,
+                          ),
+                          onPressed: () => context.push('/settings'),
                         ),
-                        onPressed: () => context.push('/history'),
-                      ),
-                      IconButton(
-                        key: const Key('open-settings'),
-                        tooltip: l10n.settings,
-                        icon: const Icon(Icons.settings_outlined),
-                        iconSize: 26,
-                        color: NalviumColors.textPrimary,
-                        constraints: const BoxConstraints(
-                          minWidth: 48,
-                          minHeight: 48,
-                        ),
-                        onPressed: () => context.push('/settings'),
                       ),
                     ],
                   ),

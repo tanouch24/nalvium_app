@@ -109,7 +109,7 @@ abstract class AppLocalizations {
   /// No description provided for @navHouse.
   ///
   /// In fr, this message translates to:
-  /// **'Maison'**
+  /// **'Ma maison'**
   String get navHouse;
 
   /// No description provided for @navRepair.
@@ -118,10 +118,16 @@ abstract class AppLocalizations {
   /// **'Dépannage'**
   String get navRepair;
 
+  /// No description provided for @navHistory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Historique'**
+  String get navHistory;
+
   /// No description provided for @navCamera.
   ///
   /// In fr, this message translates to:
-  /// **'Caméra'**
+  /// **'Scanner un problème'**
   String get navCamera;
 
   /// No description provided for @history.
@@ -2649,6 +2655,24 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Je prépare la suite…'**
   String get preparingNext;
+
+  /// No description provided for @historyRepairTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Besoin d\'un artisan ?'**
+  String get historyRepairTitle;
+
+  /// No description provided for @historyRepairBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tes demandes d\'intervention et l\'aide d\'un professionnel.'**
+  String get historyRepairBody;
+
+  /// No description provided for @historySessions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tes diagnostics'**
+  String get historySessions;
 }
 
 class _AppLocalizationsDelegate

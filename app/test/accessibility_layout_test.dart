@@ -70,7 +70,7 @@ void main() {
   testWidgets('barre de navigation : 3 destinations + caméra, sans overflow, zones tactiles ≥ 48', (tester) async {
     await pumpApp(tester, size: _small, textScale: 2.0);
     expect(tester.takeException(), isNull);
-    for (final k in ['nav-home', 'nav-house', 'nav-repair']) {
+    for (final k in ['nav-home', 'nav-house', 'nav-history']) {
       expect(tester.getSize(find.byKey(Key(k))).height, greaterThanOrEqualTo(48));
     }
     expect(tester.getSize(find.byKey(const Key('nav-camera'))).width, greaterThanOrEqualTo(56));
@@ -104,10 +104,9 @@ void main() {
     final handle = tester.ensureSemantics();
     await pumpApp(tester);
     expect(find.bySemanticsLabel(RegExp('Prendre une photo')), findsOneWidget);
-    expect(find.bySemanticsLabel('Caméra'), findsOneWidget);
-    expect(find.byTooltip('Historique'), findsOneWidget);
+    expect(find.bySemanticsLabel('Scanner un problème'), findsOneWidget);
     expect(find.byTooltip('Réglages'), findsOneWidget);
-    for (final label in ['Accueil', 'Maison', 'Dépannage']) {
+    for (final label in ['Accueil', 'Ma maison', 'Historique']) {
       expect(find.bySemanticsLabel(label), findsOneWidget, reason: label);
     }
     handle.dispose();

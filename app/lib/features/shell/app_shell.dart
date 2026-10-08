@@ -4,19 +4,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/nalvium_colors.dart';
+import '../../core/theme/nalvium_spacing.dart';
 import '../../core/theme/nalvium_typography.dart';
 import '../../core/widgets/motion.dart';
 import '../../l10n/app_localizations.dart';
 import '../capture/capture_flow.dart';
 
-/// Accueil | Maison | [CAMÉRA] | Dépannage | Communauté
-/// Le bouton central est une ACTION (pas un onglet) : il ouvre directement la caméra.
+/// Accueil | Ma maison | Historique, et le bouton Scanner (noir, à droite, en relief).
+/// Scanner est une ACTION (pas un onglet) : il ouvre directement la caméra.
 class AppShell extends ConsumerWidget {
   const AppShell({super.key, required this.navigationShell});
   final StatefulNavigationShell navigationShell;
 
   static const _barHeight = 64.0;
-  static const _lift = 20.0;
+  static const _lift = 22.0;
+  static const _scanSize = 64.0;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -42,74 +44,67 @@ class AppShell extends ConsumerWidget {
 
     return Scaffold(
       body: navigationShell,
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          MediaQuery.withClampedTextScaling(
-            maxScaleFactor: 1.0, // libellés de navigation à taille fixe (5 destinations sur 360 dp)
-            child: SafeArea(
-              top: false,
-              child: SizedBox(
-                height: _barHeight + _lift,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      height: _barHeight,
-                      child: DecoratedBox(
-                        decoration: const BoxDecoration(
-                          color: NalviumColors.surface,
-                          border: Border(
-                            top: BorderSide(color: NalviumColors.borderSubtle),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            item(
-                              0,
-                              Icons.home_outlined,
-                              Icons.home_rounded,
-                              l10n.navHome,
-                              const Key('nav-home'),
-                            ),
-                            item(
-                              1,
-                              Icons.house_outlined,
-                              Icons.house_rounded,
-                              l10n.navHouse,
-                              const Key('nav-house'),
-                            ),
-                            const Expanded(child: SizedBox.shrink()),
-                            item(
-                              2,
-                              Icons.build_circle_outlined,
-                              Icons.build_circle_rounded,
-                              l10n.navRepair,
-                              const Key('nav-repair'),
-                            ),
-                          ],
-                        ),
+      bottomNavigationBar: MediaQuery.withClampedTextScaling(
+        maxScaleFactor: 1.0, // libellés de navigation à taille fixe
+        child: SafeArea(
+          top: false,
+          child: SizedBox(
+            height: _barHeight + _lift,
+            child: Stack(
+              children: [
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  height: _barHeight,
+                  child: DecoratedBox(
+                    decoration: const BoxDecoration(
+                      color: NalviumColors.surface,
+                      border: Border(
+                        top: BorderSide(color: NalviumColors.borderSubtle),
                       ),
                     ),
-                    Positioned(
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      child: Center(
-                        child: _CameraButton(
-                          label: l10n.navCamera,
-                          onTap: () => startPhotoCapture(context, ref),
+                    child: Row(
+                      children: [
+                        item(
+                          0,
+                          Icons.home_outlined,
+                          Icons.home_rounded,
+                          l10n.navHome,
+                          const Key('nav-home'),
                         ),
-                      ),
+                        item(
+                          1,
+                          Icons.house_outlined,
+                          Icons.house_rounded,
+                          l10n.navHouse,
+                          const Key('nav-house'),
+                        ),
+                        item(
+                          2,
+                          Icons.history_rounded,
+                          Icons.history_rounded,
+                          l10n.navHistory,
+                          const Key('nav-history'),
+                        ),
+                        const SizedBox(width: _scanSize + 2 * Space.x4),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
+                Positioned(
+                  top: 0,
+                  right: Space.x4,
+                  child: _ScanButton(
+                    label: l10n.navCamera,
+                    size: _scanSize,
+                    onTap: () => startPhotoCapture(context, ref),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -131,8 +126,8 @@ class _NavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = selected
-        ? NalviumColors.primaryText
-        : NalviumColors.textSecondary;
+        ? NalviumColors.textPrimary
+        : NalviumColors.textMuted;
     return Semantics(
       button: true,
       selected: selected,
@@ -179,9 +174,14 @@ class _NavItem extends StatelessWidget {
   }
 }
 
-class _CameraButton extends StatelessWidget {
-  const _CameraButton({required this.label, required this.onTap});
+class _ScanButton extends StatelessWidget {
+  const _ScanButton({
+    required this.label,
+    required this.size,
+    required this.onTap,
+  });
   final String label;
+  final double size;
   final VoidCallback onTap;
 
   @override
@@ -191,12 +191,11 @@ class _CameraButton extends StatelessWidget {
     child: DecoratedBox(
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: NalviumColors.surface, width: 4),
         boxShadow: [
           BoxShadow(
             color: NalviumColors.primary.withValues(alpha: 0.28),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -215,13 +214,13 @@ class _CameraButton extends StatelessWidget {
                 ? NalviumColors.primaryPressed
                 : null,
           ),
-          child: const SizedBox(
-            width: 62,
-            height: 62,
-            child: Icon(
-              Icons.photo_camera_rounded,
+          child: SizedBox(
+            width: size,
+            height: size,
+            child: const Icon(
+              Icons.add_rounded,
               color: Colors.white,
-              size: 29,
+              size: 32,
             ),
           ),
         ),

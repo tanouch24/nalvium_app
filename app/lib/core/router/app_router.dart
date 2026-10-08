@@ -49,7 +49,7 @@ GoRouter buildRouter({
         ),
         StatefulShellBranch(
           routes: [
-            GoRoute(path: '/repair', builder: (_, _) => const RepairScreen()),
+            GoRoute(path: '/history', builder: (_, _) => const HistoryScreen()),
           ],
         ),
       ],
@@ -174,8 +174,8 @@ GoRouter buildRouter({
       pageBuilder: (_, state) => nalviumPage(state, RequestDetailScreen(requestId: state.pathParameters['id']!)),
     ),
     GoRoute(
-      path: '/history',
-      pageBuilder: (_, state) => nalviumPage(state, const HistoryScreen()),
+      path: '/repair',
+      pageBuilder: (_, state) => nalviumPage(state, const RepairScreen()),
     ),
     GoRoute(
       path: '/settings',

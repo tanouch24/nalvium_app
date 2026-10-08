@@ -17,7 +17,7 @@ void main() {
         summary(id: 'd', title: 'Lave-vaisselle', status: 'active', state: 'INSTRUCTION', category: 'appliance', updatedAt: now),
       ]);
       await pumpApp(tester, repo: repo);
-      await tester.tap(find.byKey(const Key('open-history')));
+      await tester.tap(find.byKey(const Key('nav-history')));
       await tester.pumpAndSettle();
       for (final t in ['Robinet qui goutte', 'Câble qui chauffe', 'Machine en panne', 'Lave-vaisselle']) {
         expect(find.text(t), findsOneWidget);
@@ -43,7 +43,7 @@ void main() {
         stored: sessionState(action: NextActionType.instruction, message: 'Fermez le robinet.', id: 'b'),
       );
       await pumpApp(tester, repo: repo);
-      await tester.tap(find.byKey(const Key('open-history')));
+      await tester.tap(find.byKey(const Key('nav-history')));
       await tester.pumpAndSettle();
 
       await tester.tap(find.byKey(const Key('history-b')));
@@ -52,7 +52,7 @@ void main() {
 
       await tester.tap(find.byKey(const Key('close-session')));
       await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const Key('open-history')));
+      await tester.tap(find.byKey(const Key('nav-history')));
       await tester.pumpAndSettle();
 
       repo.stored = sessionState(action: NextActionType.resolved, message: 'Le filtre était bouché.', status: 'resolved', id: 'a');
@@ -67,7 +67,7 @@ void main() {
       final repo = FakeSessionsRepository();
       await pumpApp(tester, repo: repo);
       repo.listError = const ApiNetworkException();
-      await tester.tap(find.byKey(const Key('open-history')));
+      await tester.tap(find.byKey(const Key('nav-history')));
       await tester.pumpAndSettle();
       expect(find.byKey(const Key('retry')), findsOneWidget);
     });

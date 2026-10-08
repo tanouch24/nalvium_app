@@ -2,9 +2,10 @@
   "@@locale": "fr",
   "appName": "NALVIUM",
   "navHome": "Accueil",
-  "navHouse": "Maison",
+  "navHouse": "Ma maison",
   "navRepair": "Dépannage",
-  "navCamera": "Caméra",
+  "navHistory": "Historique",
+  "navCamera": "Scanner un problème",
   "history": "Historique",
   "settings": "Réglages",
   "homeGreeting": "Bonjour",
@@ -549,5 +550,8 @@
   "stDelDoneBody": "Nalvium repart à zéro avec une nouvelle identité anonyme.",
   "stDelHome": "Retour à l'accueil",
   "stDataRow": "Consulter et supprimer mes données",
-  "preparingNext": "Je prépare la suite…"
+  "preparingNext": "Je prépare la suite…",
+  "historyRepairTitle": "Besoin d'un artisan ?",
+  "historyRepairBody": "Tes demandes d'intervention et l'aide d'un professionnel.",
+  "historySessions": "Tes diagnostics"
 }

@@ -1,32 +1,38 @@
 import 'package:flutter/material.dart';
 
-/// Tokens de couleur Nalvium. Bleu = action, marine = texte, rouge = danger réel uniquement.
+/// Tokens de couleur Nalvium (direction premium, octobre 2026).
+/// Blanc cassé + encre = calme et lisible ; cuivre = UNE seule couleur d'accent ; rouge = danger réel uniquement.
 abstract final class NalviumColors {
-  static const background = Color(0xFFF7F9FC);
+  static const background = Color(0xFFF6F4EF);
   static const surface = Color(0xFFFFFFFF);
-  static const surfaceSubtle = Color(0xFFEEF2F8);
+  static const surfaceSubtle = Color(0xFFECE8DF);
 
-  static const primary = Color(0xFF1E6BFF);
-  static const primaryPressed = Color(0xFF1657D6);
-  static const primarySoft = Color(0xFFE8F0FF);
+  /// Action principale : encre (boutons pleins, bouton Scanner).
+  static const primary = Color(0xFF15140F);
+  static const primaryPressed = Color(0xFF34322B);
+  static const primarySoft = Color(0xFFECE8DF);
 
-  /// Texte bleu sur fond doux (contraste ≥ 4.5:1).
-  static const primaryText = Color(0xFF1553CC);
+  /// Texte d'action sur fond clair ou doux (liens, « Continuer ») : cuivre foncé (contraste ≥ 4.5:1).
+  static const primaryText = Color(0xFF9A3F14);
 
-  static const textPrimary = Color(0xFF0B1F44);
-  static const textSecondary = Color(0xFF4F5E78);
-  static const textMuted = Color(0xFF5E6B85);
-  static const borderSubtle = Color(0xFFE3E9F2);
+  /// Accent cuivre : un geste fort par écran au plus. Texte blanc lisible dessus (≥ 4.5:1).
+  static const accent = Color(0xFFB0561F);
+  static const accentSoft = Color(0xFFFBE9DF);
 
-  static const success = Color(0xFF0F7048);
-  static const successSoft = Color(0xFFE6F5EE);
-  static const warning = Color(0xFF8F5200);
-  static const warningSoft = Color(0xFFFFF1DB);
-  static const danger = Color(0xFFD6342C);
+  static const textPrimary = Color(0xFF15140F);
+  static const textSecondary = Color(0xFF5B574E);
+  static const textMuted = Color(0xFF6B675E);
+  static const borderSubtle = Color(0xFFE4DFD4);
+
+  static const success = Color(0xFF2F6B3A);
+  static const successSoft = Color(0xFFE3EFE3);
+  static const warning = Color(0xFF8A5A00);
+  static const warningSoft = Color(0xFFF6EED8);
+  static const danger = Color(0xFFC8372D);
 
   /// Texte rouge sur fonds clairs (contraste ≥ 4.5:1) ; `danger` reste pour les aplats/icônes.
-  static const dangerText = Color(0xFFB8261F);
-  static const dangerPressed = Color(0xFFB92A23);
-  static const dangerSoft = Color(0xFFFDECEA);
-  static const dangerBackground = Color(0xFFFFF7F6);
+  static const dangerText = Color(0xFFA82A21);
+  static const dangerPressed = Color(0xFFA82D24);
+  static const dangerSoft = Color(0xFFFBE8E5);
+  static const dangerBackground = Color(0xFFFDF5F3);
 }

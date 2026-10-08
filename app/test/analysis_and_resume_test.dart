@@ -191,7 +191,7 @@ void main() {
       final repo = FakeSessionsRepository(sessions: [summary(id: 'a', status: 'resolved', state: 'RESOLVED', title: 'Robinet réparé')]);
       await pumpApp(tester, repo: repo);
       expect(find.text('À reprendre'), findsNothing);
-      await tester.tap(find.byKey(const Key('open-history')));
+      await tester.tap(find.byKey(const Key('nav-history')));
       await tester.pumpAndSettle();
       expect(find.text('Robinet réparé'), findsOneWidget);
       expect(find.text('Résolu'), findsOneWidget);
@@ -200,7 +200,7 @@ void main() {
 
     testWidgets('historique vide : état vide honnête', (tester) async {
       await pumpApp(tester, repo: FakeSessionsRepository());
-      await tester.tap(find.byKey(const Key('open-history')));
+      await tester.tap(find.byKey(const Key('nav-history')));
       await tester.pumpAndSettle();
       expect(find.text('Aucun historique'), findsOneWidget);
     });

@@ -142,8 +142,8 @@ class _Button extends StatelessWidget {
           color: enabled
               ? bg
               : (filled ? NalviumColors.surfaceSubtle : NalviumColors.surface),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(Corner.medium),
+          // Boutons en pilule : signature visuelle premium.
+          shape: StadiumBorder(
             side: filled
                 ? BorderSide.none
                 : BorderSide(

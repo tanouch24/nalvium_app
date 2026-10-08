@@ -14,8 +14,8 @@ import '../../l10n/app_localizations.dart';
 import '../../services/providers.dart';
 import 'session_labels.dart';
 
-/// Historique : uniquement de vraies sessions du backend. Une session active se reprend,
-/// une session terminée ouvre son récapitulatif (jamais la conversation brute).
+/// Historique (onglet) : l'accès aux artisans en tête, puis uniquement de vraies sessions du backend.
+/// Une session active se reprend, une session terminée ouvre son récapitulatif (jamais la conversation brute).
 class HistoryScreen extends ConsumerWidget {
   const HistoryScreen({super.key});
 
@@ -26,39 +26,94 @@ class HistoryScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        leading: BackButton(onPressed: () => context.pop()),
+        titleSpacing: Space.gutter,
         title: Text(l10n.history, style: NalviumText.titleLarge),
         toolbarHeight: 72,
       ),
       body: SafeArea(
-        child: sessions.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(
-            child: Padding(
-              padding: const EdgeInsets.all(Space.gutter),
-              child: ErrorPanel(
-                error: e,
-                onRetry: () => ref.invalidate(allSessionsProvider),
-              ),
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(Space.gutter, 0, Space.gutter, Space.x8),
+          children: [
+            const _RepairEntry(),
+            const SizedBox(height: Space.x6),
+            ...sessions.when(
+              loading: () => const [Padding(padding: EdgeInsets.all(Space.x8), child: Center(child: CircularProgressIndicator()))],
+              error: (e, _) => [
+                ErrorPanel(
+                  error: e,
+                  onRetry: () => ref.invalidate(allSessionsProvider),
+                ),
+              ],
+              data: (items) => items.isEmpty
+                  ? [
+                      SizedBox(
+                        height: 380,
+                        child: EmptyState(
+                          icon: Icons.history_rounded,
+                          title: l10n.historyEmptyTitle,
+                          body: l10n.historyEmptyBody,
+                        ),
+                      ),
+                    ]
+                  : [
+                      Semantics(header: true, child: Text(l10n.historySessions, style: NalviumText.title.copyWith(fontSize: 19))),
+                      const SizedBox(height: Space.x1),
+                      Text(l10n.historyIntro, key: const Key('history-intro'), style: NalviumText.body),
+                      const SizedBox(height: Space.x2),
+                      for (var i = 0; i < items.length; i++) ...[
+                        if (i > 0) const Divider(height: 1, thickness: 0.8, color: NalviumColors.borderSubtle),
+                        _HistoryRow(session: items[i]),
+                      ],
+                    ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Accès aux demandes d'intervention (ancien onglet Dépannage) : une carte sobre, toujours visible.
+class _RepairEntry extends StatelessWidget {
+  const _RepairEntry();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Semantics(
+      button: true,
+      child: Material(
+        color: NalviumColors.surface,
+        borderRadius: BorderRadius.circular(Corner.medium),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          key: const Key('history-repair'),
+          onTap: () => context.push('/repair'),
+          child: Padding(
+            padding: const EdgeInsets.all(Space.x4),
+            child: Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: const BoxDecoration(color: NalviumColors.accentSoft, shape: BoxShape.circle),
+                  child: const Icon(Icons.handyman_outlined, color: NalviumColors.primaryText, size: 24),
+                ),
+                const SizedBox(width: Space.x4),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(l10n.historyRepairTitle, style: NalviumText.title.copyWith(fontSize: 17)),
+                      const SizedBox(height: 2),
+                      Text(l10n.historyRepairBody, style: NalviumText.caption),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_right_rounded, color: NalviumColors.textMuted),
+              ],
             ),
           ),
-          data: (items) => items.isEmpty
-              ? EmptyState(
-                  icon: Icons.history_rounded,
-                  title: l10n.historyEmptyTitle,
-                  body: l10n.historyEmptyBody,
-                )
-              : ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(Space.gutter, 0, Space.gutter, Space.x8),
-                  itemCount: items.length + 1,
-                  separatorBuilder: (_, i) => i == 0 ? const SizedBox.shrink() : const Divider(height: 1, thickness: 0.8, color: NalviumColors.borderSubtle),
-                  itemBuilder: (context, i) => i == 0
-                      ? Padding(
-                          padding: const EdgeInsets.only(bottom: Space.x2),
-                          child: Text(l10n.historyIntro, key: const Key('history-intro'), style: NalviumText.body),
-                        )
-                      : _HistoryRow(session: items[i - 1]),
-                ),
         ),
       ),
     );

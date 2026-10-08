@@ -512,7 +512,7 @@ void main() {
         stored: sessionState(id: 'r1', action: NextActionType.resolved, status: 'resolved', message: 'Réglé.'),
       );
       await pumpApp(tester, home: home, repo: repo);
-      await tester.tap(byKey('open-history'));
+      await tester.tap(byKey('nav-history'));
       await tester.pumpAndSettle();
       await tester.tap(byKey('history-r1'));
       await tester.pumpAndSettle();
@@ -536,7 +536,7 @@ void main() {
         stored: sessionState(id: 'r1', action: NextActionType.resolved, status: 'resolved', message: 'Réglé.'),
       );
       await pumpApp(tester, home: home, repo: repo);
-      await tester.tap(byKey('open-history'));
+      await tester.tap(byKey('nav-history'));
       await tester.pumpAndSettle();
       await tester.tap(byKey('history-r1'));
       await tester.pumpAndSettle();
@@ -557,7 +557,7 @@ void main() {
         stored: sessionState(id: 'r1', action: NextActionType.resolved, status: 'resolved', message: 'Réglé.'),
       );
       await pumpApp(tester, home: home, repo: repo);
-      await tester.tap(byKey('open-history'));
+      await tester.tap(byKey('nav-history'));
       await tester.pumpAndSettle();
       await tester.tap(byKey('history-r1'));
       await tester.pumpAndSettle();
@@ -582,7 +582,7 @@ void main() {
         stored: sessionState(id: 'r1', action: NextActionType.resolved, status: 'resolved', message: 'Réglé.'),
       );
       await pumpApp(tester, home: home, repo: repo);
-      await tester.tap(byKey('open-history'));
+      await tester.tap(byKey('nav-history'));
       await tester.pumpAndSettle();
       await tester.tap(byKey('history-r1'));
       await tester.pumpAndSettle();
@@ -600,7 +600,7 @@ void main() {
         stored: sessionState(id: 'r1', action: NextActionType.resolved, status: 'resolved', message: 'Réglé.', equipment: linked()),
       );
       await pumpApp(tester, home: FakeHomeRepository(items: [equipment(id: 'e1', brand: 'Bosch')]), repo: repo);
-      await tester.tap(byKey('open-history'));
+      await tester.tap(byKey('nav-history'));
       await tester.pumpAndSettle();
       await tester.tap(byKey('history-r1'));
       await tester.pumpAndSettle();

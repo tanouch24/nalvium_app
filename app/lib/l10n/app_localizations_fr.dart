@@ -16,13 +16,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get navHome => 'Accueil';
 
   @override
-  String get navHouse => 'Maison';
+  String get navHouse => 'Ma maison';
 
   @override
   String get navRepair => 'Dépannage';
 
   @override
-  String get navCamera => 'Caméra';
+  String get navHistory => 'Historique';
+
+  @override
+  String get navCamera => 'Scanner un problème';
 
   @override
   String get history => 'Historique';
@@ -1388,4 +1391,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get preparingNext => 'Je prépare la suite…';
+
+  @override
+  String get historyRepairTitle => 'Besoin d\'un artisan ?';
+
+  @override
+  String get historyRepairBody =>
+      'Tes demandes d\'intervention et l\'aide d\'un professionnel.';
+
+  @override
+  String get historySessions => 'Tes diagnostics';
 }

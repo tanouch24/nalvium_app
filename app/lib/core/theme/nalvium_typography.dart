@@ -9,25 +9,25 @@ abstract final class NalviumText {
   static const display = TextStyle(
     fontFamily: family,
     fontSize: 34,
-    height: 1.12,
-    fontWeight: FontWeight.w700,
-    letterSpacing: -0.8,
+    height: 1.1,
+    fontWeight: FontWeight.w800,
+    letterSpacing: -1.0,
     color: NalviumColors.textPrimary,
   );
   static const titleLarge = TextStyle(
     fontFamily: family,
     fontSize: 27,
-    height: 1.2,
-    fontWeight: FontWeight.w700,
-    letterSpacing: -0.4,
+    height: 1.18,
+    fontWeight: FontWeight.w800,
+    letterSpacing: -0.6,
     color: NalviumColors.textPrimary,
   );
   static const title = TextStyle(
     fontFamily: family,
     fontSize: 20,
     height: 1.3,
-    fontWeight: FontWeight.w600,
-    letterSpacing: -0.1,
+    fontWeight: FontWeight.w700,
+    letterSpacing: -0.3,
     color: NalviumColors.textPrimary,
   );
   static const bodyLarge = TextStyle(
@@ -55,14 +55,15 @@ abstract final class NalviumText {
     fontFamily: family,
     fontSize: 17,
     height: 1.2,
-    fontWeight: FontWeight.w600,
+    fontWeight: FontWeight.w700,
   );
+  /// Logotype « nalvium » en minuscules, encre.
   static const wordmark = TextStyle(
     fontFamily: family,
-    fontSize: 17,
+    fontSize: 23,
     height: 1.2,
-    fontWeight: FontWeight.w700,
-    letterSpacing: 3,
-    color: NalviumColors.primary,
+    fontWeight: FontWeight.w800,
+    letterSpacing: -0.6,
+    color: NalviumColors.textPrimary,
   );
 }

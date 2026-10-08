@@ -4,16 +4,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'helpers/pump_app.dart';
 
 void main() {
-  testWidgets('la barre affiche Accueil | Maison | Caméra | Dépannage', (tester) async {
+  testWidgets('la barre affiche Accueil | Ma maison | Historique + Scanner', (tester) async {
     await pumpApp(tester);
-    for (final label in ['Accueil', 'Maison', 'Dépannage']) {
+    for (final label in ['Accueil', 'Ma maison', 'Historique']) {
       expect(find.text(label), findsOneWidget);
     }
     expect(find.byKey(const Key('nav-camera')), findsOneWidget);
     expect(find.text('Communauté'), findsNothing);
+    expect(find.text('Dépannage'), findsNothing);
   });
 
-  testWidgets('les onglets Maison et Dépannage affichent un état vide honnête', (tester) async {
+  testWidgets('Ma maison et Historique affichent un état vide honnête ; les artisans s\'ouvrent depuis l\'Historique', (tester) async {
     await pumpApp(tester);
 
     await tester.tap(find.byKey(const Key('nav-house')));
@@ -22,10 +23,15 @@ void main() {
     expect(find.text('Votre maison'), findsOneWidget);
     expect(find.byKey(const Key('house-add')), findsOneWidget);
 
-    await tester.tap(find.byKey(const Key('nav-repair')));
+    await tester.tap(find.byKey(const Key('nav-history')));
+    await tester.pumpAndSettle();
+    expect(find.text('Aucun historique'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('history-repair')));
     await tester.pumpAndSettle();
     expect(find.text("Besoin d'un coup de main ?"), findsOneWidget);
     expect(find.byKey(const Key('repair-empty')), findsOneWidget); // aucune fausse demande
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('nav-home')));
     await tester.pumpAndSettle();
@@ -40,13 +46,8 @@ void main() {
     expect(find.text('Un problème à la maison ?'), findsOneWidget);
   });
 
-  testWidgets('Historique et Réglages s\'ouvrent depuis l\'accueil', (tester) async {
+  testWidgets('Réglages s\'ouvrent depuis l\'accueil', (tester) async {
     await pumpApp(tester);
-    await tester.tap(find.byKey(const Key('open-history')));
-    await tester.pumpAndSettle();
-    expect(find.text('Aucun historique'), findsOneWidget);
-    await tester.tap(find.byType(BackButton));
-    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('open-settings')));
     await tester.pumpAndSettle();
     expect(find.text('Réglages'), findsWidgets);

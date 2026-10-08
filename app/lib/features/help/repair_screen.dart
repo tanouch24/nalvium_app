@@ -12,7 +12,7 @@ import '../../services/providers.dart';
 import '../history/session_labels.dart';
 import 'request_labels.dart';
 
-/// Dépannage : un seul point d'entrée, puis uniquement les VRAIES demandes de l'utilisateur.
+/// Artisans (ouvert depuis l'Historique) : un seul point d'entrée, puis uniquement les VRAIES demandes de l'utilisateur.
 class RepairScreen extends ConsumerWidget {
   const RepairScreen({super.key});
 
@@ -22,8 +22,6 @@ class RepairScreen extends ConsumerWidget {
     final requests = ref.watch(requestsProvider);
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        titleSpacing: Space.gutter,
         title: Text(l10n.repairTitle, style: NalviumText.titleLarge),
         toolbarHeight: 72,
       ),
