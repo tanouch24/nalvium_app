@@ -18,7 +18,15 @@ class NalviumApp extends ConsumerStatefulWidget {
 }
 
 class _NalviumAppState extends ConsumerState<NalviumApp> {
-  late final GoRouter _router = widget.router ?? buildRouter();
+  late final GoRouter _router =
+      widget.router ??
+      buildRouter(
+        redirect: (_, state) => appGuard(
+          onboarded: ref.read(localStoreProvider).onboarded,
+          aiConsent: ref.read(aiConsentProvider),
+          location: state.matchedLocation,
+        ),
+      );
 
   @override
   void initState() {

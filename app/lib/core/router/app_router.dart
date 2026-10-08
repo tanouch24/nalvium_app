@@ -25,15 +25,37 @@ import '../../domain/video.dart';
 import '../../features/session/session_summary_screen.dart';
 import '../../features/settings/settings_screen.dart';
 import '../../features/shell/app_shell.dart';
+import '../../features/onboarding/consent_view.dart';
+import '../../features/onboarding/onboarding_screen.dart';
 import '../widgets/page_transitions.dart';
+
+/// Chemins qui envoient des données à l'IA : un accord est exigé avant d'y entrer.
+const _aiPaths = ['/capture', '/video', '/describe', '/analyze'];
+
+/// Garde de l'app : démarrage non terminé → `/welcome` (les textes légaux restent lisibles) ;
+/// pas d'accord IA → `/consent` avant tout nouveau diagnostic.
+String? appGuard({required bool onboarded, required bool aiConsent, required String location}) {
+  if (!onboarded) {
+    return location.startsWith('/welcome') || location.startsWith('/settings/legal') ? null : '/welcome';
+  }
+  if (!aiConsent && _aiPaths.any(location.startsWith)) return '/consent';
+  return null;
+}
 
 GoRouter buildRouter({
   String initialLocation = '/home',
   Object? initialExtra,
+  GoRouterRedirect? redirect,
 }) => GoRouter(
   initialLocation: initialLocation,
   initialExtra: initialExtra,
+  redirect: redirect,
   routes: [
+    GoRoute(path: '/welcome', builder: (_, _) => const OnboardingScreen()),
+    GoRoute(
+      path: '/consent',
+      pageBuilder: (_, state) => nalviumPage(state, const ConsentScreen()),
+    ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, shell) => AppShell(navigationShell: shell),
       branches: [

@@ -24,6 +24,10 @@ abstract final class NalviumColors {
   static const textMuted = Color(0xFF6B675E);
   static const borderSubtle = Color(0xFFE4DFD4);
 
+  /// Eau (points vitaux, urgence fuite).
+  static const water = Color(0xFF2A5B85);
+  static const waterSoft = Color(0xFFE4EEF6);
+
   static const success = Color(0xFF2F6B3A);
   static const successSoft = Color(0xFFE3EFE3);
   static const warning = Color(0xFF8A5A00);

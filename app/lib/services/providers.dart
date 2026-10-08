@@ -2,8 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../core/analytics/analytics.dart';
+import '../domain/home_profile.dart';
+import 'local_store.dart';
 import '../core/config/api_config.dart';
 import '../core/network/api_client.dart';
 import '../core/network/api_exceptions.dart';
@@ -33,6 +36,58 @@ final photoCaptureServiceProvider = Provider<PhotoCaptureService>(
       ? const FixedFilePhotoCaptureService(_debugPhoto)
       : ImagePickerPhotoCaptureService(),
 );
+
+/// Préférences locales. Surchargé au démarrage (main.dart) et dans les tests : jamais lu avant.
+final localStoreProvider = Provider<LocalStore>((ref) => throw UnimplementedError('localStoreProvider non initialisé'));
+
+/// Profil de la maison (téléphone uniquement), modifiable depuis le démarrage et « Ma maison ».
+class HomeProfileNotifier extends Notifier<HomeProfile> {
+  @override
+  HomeProfile build() => ref.read(localStoreProvider).profile;
+
+  Future<void> update(HomeProfile Function(HomeProfile) change) async {
+    state = change(state);
+    await ref.read(localStoreProvider).saveProfile(state);
+  }
+
+  Future<void> markMaintenanceDone(String taskId, DateTime when) =>
+      update((p) => p.copyWith(maintenanceDone: {...p.maintenanceDone, taskId: when}));
+
+  Future<void> reset() async {
+    state = const HomeProfile();
+  }
+}
+
+/// Copie une photo de point vital dans le dossier PRIVÉ de l'app (jamais envoyée au serveur). Surchargé en test.
+final vitalPhotoSaverProvider = Provider<Future<String> Function(String tempPath, VitalPoint point)>(
+  (ref) => (tempPath, point) async {
+    final dir = Directory('${(await getApplicationDocumentsDirectory()).path}/vitals');
+    await dir.create(recursive: true);
+    final target = '${dir.path}/${point.name}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+    await File(tempPath).copy(target);
+    return target;
+  },
+);
+
+final homeProfileProvider = NotifierProvider<HomeProfileNotifier, HomeProfile>(HomeProfileNotifier.new);
+
+/// Accord pour l'envoi à l'IA (redemandé si la version de l'information change).
+class AiConsentNotifier extends Notifier<bool> {
+  @override
+  bool build() => ref.read(localStoreProvider).hasAiConsent;
+
+  Future<void> give() async {
+    await ref.read(localStoreProvider).giveAiConsent();
+    state = true;
+  }
+
+  Future<void> withdraw() async {
+    await ref.read(localStoreProvider).withdrawAiConsent();
+    state = false;
+  }
+}
+
+final aiConsentProvider = NotifierProvider<AiConsentNotifier, bool>(AiConsentNotifier.new);
 
 final installIdStoreProvider = Provider<InstallIdStore>(
   (ref) => InstallIdStore(),
@@ -181,6 +236,9 @@ final accountRepositoryProvider = Provider<AccountRepository>(
 Future<void> deleteAllMyData(WidgetRef ref) async {
   await ref.read(accountRepositoryProvider).deleteAll();
   await ref.read(installIdStoreProvider).reset();
+  await ref.read(localStoreProvider).clearPersonal();
+  ref.read(homeProfileProvider.notifier).reset();
+  ref.invalidate(aiConsentProvider);
   ref.read(sessionsRevisionProvider.notifier).bump();
   ref.read(homeRevisionProvider.notifier).bump();
   ref.read(requestsRevisionProvider.notifier).bump();

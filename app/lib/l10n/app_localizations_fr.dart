@@ -1482,4 +1482,182 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get reportFailed =>
       'Le signalement n\'a pas pu être envoyé. Vous pouvez aussi écrire à contact@nalvium.com.';
+
+  @override
+  String get obWelcomeTitle => 'Votre assistant maison';
+
+  @override
+  String get obWelcomeBody =>
+      'Montrez un problème, Nalvium vous guide pas à pas. Et il garde en mémoire ce qui compte chez vous.';
+
+  @override
+  String get obWelcomeBullet1 =>
+      'Un diagnostic en photo, en vidéo ou en quelques mots';
+
+  @override
+  String get obWelcomeBullet2 =>
+      'Ce que ça coûte vous-même, et chez un artisan';
+
+  @override
+  String get obWelcomeBullet3 =>
+      'Vos points vitaux et vos entretiens, au même endroit';
+
+  @override
+  String get obStart => 'Commencer';
+
+  @override
+  String get obSkip => 'Passer';
+
+  @override
+  String get obContinue => 'Continuer';
+
+  @override
+  String get obLater => 'Je ne sais pas, plus tard';
+
+  @override
+  String get consentTitle => 'Avant votre premier diagnostic';
+
+  @override
+  String get consentIntro =>
+      'Pour analyser votre problème, Nalvium envoie à un fournisseur d\'intelligence artificielle, OpenAI :';
+
+  @override
+  String get consentItem1 => 'votre description et vos réponses ;';
+
+  @override
+  String get consentItem2 =>
+      'les photos, ou quelques images extraites de vos vidéos ;';
+
+  @override
+  String get consentItem3 =>
+      'l\'équipement concerné (marque, référence), si vous l\'avez indiqué.';
+
+  @override
+  String get consentNoIdentity =>
+      'Ni votre nom, ni votre numéro, ni votre position ne sont envoyés. Nous demandons à OpenAI de ne pas conserver la conversation.';
+
+  @override
+  String get consentLimits =>
+      'Nalvium peut se tromper et ne remplace pas un professionnel. En cas de danger, appelez le 18 ou le 112.';
+
+  @override
+  String get consentAccept => 'J\'accepte et je continue';
+
+  @override
+  String get consentDecline => 'Pas maintenant';
+
+  @override
+  String get consentPrivacy => 'Lire la politique de confidentialité';
+
+  @override
+  String get consentRequiredTitle => 'Votre accord est nécessaire';
+
+  @override
+  String get consentRequiredBody =>
+      'Sans votre accord, Nalvium ne peut pas analyser de photo ni de description. Vous pouvez toujours utiliser Ma maison.';
+
+  @override
+  String get obHousingTitle => 'Vous vivez dans…';
+
+  @override
+  String get obHousingApartment => 'Un appartement';
+
+  @override
+  String get obHousingHouse => 'Une maison';
+
+  @override
+  String get obTenureTitle => 'Vous êtes…';
+
+  @override
+  String get obTenureTenant => 'Locataire';
+
+  @override
+  String get obTenureOwner => 'Propriétaire';
+
+  @override
+  String get obHeatingTitle => 'Votre chauffage';
+
+  @override
+  String get obHeatingGas => 'Gaz';
+
+  @override
+  String get obHeatingElectric => 'Électrique';
+
+  @override
+  String get obHeatingHeatPump => 'Pompe à chaleur';
+
+  @override
+  String get obHeatingOilWood => 'Fioul ou bois';
+
+  @override
+  String get obUnknown => 'Je ne sais pas';
+
+  @override
+  String get obHotWaterTitle => 'Votre eau chaude vient…';
+
+  @override
+  String get obHotWaterBoiler => 'D\'une chaudière';
+
+  @override
+  String get obHotWaterTank => 'D\'un ballon électrique';
+
+  @override
+  String get obDiyTitle => 'En bricolage, vous êtes…';
+
+  @override
+  String get obDiyBeginner => 'Débutant';
+
+  @override
+  String get obDiyHandy => 'Je me débrouille';
+
+  @override
+  String get obDiyConfident => 'À l\'aise';
+
+  @override
+  String get obProfileHint =>
+      'Facultatif. Cela aide Nalvium à vous proposer les bons entretiens.';
+
+  @override
+  String get vitalsOptional => 'FACULTATIF';
+
+  @override
+  String get vitalsTitle => 'Vous savez où sont vos points vitaux ?';
+
+  @override
+  String get vitalsBody =>
+      'En cas d\'urgence, Nalvium vous les montre en une seconde. Pas de souci si vous ne savez pas : vous pourrez les ajouter plus tard dans Ma maison.';
+
+  @override
+  String get vitalWaterValve => 'Vanne d\'arrêt d\'eau';
+
+  @override
+  String get vitalElectricalPanel => 'Tableau électrique';
+
+  @override
+  String get vitalGasMeter => 'Compteur ou robinet de gaz';
+
+  @override
+  String get vitalTakePhoto => 'Prendre une photo';
+
+  @override
+  String get vitalAdded => 'Photo ajoutée';
+
+  @override
+  String get vitalNoGas => 'Je n\'ai pas le gaz';
+
+  @override
+  String get vitalAbsent => 'Pas de gaz chez moi';
+
+  @override
+  String get vitalRemove => 'Retirer';
+
+  @override
+  String get obReadyTitle => 'Votre carnet maison est prêt';
+
+  @override
+  String get obReadyBody =>
+      'Vos entretiens à venir et vos points vitaux sont rangés dans Ma maison. Quand un problème arrive, appuyez sur le bouton noir.';
+
+  @override
+  String get obReadyGo => 'C\'est parti';
 }

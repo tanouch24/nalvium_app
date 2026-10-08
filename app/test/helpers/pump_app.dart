@@ -7,7 +7,9 @@ import 'package:nalvium/app.dart';
 import 'package:nalvium/core/router/app_router.dart';
 import 'package:nalvium/services/photo_capture_service.dart';
 import 'package:nalvium/domain/video.dart';
+import 'package:nalvium/services/local_store.dart';
 import 'package:nalvium/services/providers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nalvium/services/video_recorder_service.dart';
 
 import 'fakes.dart';
@@ -55,6 +57,10 @@ Future<FakePhotoCaptureService> pumpApp(
   FakeServiceRequestsRepository? requests,
   FakeAccountRepository? account,
   FakeAnalyticsSink? analytics,
+  bool onboarded = true,
+  bool aiConsent = true,
+  Map<String, Object>? prefs,
+  bool guard = false,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = dpr;
@@ -67,10 +73,18 @@ Future<FakePhotoCaptureService> pumpApp(
     tester.platformDispatcher.clearTextScaleFactorTestValue();
     tester.platformDispatcher.clearAccessibilityFeaturesTestValue();
   });
+  SharedPreferences.setMockInitialValues({
+    if (onboarded) 'nalvium.onboarded': true,
+    if (aiConsent) 'nalvium.ai_consent': kAiConsentVersion,
+    ...?prefs,
+  });
+  final store = LocalStore(await SharedPreferences.getInstance());
   final fake = FakePhotoCaptureService(captures);
   await tester.pumpWidget(ProviderScope(
     retry: (_, _) => null,
     overrides: [
+      localStoreProvider.overrideWithValue(store),
+      vitalPhotoSaverProvider.overrideWithValue((path, _) async => path),
       photoCaptureServiceProvider.overrideWithValue(fake),
       sessionsRepositoryProvider.overrideWithValue(repo ?? FakeSessionsRepository()),
       homeRepositoryProvider.overrideWithValue(home ?? FakeHomeRepository()),
@@ -80,7 +94,20 @@ Future<FakePhotoCaptureService> pumpApp(
       videoRecorderFactoryProvider.overrideWithValue(() => recorder ?? FakeVideoRecorder()),
       videoFileSizeProvider.overrideWithValue((_) async => fileSize),
     ],
-    child: NalviumApp(router: buildRouter(initialLocation: location)),
+    child: guard
+        ? Consumer(
+            builder: (context, ref, _) => NalviumApp(
+              router: buildRouter(
+                initialLocation: location,
+                redirect: (_, state) => appGuard(
+                  onboarded: ref.read(localStoreProvider).onboarded,
+                  aiConsent: ref.read(aiConsentProvider),
+                  location: state.matchedLocation,
+                ),
+              ),
+            ),
+          )
+        : NalviumApp(router: buildRouter(initialLocation: location)),
   ));
   if (settle) {
     await tester.pumpAndSettle();

@@ -2823,6 +2823,336 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Le signalement n\'a pas pu être envoyé. Vous pouvez aussi écrire à contact@nalvium.com.'**
   String get reportFailed;
+
+  /// No description provided for @obWelcomeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre assistant maison'**
+  String get obWelcomeTitle;
+
+  /// No description provided for @obWelcomeBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montrez un problème, Nalvium vous guide pas à pas. Et il garde en mémoire ce qui compte chez vous.'**
+  String get obWelcomeBody;
+
+  /// No description provided for @obWelcomeBullet1.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un diagnostic en photo, en vidéo ou en quelques mots'**
+  String get obWelcomeBullet1;
+
+  /// No description provided for @obWelcomeBullet2.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce que ça coûte vous-même, et chez un artisan'**
+  String get obWelcomeBullet2;
+
+  /// No description provided for @obWelcomeBullet3.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos points vitaux et vos entretiens, au même endroit'**
+  String get obWelcomeBullet3;
+
+  /// No description provided for @obStart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commencer'**
+  String get obStart;
+
+  /// No description provided for @obSkip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Passer'**
+  String get obSkip;
+
+  /// No description provided for @obContinue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Continuer'**
+  String get obContinue;
+
+  /// No description provided for @obLater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Je ne sais pas, plus tard'**
+  String get obLater;
+
+  /// No description provided for @consentTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avant votre premier diagnostic'**
+  String get consentTitle;
+
+  /// No description provided for @consentIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pour analyser votre problème, Nalvium envoie à un fournisseur d\'intelligence artificielle, OpenAI :'**
+  String get consentIntro;
+
+  /// No description provided for @consentItem1.
+  ///
+  /// In fr, this message translates to:
+  /// **'votre description et vos réponses ;'**
+  String get consentItem1;
+
+  /// No description provided for @consentItem2.
+  ///
+  /// In fr, this message translates to:
+  /// **'les photos, ou quelques images extraites de vos vidéos ;'**
+  String get consentItem2;
+
+  /// No description provided for @consentItem3.
+  ///
+  /// In fr, this message translates to:
+  /// **'l\'équipement concerné (marque, référence), si vous l\'avez indiqué.'**
+  String get consentItem3;
+
+  /// No description provided for @consentNoIdentity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ni votre nom, ni votre numéro, ni votre position ne sont envoyés. Nous demandons à OpenAI de ne pas conserver la conversation.'**
+  String get consentNoIdentity;
+
+  /// No description provided for @consentLimits.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nalvium peut se tromper et ne remplace pas un professionnel. En cas de danger, appelez le 18 ou le 112.'**
+  String get consentLimits;
+
+  /// No description provided for @consentAccept.
+  ///
+  /// In fr, this message translates to:
+  /// **'J\'accepte et je continue'**
+  String get consentAccept;
+
+  /// No description provided for @consentDecline.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas maintenant'**
+  String get consentDecline;
+
+  /// No description provided for @consentPrivacy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lire la politique de confidentialité'**
+  String get consentPrivacy;
+
+  /// No description provided for @consentRequiredTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre accord est nécessaire'**
+  String get consentRequiredTitle;
+
+  /// No description provided for @consentRequiredBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans votre accord, Nalvium ne peut pas analyser de photo ni de description. Vous pouvez toujours utiliser Ma maison.'**
+  String get consentRequiredBody;
+
+  /// No description provided for @obHousingTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous vivez dans…'**
+  String get obHousingTitle;
+
+  /// No description provided for @obHousingApartment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un appartement'**
+  String get obHousingApartment;
+
+  /// No description provided for @obHousingHouse.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une maison'**
+  String get obHousingHouse;
+
+  /// No description provided for @obTenureTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous êtes…'**
+  String get obTenureTitle;
+
+  /// No description provided for @obTenureTenant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Locataire'**
+  String get obTenureTenant;
+
+  /// No description provided for @obTenureOwner.
+  ///
+  /// In fr, this message translates to:
+  /// **'Propriétaire'**
+  String get obTenureOwner;
+
+  /// No description provided for @obHeatingTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre chauffage'**
+  String get obHeatingTitle;
+
+  /// No description provided for @obHeatingGas.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gaz'**
+  String get obHeatingGas;
+
+  /// No description provided for @obHeatingElectric.
+  ///
+  /// In fr, this message translates to:
+  /// **'Électrique'**
+  String get obHeatingElectric;
+
+  /// No description provided for @obHeatingHeatPump.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pompe à chaleur'**
+  String get obHeatingHeatPump;
+
+  /// No description provided for @obHeatingOilWood.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fioul ou bois'**
+  String get obHeatingOilWood;
+
+  /// No description provided for @obUnknown.
+  ///
+  /// In fr, this message translates to:
+  /// **'Je ne sais pas'**
+  String get obUnknown;
+
+  /// No description provided for @obHotWaterTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre eau chaude vient…'**
+  String get obHotWaterTitle;
+
+  /// No description provided for @obHotWaterBoiler.
+  ///
+  /// In fr, this message translates to:
+  /// **'D\'une chaudière'**
+  String get obHotWaterBoiler;
+
+  /// No description provided for @obHotWaterTank.
+  ///
+  /// In fr, this message translates to:
+  /// **'D\'un ballon électrique'**
+  String get obHotWaterTank;
+
+  /// No description provided for @obDiyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'En bricolage, vous êtes…'**
+  String get obDiyTitle;
+
+  /// No description provided for @obDiyBeginner.
+  ///
+  /// In fr, this message translates to:
+  /// **'Débutant'**
+  String get obDiyBeginner;
+
+  /// No description provided for @obDiyHandy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Je me débrouille'**
+  String get obDiyHandy;
+
+  /// No description provided for @obDiyConfident.
+  ///
+  /// In fr, this message translates to:
+  /// **'À l\'aise'**
+  String get obDiyConfident;
+
+  /// No description provided for @obProfileHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Facultatif. Cela aide Nalvium à vous proposer les bons entretiens.'**
+  String get obProfileHint;
+
+  /// No description provided for @vitalsOptional.
+  ///
+  /// In fr, this message translates to:
+  /// **'FACULTATIF'**
+  String get vitalsOptional;
+
+  /// No description provided for @vitalsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous savez où sont vos points vitaux ?'**
+  String get vitalsTitle;
+
+  /// No description provided for @vitalsBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'En cas d\'urgence, Nalvium vous les montre en une seconde. Pas de souci si vous ne savez pas : vous pourrez les ajouter plus tard dans Ma maison.'**
+  String get vitalsBody;
+
+  /// No description provided for @vitalWaterValve.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vanne d\'arrêt d\'eau'**
+  String get vitalWaterValve;
+
+  /// No description provided for @vitalElectricalPanel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tableau électrique'**
+  String get vitalElectricalPanel;
+
+  /// No description provided for @vitalGasMeter.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compteur ou robinet de gaz'**
+  String get vitalGasMeter;
+
+  /// No description provided for @vitalTakePhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prendre une photo'**
+  String get vitalTakePhoto;
+
+  /// No description provided for @vitalAdded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo ajoutée'**
+  String get vitalAdded;
+
+  /// No description provided for @vitalNoGas.
+  ///
+  /// In fr, this message translates to:
+  /// **'Je n\'ai pas le gaz'**
+  String get vitalNoGas;
+
+  /// No description provided for @vitalAbsent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas de gaz chez moi'**
+  String get vitalAbsent;
+
+  /// No description provided for @vitalRemove.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer'**
+  String get vitalRemove;
+
+  /// No description provided for @obReadyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre carnet maison est prêt'**
+  String get obReadyTitle;
+
+  /// No description provided for @obReadyBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos entretiens à venir et vos points vitaux sont rangés dans Ma maison. Quand un problème arrive, appuyez sur le bouton noir.'**
+  String get obReadyBody;
+
+  /// No description provided for @obReadyGo.
+  ///
+  /// In fr, this message translates to:
+  /// **'C\'est parti'**
+  String get obReadyGo;
 }
 
 class _AppLocalizationsDelegate
