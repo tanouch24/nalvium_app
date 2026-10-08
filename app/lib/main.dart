@@ -12,6 +12,8 @@ import 'core/theme/nalvium_theme.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(nalviumSystemOverlay);
+  // Téléphone, portrait uniquement.
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   // Pas de nouvelle tentative automatique : une erreur est montrée tout de suite (avec « Réessayer »).
   runApp(
     ProviderScope(
