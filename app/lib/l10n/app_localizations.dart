@@ -3153,6 +3153,402 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'C\'est parti'**
   String get obReadyGo;
+
+  /// No description provided for @dashFollowUp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suivi de votre maison'**
+  String get dashFollowUp;
+
+  /// No description provided for @dashFollowUpGood.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bien suivie'**
+  String get dashFollowUpGood;
+
+  /// No description provided for @dashFollowUpMid.
+  ///
+  /// In fr, this message translates to:
+  /// **'En bonne voie'**
+  String get dashFollowUpMid;
+
+  /// No description provided for @dashFollowUpLow.
+  ///
+  /// In fr, this message translates to:
+  /// **'À compléter'**
+  String get dashFollowUpLow;
+
+  /// No description provided for @dashTasksDue.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =0{Tous vos entretiens sont à jour} =1{1 entretien à prévoir} other{{count} entretiens à prévoir}}'**
+  String dashTasksDue(int count);
+
+  /// No description provided for @dashAddVitals.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoutez vos points vitaux dans Ma maison'**
+  String get dashAddVitals;
+
+  /// No description provided for @dashSaved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Économisé avec Nalvium'**
+  String get dashSaved;
+
+  /// No description provided for @dashSavedRepairs.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{1 réparation faite vous-même} other{{count} réparations faites vous-même}}'**
+  String dashSavedRepairs(int count);
+
+  /// No description provided for @dashSavedEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos économies s\'afficheront ici après votre première réparation.'**
+  String get dashSavedEmpty;
+
+  /// No description provided for @dashNextTask.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prochain entretien'**
+  String get dashNextTask;
+
+  /// No description provided for @dashInDays.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =0{Aujourd\'hui} =1{Demain} other{Dans {count} jours}}'**
+  String dashInDays(int count);
+
+  /// No description provided for @dashOverdue.
+  ///
+  /// In fr, this message translates to:
+  /// **'En retard'**
+  String get dashOverdue;
+
+  /// No description provided for @dashToPlan.
+  ///
+  /// In fr, this message translates to:
+  /// **'À planifier'**
+  String get dashToPlan;
+
+  /// No description provided for @emergency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Urgence'**
+  String get emergency;
+
+  /// No description provided for @emergencyHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fuite, odeur de gaz, plus de courant'**
+  String get emergencyHint;
+
+  /// No description provided for @emTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Que se passe-t-il ?'**
+  String get emTitle;
+
+  /// No description provided for @emIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'En cas de danger immédiat (feu, fumée, personne blessée), sortez et appelez le 18 ou le 112.'**
+  String get emIntro;
+
+  /// No description provided for @emLeakTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une fuite d\'eau'**
+  String get emLeakTitle;
+
+  /// No description provided for @emLeak1.
+  ///
+  /// In fr, this message translates to:
+  /// **'Coupez l\'eau à la vanne d\'arrêt.'**
+  String get emLeak1;
+
+  /// No description provided for @emLeak2.
+  ///
+  /// In fr, this message translates to:
+  /// **'Si l\'eau approche des prises ou des appareils, coupez le courant au tableau, sans marcher dans l\'eau.'**
+  String get emLeak2;
+
+  /// No description provided for @emLeak3.
+  ///
+  /// In fr, this message translates to:
+  /// **'Épongez et protégez ce qui peut l\'être.'**
+  String get emLeak3;
+
+  /// No description provided for @emLeak4.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prenez des photos (assurance) et prévenez le voisin du dessous ou le syndic.'**
+  String get emLeak4;
+
+  /// No description provided for @emGasTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une odeur de gaz'**
+  String get emGasTitle;
+
+  /// No description provided for @emGas1.
+  ///
+  /// In fr, this message translates to:
+  /// **'N\'actionnez aucun interrupteur, aucun appareil, aucune flamme. Ne fumez pas.'**
+  String get emGas1;
+
+  /// No description provided for @emGas2.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrez grand les fenêtres.'**
+  String get emGas2;
+
+  /// No description provided for @emGas3.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fermez le robinet de gaz si vous pouvez le faire sans risque.'**
+  String get emGas3;
+
+  /// No description provided for @emGas4.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sortez, puis appelez depuis l\'extérieur.'**
+  String get emGas4;
+
+  /// No description provided for @emGasCall.
+  ///
+  /// In fr, this message translates to:
+  /// **'Urgence Sécurité Gaz · 0 800 47 33 33'**
+  String get emGasCall;
+
+  /// No description provided for @emGasCallHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Numéro gratuit, 24 h/24 (GRDF)'**
+  String get emGasCallHint;
+
+  /// No description provided for @emPowerTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus de courant'**
+  String get emPowerTitle;
+
+  /// No description provided for @emPower1.
+  ///
+  /// In fr, this message translates to:
+  /// **'Regardez si vos voisins ont du courant : sinon, c\'est une panne du réseau (Enedis, numéro sur votre facture).'**
+  String get emPower1;
+
+  /// No description provided for @emPower2.
+  ///
+  /// In fr, this message translates to:
+  /// **'Au tableau électrique, repérez le disjoncteur abaissé.'**
+  String get emPower2;
+
+  /// No description provided for @emPower3.
+  ///
+  /// In fr, this message translates to:
+  /// **'Débranchez les appareils de la pièce concernée, puis remontez le disjoncteur.'**
+  String get emPower3;
+
+  /// No description provided for @emPower4.
+  ///
+  /// In fr, this message translates to:
+  /// **'S\'il saute aussitôt, laissez-le coupé et faites appel à un électricien. Jamais les mains mouillées.'**
+  String get emPower4;
+
+  /// No description provided for @emYourValve.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre vanne d\'arrêt'**
+  String get emYourValve;
+
+  /// No description provided for @emYourPanel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre tableau électrique'**
+  String get emYourPanel;
+
+  /// No description provided for @emYourGas.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre robinet de gaz'**
+  String get emYourGas;
+
+  /// No description provided for @emNumbers.
+  ///
+  /// In fr, this message translates to:
+  /// **'Numéros d\'urgence'**
+  String get emNumbers;
+
+  /// No description provided for @emCall18.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pompiers · 18'**
+  String get emCall18;
+
+  /// No description provided for @emCall15.
+  ///
+  /// In fr, this message translates to:
+  /// **'SAMU · 15'**
+  String get emCall15;
+
+  /// No description provided for @emCall112.
+  ///
+  /// In fr, this message translates to:
+  /// **'Urgence européenne · 112'**
+  String get emCall112;
+
+  /// No description provided for @emDiagnose.
+  ///
+  /// In fr, this message translates to:
+  /// **'Diagnostiquer avec Nalvium'**
+  String get emDiagnose;
+
+  /// No description provided for @houseVitals.
+  ///
+  /// In fr, this message translates to:
+  /// **'Points vitaux'**
+  String get houseVitals;
+
+  /// No description provided for @houseVitalsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Facultatif : utile en cas d\'urgence.'**
+  String get houseVitalsHint;
+
+  /// No description provided for @houseMaintenance.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entretiens'**
+  String get houseMaintenance;
+
+  /// No description provided for @houseMaintenanceHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Des rappels pour garder votre maison en forme. Ce ne sont pas des contrôles.'**
+  String get houseMaintenanceHint;
+
+  /// No description provided for @houseEquipment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos équipements'**
+  String get houseEquipment;
+
+  /// No description provided for @houseProfile.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre logement'**
+  String get houseProfile;
+
+  /// No description provided for @houseProfileEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier'**
+  String get houseProfileEdit;
+
+  /// No description provided for @mtDone.
+  ///
+  /// In fr, this message translates to:
+  /// **'C\'est fait'**
+  String get mtDone;
+
+  /// No description provided for @mtDoneOn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fait le {date}'**
+  String mtDoneOn(String date);
+
+  /// No description provided for @mtMandatory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Obligatoire chaque année'**
+  String get mtMandatory;
+
+  /// No description provided for @mtNext.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prochain : {date}'**
+  String mtNext(String date);
+
+  /// No description provided for @mtBoiler.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entretien de la chaudière'**
+  String get mtBoiler;
+
+  /// No description provided for @mtBoilerBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chaque année, par un professionnel qualifié.'**
+  String get mtBoilerBody;
+
+  /// No description provided for @mtRadiators.
+  ///
+  /// In fr, this message translates to:
+  /// **'Purge des radiateurs'**
+  String get mtRadiators;
+
+  /// No description provided for @mtRadiatorsBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avant l\'hiver, pour qu\'ils chauffent de façon homogène.'**
+  String get mtRadiatorsBody;
+
+  /// No description provided for @mtHeatPump.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entretien de la pompe à chaleur'**
+  String get mtHeatPump;
+
+  /// No description provided for @mtHeatPumpBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérification recommandée par un professionnel.'**
+  String get mtHeatPumpBody;
+
+  /// No description provided for @mtWaterHeater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Groupe de sécurité du chauffe-eau'**
+  String get mtWaterHeater;
+
+  /// No description provided for @mtWaterHeaterBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'À manœuvrer régulièrement pour éviter qu\'il ne s\'entartre.'**
+  String get mtWaterHeaterBody;
+
+  /// No description provided for @mtVmc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bouches de ventilation (VMC)'**
+  String get mtVmc;
+
+  /// No description provided for @mtVmcBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'À nettoyer pour garder un air sain.'**
+  String get mtVmcBody;
+
+  /// No description provided for @mtSmokeAlarm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Détecteur de fumée'**
+  String get mtSmokeAlarm;
+
+  /// No description provided for @mtSmokeAlarmBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Testez-le en appuyant sur son bouton.'**
+  String get mtSmokeAlarmBody;
+
+  /// No description provided for @mtMarked.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entretien noté. Nalvium vous le rappellera.'**
+  String get mtMarked;
 }
 
 class _AppLocalizationsDelegate

@@ -25,6 +25,7 @@ import '../../domain/video.dart';
 import '../../features/session/session_summary_screen.dart';
 import '../../features/settings/settings_screen.dart';
 import '../../features/shell/app_shell.dart';
+import '../../features/emergency/emergency_screen.dart';
 import '../../features/onboarding/consent_view.dart';
 import '../../features/onboarding/onboarding_screen.dart';
 import '../widgets/page_transitions.dart';
@@ -52,6 +53,10 @@ GoRouter buildRouter({
   redirect: redirect,
   routes: [
     GoRoute(path: '/welcome', builder: (_, _) => const OnboardingScreen()),
+    GoRoute(
+      path: '/emergency',
+      pageBuilder: (_, state) => nalviumPage(state, const EmergencyScreen()),
+    ),
     GoRoute(
       path: '/consent',
       pageBuilder: (_, state) => nalviumPage(state, const ConsentScreen()),

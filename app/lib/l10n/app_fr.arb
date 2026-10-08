@@ -640,5 +640,106 @@
   "vitalRemove": "Retirer",
   "obReadyTitle": "Votre carnet maison est prêt",
   "obReadyBody": "Vos entretiens à venir et vos points vitaux sont rangés dans Ma maison. Quand un problème arrive, appuyez sur le bouton noir.",
-  "obReadyGo": "C'est parti"
+  "obReadyGo": "C'est parti",
+  "dashFollowUp": "Suivi de votre maison",
+  "dashFollowUpGood": "Bien suivie",
+  "dashFollowUpMid": "En bonne voie",
+  "dashFollowUpLow": "À compléter",
+  "dashTasksDue": "{count, plural, =0{Tous vos entretiens sont à jour} =1{1 entretien à prévoir} other{{count} entretiens à prévoir}}",
+  "@dashTasksDue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dashAddVitals": "Ajoutez vos points vitaux dans Ma maison",
+  "dashSaved": "Économisé avec Nalvium",
+  "dashSavedRepairs": "{count, plural, =1{1 réparation faite vous-même} other{{count} réparations faites vous-même}}",
+  "@dashSavedRepairs": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dashSavedEmpty": "Vos économies s'afficheront ici après votre première réparation.",
+  "dashNextTask": "Prochain entretien",
+  "dashInDays": "{count, plural, =0{Aujourd'hui} =1{Demain} other{Dans {count} jours}}",
+  "@dashInDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dashOverdue": "En retard",
+  "dashToPlan": "À planifier",
+  "emergency": "Urgence",
+  "emergencyHint": "Fuite, odeur de gaz, plus de courant",
+  "emTitle": "Que se passe-t-il ?",
+  "emIntro": "En cas de danger immédiat (feu, fumée, personne blessée), sortez et appelez le 18 ou le 112.",
+  "emLeakTitle": "Une fuite d'eau",
+  "emLeak1": "Coupez l'eau à la vanne d'arrêt.",
+  "emLeak2": "Si l'eau approche des prises ou des appareils, coupez le courant au tableau, sans marcher dans l'eau.",
+  "emLeak3": "Épongez et protégez ce qui peut l'être.",
+  "emLeak4": "Prenez des photos (assurance) et prévenez le voisin du dessous ou le syndic.",
+  "emGasTitle": "Une odeur de gaz",
+  "emGas1": "N'actionnez aucun interrupteur, aucun appareil, aucune flamme. Ne fumez pas.",
+  "emGas2": "Ouvrez grand les fenêtres.",
+  "emGas3": "Fermez le robinet de gaz si vous pouvez le faire sans risque.",
+  "emGas4": "Sortez, puis appelez depuis l'extérieur.",
+  "emGasCall": "Urgence Sécurité Gaz · 0 800 47 33 33",
+  "emGasCallHint": "Numéro gratuit, 24 h/24 (GRDF)",
+  "emPowerTitle": "Plus de courant",
+  "emPower1": "Regardez si vos voisins ont du courant : sinon, c'est une panne du réseau (Enedis, numéro sur votre facture).",
+  "emPower2": "Au tableau électrique, repérez le disjoncteur abaissé.",
+  "emPower3": "Débranchez les appareils de la pièce concernée, puis remontez le disjoncteur.",
+  "emPower4": "S'il saute aussitôt, laissez-le coupé et faites appel à un électricien. Jamais les mains mouillées.",
+  "emYourValve": "Votre vanne d'arrêt",
+  "emYourPanel": "Votre tableau électrique",
+  "emYourGas": "Votre robinet de gaz",
+  "emNumbers": "Numéros d'urgence",
+  "emCall18": "Pompiers · 18",
+  "emCall15": "SAMU · 15",
+  "emCall112": "Urgence européenne · 112",
+  "emDiagnose": "Diagnostiquer avec Nalvium",
+  "houseVitals": "Points vitaux",
+  "houseVitalsHint": "Facultatif : utile en cas d'urgence.",
+  "houseMaintenance": "Entretiens",
+  "houseMaintenanceHint": "Des rappels pour garder votre maison en forme. Ce ne sont pas des contrôles.",
+  "houseEquipment": "Vos équipements",
+  "houseProfile": "Votre logement",
+  "houseProfileEdit": "Modifier",
+  "mtDone": "C'est fait",
+  "mtDoneOn": "Fait le {date}",
+  "@mtDoneOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "mtMandatory": "Obligatoire chaque année",
+  "mtNext": "Prochain : {date}",
+  "@mtNext": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "mtBoiler": "Entretien de la chaudière",
+  "mtBoilerBody": "Chaque année, par un professionnel qualifié.",
+  "mtRadiators": "Purge des radiateurs",
+  "mtRadiatorsBody": "Avant l'hiver, pour qu'ils chauffent de façon homogène.",
+  "mtHeatPump": "Entretien de la pompe à chaleur",
+  "mtHeatPumpBody": "Vérification recommandée par un professionnel.",
+  "mtWaterHeater": "Groupe de sécurité du chauffe-eau",
+  "mtWaterHeaterBody": "À manœuvrer régulièrement pour éviter qu'il ne s'entartre.",
+  "mtVmc": "Bouches de ventilation (VMC)",
+  "mtVmcBody": "À nettoyer pour garder un air sain.",
+  "mtSmokeAlarm": "Détecteur de fumée",
+  "mtSmokeAlarmBody": "Testez-le en appuyant sur son bouton.",
+  "mtMarked": "Entretien noté. Nalvium vous le rappellera."
 }

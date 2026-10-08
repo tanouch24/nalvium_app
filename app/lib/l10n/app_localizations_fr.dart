@@ -1660,4 +1660,245 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get obReadyGo => 'C\'est parti';
+
+  @override
+  String get dashFollowUp => 'Suivi de votre maison';
+
+  @override
+  String get dashFollowUpGood => 'Bien suivie';
+
+  @override
+  String get dashFollowUpMid => 'En bonne voie';
+
+  @override
+  String get dashFollowUpLow => 'À compléter';
+
+  @override
+  String dashTasksDue(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count entretiens à prévoir',
+      one: '1 entretien à prévoir',
+      zero: 'Tous vos entretiens sont à jour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dashAddVitals => 'Ajoutez vos points vitaux dans Ma maison';
+
+  @override
+  String get dashSaved => 'Économisé avec Nalvium';
+
+  @override
+  String dashSavedRepairs(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count réparations faites vous-même',
+      one: '1 réparation faite vous-même',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dashSavedEmpty =>
+      'Vos économies s\'afficheront ici après votre première réparation.';
+
+  @override
+  String get dashNextTask => 'Prochain entretien';
+
+  @override
+  String dashInDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Dans $count jours',
+      one: 'Demain',
+      zero: 'Aujourd\'hui',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dashOverdue => 'En retard';
+
+  @override
+  String get dashToPlan => 'À planifier';
+
+  @override
+  String get emergency => 'Urgence';
+
+  @override
+  String get emergencyHint => 'Fuite, odeur de gaz, plus de courant';
+
+  @override
+  String get emTitle => 'Que se passe-t-il ?';
+
+  @override
+  String get emIntro =>
+      'En cas de danger immédiat (feu, fumée, personne blessée), sortez et appelez le 18 ou le 112.';
+
+  @override
+  String get emLeakTitle => 'Une fuite d\'eau';
+
+  @override
+  String get emLeak1 => 'Coupez l\'eau à la vanne d\'arrêt.';
+
+  @override
+  String get emLeak2 =>
+      'Si l\'eau approche des prises ou des appareils, coupez le courant au tableau, sans marcher dans l\'eau.';
+
+  @override
+  String get emLeak3 => 'Épongez et protégez ce qui peut l\'être.';
+
+  @override
+  String get emLeak4 =>
+      'Prenez des photos (assurance) et prévenez le voisin du dessous ou le syndic.';
+
+  @override
+  String get emGasTitle => 'Une odeur de gaz';
+
+  @override
+  String get emGas1 =>
+      'N\'actionnez aucun interrupteur, aucun appareil, aucune flamme. Ne fumez pas.';
+
+  @override
+  String get emGas2 => 'Ouvrez grand les fenêtres.';
+
+  @override
+  String get emGas3 =>
+      'Fermez le robinet de gaz si vous pouvez le faire sans risque.';
+
+  @override
+  String get emGas4 => 'Sortez, puis appelez depuis l\'extérieur.';
+
+  @override
+  String get emGasCall => 'Urgence Sécurité Gaz · 0 800 47 33 33';
+
+  @override
+  String get emGasCallHint => 'Numéro gratuit, 24 h/24 (GRDF)';
+
+  @override
+  String get emPowerTitle => 'Plus de courant';
+
+  @override
+  String get emPower1 =>
+      'Regardez si vos voisins ont du courant : sinon, c\'est une panne du réseau (Enedis, numéro sur votre facture).';
+
+  @override
+  String get emPower2 =>
+      'Au tableau électrique, repérez le disjoncteur abaissé.';
+
+  @override
+  String get emPower3 =>
+      'Débranchez les appareils de la pièce concernée, puis remontez le disjoncteur.';
+
+  @override
+  String get emPower4 =>
+      'S\'il saute aussitôt, laissez-le coupé et faites appel à un électricien. Jamais les mains mouillées.';
+
+  @override
+  String get emYourValve => 'Votre vanne d\'arrêt';
+
+  @override
+  String get emYourPanel => 'Votre tableau électrique';
+
+  @override
+  String get emYourGas => 'Votre robinet de gaz';
+
+  @override
+  String get emNumbers => 'Numéros d\'urgence';
+
+  @override
+  String get emCall18 => 'Pompiers · 18';
+
+  @override
+  String get emCall15 => 'SAMU · 15';
+
+  @override
+  String get emCall112 => 'Urgence européenne · 112';
+
+  @override
+  String get emDiagnose => 'Diagnostiquer avec Nalvium';
+
+  @override
+  String get houseVitals => 'Points vitaux';
+
+  @override
+  String get houseVitalsHint => 'Facultatif : utile en cas d\'urgence.';
+
+  @override
+  String get houseMaintenance => 'Entretiens';
+
+  @override
+  String get houseMaintenanceHint =>
+      'Des rappels pour garder votre maison en forme. Ce ne sont pas des contrôles.';
+
+  @override
+  String get houseEquipment => 'Vos équipements';
+
+  @override
+  String get houseProfile => 'Votre logement';
+
+  @override
+  String get houseProfileEdit => 'Modifier';
+
+  @override
+  String get mtDone => 'C\'est fait';
+
+  @override
+  String mtDoneOn(String date) {
+    return 'Fait le $date';
+  }
+
+  @override
+  String get mtMandatory => 'Obligatoire chaque année';
+
+  @override
+  String mtNext(String date) {
+    return 'Prochain : $date';
+  }
+
+  @override
+  String get mtBoiler => 'Entretien de la chaudière';
+
+  @override
+  String get mtBoilerBody => 'Chaque année, par un professionnel qualifié.';
+
+  @override
+  String get mtRadiators => 'Purge des radiateurs';
+
+  @override
+  String get mtRadiatorsBody =>
+      'Avant l\'hiver, pour qu\'ils chauffent de façon homogène.';
+
+  @override
+  String get mtHeatPump => 'Entretien de la pompe à chaleur';
+
+  @override
+  String get mtHeatPumpBody => 'Vérification recommandée par un professionnel.';
+
+  @override
+  String get mtWaterHeater => 'Groupe de sécurité du chauffe-eau';
+
+  @override
+  String get mtWaterHeaterBody =>
+      'À manœuvrer régulièrement pour éviter qu\'il ne s\'entartre.';
+
+  @override
+  String get mtVmc => 'Bouches de ventilation (VMC)';
+
+  @override
+  String get mtVmcBody => 'À nettoyer pour garder un air sain.';
+
+  @override
+  String get mtSmokeAlarm => 'Détecteur de fumée';
+
+  @override
+  String get mtSmokeAlarmBody => 'Testez-le en appuyant sur son bouton.';
+
+  @override
+  String get mtMarked => 'Entretien noté. Nalvium vous le rappellera.';
 }

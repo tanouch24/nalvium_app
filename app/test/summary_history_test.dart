@@ -64,9 +64,9 @@ void main() {
     });
 
     testWidgets('erreur de chargement : message + Réessayer', (tester) async {
-      final repo = FakeSessionsRepository();
-      await pumpApp(tester, repo: repo);
-      repo.listError = const ApiNetworkException();
+      final repo = FakeSessionsRepository()..listError = const ApiNetworkException();
+      await pumpApp(tester, repo: repo); // l'accueil (tableau de bord) reste utilisable malgré l'erreur
+      expect(find.text('Un problème à la maison ?'), findsOneWidget);
       await tester.tap(find.byKey(const Key('nav-history')));
       await tester.pumpAndSettle();
       expect(find.byKey(const Key('retry')), findsOneWidget);

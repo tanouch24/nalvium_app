@@ -10,10 +10,11 @@ import '../../core/widgets/error_panel.dart';
 import '../../domain/equipment.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/providers.dart';
+import '../onboarding/vitals_editor.dart';
 import 'house_widgets.dart';
+import 'maintenance_section.dart';
 
-/// Maison : la mémoire des équipements du logement, rangés par pièce. Aucun appel IA, aucune publicité,
-/// aucune statistique : simple, visuel, calme.
+/// Ma maison : points vitaux, entretiens, puis la mémoire des équipements rangés par pièce. Aucun appel IA.
 class HouseScreen extends ConsumerWidget {
   const HouseScreen({super.key});
 
@@ -45,29 +46,54 @@ class HouseScreen extends ConsumerWidget {
         ],
       ),
       body: SafeArea(
-        child: home.when(
-          // On garde l'ancienne liste affichée pendant un rechargement : pas de clignotement.
-          skipLoadingOnReload: true,
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(Space.gutter),
-              child: ErrorPanel(error: e, onRetry: () => ref.invalidate(homeProvider)),
-            ),
+        child: RefreshIndicator(
+          onRefresh: () async {
+            ref.invalidate(homeProvider);
+            await ref.read(homeProvider.future);
+          },
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(Space.gutter, Space.x1, Space.gutter, Space.x10),
+            children: [
+              _SectionHeader(title: l10n.houseEquipment),
+              ...home.when(
+                // On garde l'ancienne liste affichée pendant un rechargement : pas de clignotement.
+                skipLoadingOnReload: true,
+                loading: () => const [Padding(padding: EdgeInsets.all(Space.x8), child: Center(child: CircularProgressIndicator()))],
+                error: (e, _) => [ErrorPanel(error: e, onRetry: () => ref.invalidate(homeProvider))],
+                data: (data) => data.equipment.isEmpty ? const [_EmptyHouse()] : _equipmentRows(context, data),
+              ),
+              _SectionHeader(title: l10n.houseVitals, hint: l10n.houseVitalsHint),
+              const VitalsEditor(),
+              _SectionHeader(title: l10n.houseMaintenance, hint: l10n.houseMaintenanceHint),
+              const MaintenanceSection(),
+            ],
           ),
-          data: (data) => data.equipment.isEmpty
-              ? const _EmptyHouse()
-              : RefreshIndicator(
-                  onRefresh: () async {
-                    ref.invalidate(homeProvider);
-                    await ref.read(homeProvider.future);
-                  },
-                  child: _Filled(data: data),
-                ),
         ),
       ),
     );
   }
+}
+
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({required this.title, this.hint});
+  final String title;
+  final String? hint;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(top: Space.x6, bottom: Space.x3),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Semantics(header: true, child: Text(title, style: NalviumText.title.copyWith(fontSize: 20))),
+        if (hint != null) ...[
+          const SizedBox(height: 2),
+          Text(hint!, style: NalviumText.caption),
+        ],
+      ],
+    ),
+  );
 }
 
 class _EmptyHouse extends StatelessWidget {
@@ -76,93 +102,69 @@ class _EmptyHouse extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Align(
-      // Centre optique : un peu au-dessus du milieu, pour que l'état vide ait une intention et pas un grand blanc.
-      alignment: const Alignment(0, -0.3),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(Space.gutter, Space.x6, Space.gutter, Space.x10),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Center(
-              child: Container(
-                width: 84,
-                height: 84,
-                decoration: const BoxDecoration(color: NalviumColors.primarySoft, shape: BoxShape.circle),
-                child: const Icon(Icons.house_outlined, size: 38, color: NalviumColors.primary),
-              ),
-            ),
-            const SizedBox(height: Space.x5),
-            Text(
-              l10n.houseEmptyBody,
-              key: const Key('house-empty-body'),
-              style: NalviumText.title.copyWith(fontSize: 21, height: 1.35),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: Space.x3),
-            Text(l10n.houseEmptyHint, style: NalviumText.body.copyWith(height: 1.45), textAlign: TextAlign.center),
-            const SizedBox(height: Space.x6),
-            PrimaryButton(
-              key: const Key('house-add'),
-              label: l10n.houseAdd,
-              icon: Icons.add_rounded,
-              onPressed: () => context.push('/equipment/add'),
-            ),
-          ],
-        ),
+    return Container(
+      padding: const EdgeInsets.all(Space.x5),
+      decoration: BoxDecoration(color: NalviumColors.surface, borderRadius: BorderRadius.circular(Corner.medium)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            l10n.houseEmptyBody,
+            key: const Key('house-empty-body'),
+            style: NalviumText.title.copyWith(fontSize: 18, height: 1.35),
+          ),
+          const SizedBox(height: Space.x2),
+          Text(l10n.houseEmptyHint, style: NalviumText.body.copyWith(height: 1.45)),
+          const SizedBox(height: Space.x4),
+          PrimaryButton(
+            key: const Key('house-add'),
+            label: l10n.houseAdd,
+            icon: Icons.add_rounded,
+            onPressed: () => context.push('/equipment/add'),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _Filled extends StatelessWidget {
-  const _Filled({required this.data});
-  final HomeData data;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final groups = data.byRoom();
-    return ListView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(Space.gutter, Space.x1, Space.gutter, Space.x10),
-      children: [
-        for (final g in groups) ...[
-          Padding(
-            padding: const EdgeInsets.only(top: Space.x6, bottom: Space.x2 + 2),
-            child: Semantics(
-              header: true,
-              child: Row(
-                children: [
-                  Icon(
-                    RoomCatalog.of(g.value.first.roomType)?.icon ?? Icons.meeting_room_outlined,
-                    size: 20,
-                    color: NalviumColors.textMuted,
-                  ),
-                  const SizedBox(width: Space.x2),
-                  Flexible(
-                    child: Text(
-                      g.key ?? l10n.houseNoRoom,
-                      style: NalviumText.title.copyWith(fontSize: 17, color: NalviumColors.textSecondary, fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                ],
+List<Widget> _equipmentRows(BuildContext context, HomeData data) {
+  final l10n = AppLocalizations.of(context);
+  final groups = data.byRoom();
+  return [
+    for (final g in groups) ...[
+      Padding(
+        padding: const EdgeInsets.only(top: Space.x2, bottom: Space.x2 + 2),
+        child: Semantics(
+          header: true,
+          child: Row(
+            children: [
+              Icon(
+                RoomCatalog.of(g.value.first.roomType)?.icon ?? Icons.meeting_room_outlined,
+                size: 20,
+                color: NalviumColors.textMuted,
               ),
-            ),
+              const SizedBox(width: Space.x2),
+              Flexible(
+                child: Text(
+                  g.key ?? l10n.houseNoRoom,
+                  style: NalviumText.title.copyWith(fontSize: 17, color: NalviumColors.textSecondary, fontWeight: FontWeight.w600),
+                ),
+              ),
+            ],
           ),
-          for (final e in g.value) EquipmentRow(equipment: e),
-        ],
-        const SizedBox(height: Space.x6),
-        SecondaryButton(
-          key: const Key('house-add'),
-          label: l10n.houseAdd,
-          icon: Icons.add_rounded,
-          onPressed: () => context.push('/equipment/add'),
         ),
-      ],
-    );
-  }
+      ),
+      for (final e in g.value) EquipmentRow(equipment: e),
+    ],
+    const SizedBox(height: Space.x4),
+    SecondaryButton(
+      key: const Key('house-add'),
+      label: l10n.houseAdd,
+      icon: Icons.add_rounded,
+      onPressed: () => context.push('/equipment/add'),
+    ),
+  ];
 }
 
 /// Ligne compacte : visuel, nom, marque, nombre de diagnostics. Une seule zone tactile.

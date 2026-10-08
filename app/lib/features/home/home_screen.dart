@@ -13,6 +13,7 @@ import '../../core/widgets/viewfinder.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/providers.dart';
 import '../capture/capture_flow.dart';
+import 'dashboard.dart';
 import '../history/session_labels.dart';
 
 /// Accueil : explique l'app immédiatement. « À reprendre » n'existe que s'il y a une vraie session active.
@@ -94,6 +95,8 @@ class HomeScreen extends ConsumerWidget {
                     onFilm: () => context.push('/video/capture'),
                   ),
                   const _ResumeSection(),
+                  const SizedBox(height: Space.x8),
+                  const HomeDashboard(),
                 ],
               ),
             ),

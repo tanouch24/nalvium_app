@@ -71,6 +71,9 @@ String _hm(DateTime d) =>
     '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
 
 /// Date relative : « Aujourd'hui, 15:45 », « Hier », « 12 sept. ».
+/// « 12 oct. 2027 » (sans dépendre de l'initialisation des formats de date).
+String formatDay(DateTime d) => '${d.day} ${_months[d.month - 1]} ${d.year}';
+
 String relativeDate(AppLocalizations l10n, DateTime date, {DateTime? now}) {
   final d = date.toLocal();
   final n = now ?? DateTime.now();

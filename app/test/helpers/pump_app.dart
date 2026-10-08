@@ -7,6 +7,7 @@ import 'package:nalvium/app.dart';
 import 'package:nalvium/core/router/app_router.dart';
 import 'package:nalvium/services/photo_capture_service.dart';
 import 'package:nalvium/domain/video.dart';
+import 'package:nalvium/features/emergency/emergency_screen.dart';
 import 'package:nalvium/services/local_store.dart';
 import 'package:nalvium/services/providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -61,6 +62,7 @@ Future<FakePhotoCaptureService> pumpApp(
   bool aiConsent = true,
   Map<String, Object>? prefs,
   bool guard = false,
+  Future<void> Function(String number)? dialer,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = dpr;
@@ -84,6 +86,7 @@ Future<FakePhotoCaptureService> pumpApp(
     retry: (_, _) => null,
     overrides: [
       localStoreProvider.overrideWithValue(store),
+      phoneDialerProvider.overrideWithValue(dialer ?? (_) async {}),
       vitalPhotoSaverProvider.overrideWithValue((path, _) async => path),
       photoCaptureServiceProvider.overrideWithValue(fake),
       sessionsRepositoryProvider.overrideWithValue(repo ?? FakeSessionsRepository()),
