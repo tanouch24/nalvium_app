@@ -30,15 +30,11 @@ Contact : contact@nalvium.com.
 
 - Demandes d'intervention : problème, prénom, téléphone, e-mail (facultatif), ville, code postal, disponibilité, médias que vous avez explicitement choisis, et votre consentement (version, date, catégories).
 
-- Communauté : vos publications, commentaires, « Utile », signalements, et vos enregistrements (privés).
-
 - Données techniques minimales : journaux sans contenu personnel (identifiants techniques, statuts, durées).
-
-- Publicité : voir la section « Publicité et consentement ».
 
 ## Finalités
 
-Vous guider dans un dépannage ; retrouver vos équipements et leur historique ; préparer et transmettre une demande d'intervention que vous décidez d'envoyer ; permettre le partage de solutions dans la Communauté ; assurer la sécurité et le bon fonctionnement du service ; afficher de la publicité.
+Vous guider dans un dépannage ; retrouver vos équipements et leur historique ; préparer et transmettre une demande d'intervention que vous décidez d'envoyer ; assurer la sécurité et le bon fonctionnement du service.
 
 ## Intelligence artificielle (OpenAI)
 
@@ -52,7 +48,7 @@ Vos données ne restent donc pas uniquement sur les serveurs de Nalvium.
 
 Les médias de diagnostic restent privés. Leur localisation (GPS) et leurs métadonnées (EXIF) sont supprimées à l'enregistrement.
 
-Une photo n'est publique que si vous la choisissez pour la Communauté : une copie nettoyée est alors créée ; l'original reste privé.
+Vos photos et vidéos ne sont jamais rendues publiques.
 
 Aucun média n'est transmis dans une demande d'intervention sans que vous l'ayez sélectionné explicitement.
 
@@ -66,19 +62,13 @@ Vos photos et vidéos ne sont pas envoyées à Telegram : seul leur nombre peut 
 
 Votre demande peut ensuite être transmise aux opérateurs ou partenaires concernés lorsqu'elle est effectivement prise en charge, et uniquement après votre consentement explicite.
 
-## Communauté publique
+## Publicité
 
-Une publication ou un commentaire est visible par tous les membres, sous le nom « Membre Nalvium ». Votre identifiant n'est jamais affiché. Ne publiez pas d'information personnelle.
-
-## Publicité et consentement (Google AdMob)
-
-Nalvium affiche de la publicité via Google AdMob. L'application déclare l'autorisation d'accès à l'identifiant publicitaire Android, utilisé par Google selon vos choix. Dans l'Espace économique européen, un message de consentement (Google UMP) vous est proposé et vous pouvez modifier vos choix à tout moment dans Réglages › Confidentialité et publicité. Google agit pour la publicité en application de ses propres règles. Aucune donnée de diagnostic n'est transmise aux annonceurs.
+Nalvium n'affiche aucune publicité et n'utilise pas votre identifiant publicitaire.
 
 ## Destinataires et sous-traitants
 
 - OpenAI : analyse par intelligence artificielle (voir plus haut).
-
-- Google (AdMob / UMP) : publicité et gestion du consentement.
 
 - Railway Corp., 548 Market St PMB 68956, San Francisco, California 94104, États-Unis : hébergement. Les services applicatifs et volumes persistants de Nalvium sont actuellement déployés dans la région EU West (Amsterdam, Pays-Bas).
 
@@ -88,13 +78,13 @@ Nalvium affiche de la publicité via Google AdMob. L'application déclare l'auto
 
 ## Transferts hors Union européenne
 
-Plusieurs de ces prestataires (OpenAI, Google, Railway, Telegram) peuvent traiter des données en dehors de l'Union européenne, notamment aux États-Unis. Nalvium ne garantit donc pas que vos données restent limitées à l'Union européenne ; les transferts concernés reposent sur les mécanismes prévus par le RGPD lorsqu'ils sont applicables.
+Plusieurs de ces prestataires (OpenAI, Railway, Telegram) peuvent traiter des données en dehors de l'Union européenne, notamment aux États-Unis. Nalvium ne garantit donc pas que vos données restent limitées à l'Union européenne ; les transferts concernés reposent sur les mécanismes prévus par le RGPD lorsqu'ils sont applicables.
 
 ## Conservation
 
-Vos diagnostics, médias, équipements, notices, demandes d'intervention envoyées, publications et commentaires sont conservés tant que vous ne supprimez pas vos données depuis Réglages › Mes données.
+Vos diagnostics, médias, équipements, notices, demandes d'intervention envoyées sont conservés tant que vous ne supprimez pas vos données depuis Réglages › Mes données.
 
-Les brouillons de demande, photos temporaires non rattachées, brouillons de Communauté non publiés et fichiers orphelins peuvent être supprimés lors d'opérations de maintenance (délais de quelques heures à 14 jours selon le cas).
+Les brouillons de demande, photos temporaires non rattachées et fichiers orphelins peuvent être supprimés lors d'opérations de maintenance (délais de quelques heures à 14 jours selon le cas).
 
 Les notifications Telegram sont conservées dans la conversation Telegram de l'exploitant jusqu'à leur suppression par celui-ci.
 

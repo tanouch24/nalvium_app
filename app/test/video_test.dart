@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:nalvium/core/ads/ad_policy.dart';
 import 'package:nalvium/core/network/api_exceptions.dart';
 import 'package:nalvium/domain/diagnosis.dart';
 import 'package:nalvium/domain/session.dart';
@@ -12,8 +11,8 @@ import 'package:nalvium/services/photo_capture_service.dart';
 import 'helpers/fakes.dart';
 import 'helpers/pump_app.dart';
 
-Future<void> openCapture(WidgetTester tester, {FakeVideoRecorder? recorder, FakeSessionsRepository? repo, FakeAdsService? ads, int fileSize = 5 * 1024 * 1024, List<Object?> captures = const [null]}) async {
-  await pumpApp(tester, recorder: recorder, repo: repo, ads: ads, fileSize: fileSize, captures: captures);
+Future<void> openCapture(WidgetTester tester, {FakeVideoRecorder? recorder, FakeSessionsRepository? repo, int fileSize = 5 * 1024 * 1024, List<Object?> captures = const [null]}) async {
+  await pumpApp(tester, recorder: recorder, repo: repo, fileSize: fileSize, captures: captures);
   await tester.tap(find.byKey(const Key('film-problem')));
   await tester.pumpAndSettle();
 }
@@ -201,8 +200,7 @@ void main() {
 
     testWidgets('« Utiliser cette vidéo » : upload privé, tour « video », même écran guidé', (tester) async {
       final repo = FakeSessionsRepository(turns: [sessionState(message: 'Le bruit est-il régulier ?', choices: ['Oui', 'Non'])]);
-      final ads = FakeAdsService();
-      await openCapture(tester, repo: repo, ads: ads);
+      await openCapture(tester, repo: repo);
       await record(tester, const Duration(seconds: 6));
       await stopRecording(tester);
       await tester.tap(find.byKey(const Key('use-video')));
@@ -210,7 +208,6 @@ void main() {
       expect(repo.calls, containsAllInOrder(['create', 'upload_video', 'turn']));
       expect(repo.inputs.single, isA<VideoTurn>());
       expect((repo.inputs.single! as VideoTurn).toJson(), {'kind': 'video', 'media_id': 'v1'});
-      expect(ads.newDiagnostics, 1);
       expect(find.text('J\'ai besoin de vérifier un point'), findsOneWidget); // mêmes écrans / action_type que photo et texte
     });
   });
@@ -322,7 +319,6 @@ void main() {
     });
 
     testWidgets('REQUEST_PHOTO au milieu d\'un diagnostic vidéo : « Votre vidéo → À prendre », aucune pub', (tester) async {
-      final ads = FakeAdsService();
       final json = {
         'id': 's1', 'status': 'active', 'current_state': 'REQUEST_PHOTO', 'title': 'Fuite', 'category': 'plumbing',
         'pending_analysis': false, 'latest_media_id': 'm9', 'messages': [{}, {}],
@@ -330,12 +326,11 @@ void main() {
         'next': {'action_type': 'REQUEST_PHOTO', 'message': 'Photographiez le raccord.', 'choices': [], 'required_items': [], 'observations': []},
       };
       final repo = FakeSessionsRepository(stored: SessionState.fromJson(json), turns: [sessionState(action: NextActionType.instruction, message: 'Resserrez.')]);
-      await pumpApp(tester, repo: repo, ads: ads, location: '/session/s1', captures: [CapturedPhoto(tempPhotoPath('mid'))]);
+      await pumpApp(tester, repo: repo, location: '/session/s1', captures: [CapturedPhoto(tempPhotoPath('mid'))]);
       expect(find.text('Votre vidéo'), findsOneWidget);
       await tester.tap(find.byKey(const Key('take-requested-photo')));
       await tester.pumpAndSettle();
       expect(repo.calls, containsAllInOrder(['upload', 'turn']));
-      expect(ads.newDiagnostics, 0); // même session : aucune pub
     });
 
     testWidgets('SAFETY_STOP après une vidéo : aucun bouton DIY', (tester) async {
@@ -352,74 +347,12 @@ void main() {
     });
   });
 
-  group('ADMOB — compteur GLOBAL de nouveaux diagnostics', () {
-    testWidgets('#1 photo sans pub, #2 vidéo avec pub, #3 texte avec pub', (tester) async {
-      final ads = _PolicyAds();
-      final repo = FakeSessionsRepository(turns: [sessionState(), sessionState(), sessionState()]);
-      await pumpApp(tester, repo: repo, ads: ads, captures: [CapturedPhoto(tempPhotoPath('g1'))]);
-
-      // #1 : photo
-      await tester.tap(find.byKey(const Key('take-photo')));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const Key('use-photo')));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const Key('close-session')));
-      await tester.pumpAndSettle();
-      // #2 : vidéo
-      await tester.tap(find.byKey(const Key('film-problem')));
-      await tester.pumpAndSettle();
-      await record(tester, const Duration(seconds: 4));
-      await stopRecording(tester);
-      await tester.tap(find.byKey(const Key('use-video')));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const Key('close-session')));
-      await tester.pumpAndSettle();
-      // #3 : texte
-      await tester.tap(find.byKey(const Key('describe-problem')));
-      await tester.pumpAndSettle();
-      await tester.enterText(find.byKey(const Key('describe-field')), 'Mon robinet goutte');
-      await tester.pump();
-      await tester.tap(find.byKey(const Key('describe-continue')));
-      await tester.pumpAndSettle();
-
-      expect(ads.interstitialShown, [false, true, true]); // UN compteur global, pas « un gratuit par type »
-    });
-
-    test('aucune pub plein écran sur les écrans vidéo (capture, aperçu)', () {
-      expect(AdPolicy.isInsideSession('/video/capture'), isTrue);
-      expect(AdPolicy.isInsideSession('/video/preview'), isTrue);
-      final p = AdPolicy(counter: _MemCounter());
-      expect(p.appOpenAllowed(route: '/video/capture', backgroundFor: const Duration(hours: 1)), isFalse);
-    });
-  });
-
   test('modèles : VideoTurn et durée', () {
     expect(const VideoTurn('m1').toJson(), {'kind': 'video', 'media_id': 'm1'});
     expect(formatClock(const Duration(seconds: 7)), '0:07');
     expect(formatClock(const Duration(seconds: 75)), '1:15');
     expect(kMaxVideoSeconds, 15);
   });
-}
-
-class _MemCounter implements DiagnosticCounter {
-  int n = 0;
-  @override
-  Future<int> count() async => n;
-  @override
-  Future<void> increment() async => n++;
-}
-
-/// Vraie politique + faux affichage : enregistre si un interstitiel aurait été montré à chaque nouveau diagnostic.
-class _PolicyAds extends FakeAdsService {
-  final policy = AdPolicy(counter: _MemCounter(), cooldown: Duration.zero);
-  final interstitialShown = <bool>[];
-
-  @override
-  Future<void> beforeNewDiagnostic() async {
-    final due = await policy.interstitialDueForNewDiagnostic();
-    await policy.recordDiagnosticStarted();
-    interstitialShown.add(due);
-  }
 }
 
 /// Dépôt dont l'upload vidéo échoue (n fois), pour tester les erreurs.

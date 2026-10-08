@@ -10,7 +10,6 @@ import '../../core/theme/nalvium_spacing.dart';
 import '../../core/theme/nalvium_typography.dart';
 import '../../core/widgets/buttons.dart';
 import '../../l10n/app_localizations.dart';
-import '../../services/providers.dart';
 import 'analysis_screen.dart';
 import 'capture_flow.dart';
 
@@ -30,12 +29,10 @@ class _PhotoPreviewScreenState extends ConsumerState<PhotoPreviewScreen> {
 
   bool _starting = false;
 
-  /// Nouveau diagnostic : interstitiel éventuel (à partir du n°2), puis l'analyse démarre.
+  /// Nouveau diagnostic : l'analyse démarre.
   Future<void> _use() async {
     if (_starting) return;
     setState(() => _starting = true);
-    await ref.read(adsServiceProvider).beforeNewDiagnostic();
-    if (!mounted) return;
     context.pushReplacement('/analyze', extra: PhotoStart(_path, equipmentId: widget.equipmentId));
   }
 

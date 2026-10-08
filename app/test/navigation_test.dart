@@ -4,15 +4,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'helpers/pump_app.dart';
 
 void main() {
-  testWidgets('la barre affiche Accueil | Maison | Caméra | Dépannage | Communauté', (tester) async {
+  testWidgets('la barre affiche Accueil | Maison | Caméra | Dépannage', (tester) async {
     await pumpApp(tester);
-    for (final label in ['Accueil', 'Maison', 'Dépannage', 'Communauté']) {
+    for (final label in ['Accueil', 'Maison', 'Dépannage']) {
       expect(find.text(label), findsOneWidget);
     }
     expect(find.byKey(const Key('nav-camera')), findsOneWidget);
+    expect(find.text('Communauté'), findsNothing);
   });
 
-  testWidgets('les onglets Maison, Dépannage, Communauté affichent un état vide honnête', (tester) async {
+  testWidgets('les onglets Maison et Dépannage affichent un état vide honnête', (tester) async {
     await pumpApp(tester);
 
     await tester.tap(find.byKey(const Key('nav-house')));
@@ -25,10 +26,6 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text("Besoin d'un coup de main ?"), findsOneWidget);
     expect(find.byKey(const Key('repair-empty')), findsOneWidget); // aucune fausse demande
-
-    await tester.tap(find.byKey(const Key('nav-community')));
-    await tester.pumpAndSettle();
-    expect(find.text('Les premières solutions arriveront bientôt.'), findsOneWidget); // Communauté vide, sans faux post
 
     await tester.tap(find.byKey(const Key('nav-home')));
     await tester.pumpAndSettle();

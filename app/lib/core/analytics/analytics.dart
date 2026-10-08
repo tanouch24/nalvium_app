@@ -10,11 +10,6 @@ enum AnalyticsEvent {
   helpRequested('help_requested'),
   serviceRequestSubmitted('service_request_submitted'),
   serviceRequestOutOfZone('service_request_out_of_zone'),
-  communityPostCreated('community_post_created'),
-  communityHelpful('community_helpful'),
-  communitySaved('community_saved'),
-  adBannerImpression('ad_banner_impression'),
-  adInterstitialShown('ad_interstitial_shown'),
   adAppOpenShown('ad_app_open_shown');
 
   const AnalyticsEvent(this.wire);

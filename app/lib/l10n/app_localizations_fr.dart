@@ -22,9 +22,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get navRepair => 'Dépannage';
 
   @override
-  String get navCommunity => 'Communauté';
-
-  @override
   String get navCamera => 'Caméra';
 
   @override
@@ -60,9 +57,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get repairEmptyTitle => 'Aucune demande en cours';
-
-  @override
-  String get communityTitle => 'Communauté';
 
   @override
   String get historyEmptyTitle => 'Aucun historique';
@@ -1228,271 +1222,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get helpSectionNoticed => 'Ce que Nalvium a constaté';
 
   @override
-  String get cmTitle => 'Communauté';
-
-  @override
-  String get cmIntro => 'Les solutions partagées par la communauté Nalvium.';
-
-  @override
-  String get cmShare => 'Partager une solution';
-
-  @override
-  String get cmSaved => 'Enregistrés';
-
-  @override
-  String get cmEmptyTitle => 'Les premières solutions arriveront bientôt.';
-
-  @override
-  String get cmEmptyBody =>
-      'Vous avez réglé un problème chez vous ? Votre expérience peut aider quelqu\'un d\'autre.';
-
-  @override
-  String get cmSavedEmpty => 'Vous n\'avez encore enregistré aucune solution.';
-
-  @override
-  String get cmLoadFail => 'Impossible de charger la Communauté';
-
-  @override
-  String get cmLoadMore => 'Voir plus';
-
-  @override
-  String get cmEnd => 'Vous avez tout vu.';
-
-  @override
-  String get cmHelpful => 'Utile';
-
-  @override
-  String get cmComment => 'Commenter';
-
-  @override
-  String get cmSave => 'Enregistrer';
-
-  @override
-  String get cmUnsave => 'Retirer des enregistrés';
-
-  @override
-  String get cmMember => 'Membre Nalvium';
-
-  @override
-  String get cmNotOfficial =>
-      'Solution partagée par un membre de la communauté.';
-
-  @override
-  String get cmMaterials => 'Matériel';
-
-  @override
-  String get cmComments => 'Commentaires';
-
-  @override
-  String get cmNoComments => 'Aucun commentaire pour le moment.';
-
-  @override
-  String get cmCommentHint => 'Ajouter un commentaire';
-
-  @override
-  String get cmCommentSend => 'Envoyer';
-
-  @override
-  String get cmCommentDelete => 'Supprimer mon commentaire';
-
-  @override
-  String get cmCommentFail =>
-      'Le commentaire n\'a pas pu être envoyé. Réessayez.';
-
-  @override
-  String get cmCommentTooLong =>
-      'Commentaire trop long (500 caractères maximum).';
-
-  @override
-  String get cmCommentUnsafe =>
-      'Ce commentaire ne peut pas être publié : il touche à un sujet dangereux.';
-
-  @override
-  String get cmActionFail =>
-      'L\'action n\'a pas pu être enregistrée. Réessayez.';
-
-  @override
-  String get cmReport => 'Signaler';
-
-  @override
-  String get cmReportTitle => 'Pourquoi signalez-vous ceci ?';
-
-  @override
-  String get cmReasonDangerous => 'Contenu dangereux';
-
-  @override
-  String get cmReasonSpam => 'Spam / publicité';
-
-  @override
-  String get cmReasonInappropriate => 'Contenu inapproprié';
-
-  @override
-  String get cmReasonPersonal => 'Informations personnelles';
-
-  @override
-  String get cmReasonOther => 'Autre';
-
-  @override
-  String get cmReported => 'Merci. Votre signalement a été enregistré.';
-
-  @override
-  String get cmReportedAlready => 'Vous avez déjà signalé ceci. Merci.';
-
-  @override
-  String get cmEdit => 'Modifier';
-
-  @override
-  String get cmDelete => 'Supprimer';
-
-  @override
-  String get cmDeleteTitle => 'Supprimer cette publication ?';
-
-  @override
-  String get cmDeleteBody =>
-      'Elle disparaîtra de la Communauté. Cette action est définitive.';
-
-  @override
-  String get cmDeleteConfirm => 'Supprimer la publication';
-
-  @override
-  String get cmDeleteFail =>
-      'La publication n\'a pas pu être supprimée. Réessayez.';
-
-  @override
-  String get cmGone => 'Cette publication n\'existe plus.';
-
-  @override
-  String get cmBack => 'Retour';
-
-  @override
-  String get cmNewTitle => 'Partager une solution';
-
-  @override
-  String get cmEditTitle => 'Modifier ma publication';
-
-  @override
-  String get cmFieldTitle => 'Titre';
-
-  @override
-  String get cmFieldTitleHint => 'Ex. Mon lave-vaisselle ne vidangeait plus';
-
-  @override
-  String get cmFieldSolution => 'Solution';
-
-  @override
-  String get cmFieldSolutionHint =>
-      'Ex. J\'ai nettoyé le filtre et retiré un morceau de verre qui bloquait la pompe.';
-
-  @override
-  String get cmFieldCategory => 'Catégorie';
-
-  @override
-  String get cmFieldMaterials => 'Matériel utilisé (facultatif)';
-
-  @override
-  String get cmFieldMaterialsHint => 'Ex. Tournevis cruciforme, chiffon';
-
-  @override
-  String get cmCatPlumbing => 'Plomberie';
-
-  @override
-  String get cmCatAppliance => 'Électroménager';
-
-  @override
-  String get cmCatHandyman => 'Bricolage';
-
-  @override
-  String get cmCatOther => 'Autre';
-
-  @override
-  String get cmPhoto => 'Photo';
-
-  @override
-  String get cmPhotoRecommended => 'Recommandée mais facultative.';
-
-  @override
-  String get cmPhotoTake => 'Prendre une photo';
-
-  @override
-  String get cmPhotoFromDiagnostic => 'Utiliser une photo de mon diagnostic';
-
-  @override
-  String get cmPhotoPublicNotice =>
-      'Cette photo sera visible publiquement dans la Communauté Nalvium.';
-
-  @override
-  String get cmPhotoRemove => 'Retirer la photo';
-
-  @override
-  String get cmPhotoConfirmTitle => 'Rendre cette photo publique ?';
-
-  @override
-  String get cmPhotoConfirmBody =>
-      'Une copie nettoyée de cette photo (sans localisation) sera visible publiquement dans la Communauté Nalvium. L\'original reste privé.';
-
-  @override
-  String get cmPhotoConfirmYes => 'Oui, utiliser cette photo';
-
-  @override
-  String get cmPhotoFail => 'La photo n\'a pas pu être préparée. Réessayez.';
-
-  @override
-  String get cmReview =>
-      'Relisez avant de publier : n\'ajoutez aucune information personnelle (nom, adresse, téléphone).';
-
-  @override
-  String get cmPreview => 'Aperçu';
-
-  @override
-  String get cmPreviewTitle => 'Voici votre publication';
-
-  @override
-  String get cmConsent =>
-      'Je comprends que cette publication sera visible publiquement dans la Communauté Nalvium.';
-
-  @override
-  String get cmPublish => 'Publier';
-
-  @override
-  String get cmContinue => 'Voir l\'aperçu';
-
-  @override
-  String get cmBackEdit => 'Modifier';
-
-  @override
-  String get cmErrTitle => 'Ajoutez un titre (3 caractères minimum).';
-
-  @override
-  String get cmErrSolution => 'Décrivez la solution (10 caractères minimum).';
-
-  @override
-  String get cmErrConsent => 'Vous devez accepter pour publier.';
-
-  @override
-  String get cmErrUnsafe =>
-      'Cette solution touche à un sujet dangereux (gaz, électricité, produits chimiques…). Elle ne peut pas être publiée.';
-
-  @override
-  String get cmErrPublish =>
-      'La publication n\'a pas pu être envoyée. Votre texte est conservé : réessayez.';
-
-  @override
-  String get cmPublished => 'Votre solution est publiée.';
-
-  @override
-  String get cmShareSolution => 'Partager cette solution';
-
-  @override
-  String cmHelpfulCount(int count) {
-    return '$count Utile';
-  }
-
-  @override
-  String cmCommentCount(int count) {
-    return '$count commentaire(s)';
-  }
-
-  @override
   String get oozTitle => 'Nalvium arrive bientôt dans votre secteur';
 
   @override
@@ -1533,7 +1262,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get stSecData => 'Mes données';
 
   @override
-  String get stSecPrivacy => 'Confidentialité et publicité';
+  String get stSecPrivacy => 'Confidentialité';
 
   @override
   String get stSecHelp => 'Aide';
@@ -1554,16 +1283,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get stRequests => 'Demandes d\'intervention';
 
   @override
-  String get stCommunity => 'Publications Communauté';
-
-  @override
   String get stDeleteData => 'Supprimer mes données';
 
   @override
   String get stPrivacy => 'Confidentialité';
-
-  @override
-  String get stAdChoices => 'Choix publicitaires';
 
   @override
   String get stAbout => 'À propos et limites de Nalvium';
@@ -1597,25 +1320,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get stContactCopied => 'Adresse copiée.';
 
   @override
-  String get stAdsTitle => 'Confidentialité et publicité';
-
-  @override
-  String get stAdsBody =>
-      'Nalvium est gratuit grâce à la publicité. Dans l\'Espace économique européen, vous pouvez choisir quelles données sont utilisées pour personnaliser les annonces. Aucune donnée de diagnostic n\'est transmise aux annonceurs.';
-
-  @override
-  String get stAdsManage => 'Gérer mes choix publicitaires';
-
-  @override
-  String get stAdsNone =>
-      'Aucun choix à gérer actuellement. Si un choix vous est demandé, il apparaîtra ici.';
-
-  @override
   String get stDataTitle => 'Mes données';
 
   @override
   String get stDataBody =>
-      'Nalvium fonctionne sans compte : vos données sont rattachées à un identifiant anonyme propre à ce téléphone. Elles comprennent vos diagnostics, vos photos et vidéos privées, votre Maison, vos demandes d\'intervention et votre activité dans la Communauté.';
+      'Nalvium fonctionne sans compte : vos données sont rattachées à un identifiant anonyme propre à ce téléphone. Elles comprennent vos diagnostics, vos photos et vidéos privées, votre Maison et vos demandes d\'intervention.';
 
   @override
   String get stDataDelete => 'Supprimer mes données';
@@ -1638,10 +1347,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get stDelItem4 => 'vos demandes d\'intervention ;';
-
-  @override
-  String get stDelItem5 =>
-      'vos publications et commentaires dans la Communauté, vos « Utile » et vos enregistrements ;';
 
   @override
   String get stDelItem6 => 'vos signalements.';
@@ -1683,8 +1388,4 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get preparingNext => 'Je prépare la suite…';
-
-  @override
-  String get cmPreviewNote =>
-      'Seul ce qui apparaît ci-dessous sera publié, et visible par les autres utilisateurs de Nalvium.';
 }

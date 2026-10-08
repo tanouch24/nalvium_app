@@ -3,19 +3,14 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../core/ads/ad_policy.dart';
 import '../core/analytics/analytics.dart';
-import '../core/ads/ads_service.dart';
-import '../core/ads/google_ads_service.dart';
 import '../core/config/api_config.dart';
 import '../core/network/api_client.dart';
 import '../core/network/api_exceptions.dart';
 import '../data/account_repository.dart';
-import '../data/community_repository.dart';
 import '../data/home_repository.dart';
 import '../data/service_requests_repository.dart';
 import '../data/sessions_repository.dart';
-import '../domain/community.dart';
 import '../domain/equipment.dart';
 import '../domain/service_request.dart';
 import '../domain/session.dart';
@@ -73,89 +68,6 @@ class SessionsRevision extends Notifier<int> {
 final sessionsRevisionProvider = NotifierProvider<SessionsRevision, int>(
   SessionsRevision.new,
 );
-
-final communityRepositoryProvider = Provider<CommunityRepository>(
-  (ref) => HttpCommunityRepository(ref.watch(apiClientProvider)),
-);
-
-/// État d'une liste paginée de publications (fil ou enregistrés).
-class FeedState {
-  const FeedState({this.items = const [], this.nextCursor, this.loading = true, this.loadingMore = false, this.error, this.moreError});
-  final List<CommunityPost> items;
-  final String? nextCursor;
-  final bool loading;
-  final bool loadingMore;
-  final Object? error;
-  final Object? moreError;
-  bool get hasMore => nextCursor != null;
-}
-
-/// Fil national (saved=false) ou « Enregistrés » (saved=true). Curseur stable, aucun doublon.
-class FeedNotifier extends Notifier<FeedState> {
-  FeedNotifier(this.saved);
-  final bool saved;
-
-  @override
-  FeedState build() {
-    Future.microtask(refresh);
-    return const FeedState();
-  }
-
-  Future<CommunityPage> _fetch(String? cursor) {
-    final repo = ref.read(communityRepositoryProvider);
-    return saved ? repo.saved(cursor: cursor) : repo.feed(cursor: cursor);
-  }
-
-  Future<void> refresh() async {
-    state = FeedState(items: state.items, loading: true);
-    try {
-      final page = await _fetch(null);
-      state = FeedState(items: page.items, nextCursor: page.nextCursor, loading: false);
-    } on ApiException catch (e) {
-      state = FeedState(items: state.items, loading: false, error: e);
-    }
-  }
-
-  Future<void> loadMore() async {
-    if (state.loading || state.loadingMore || !state.hasMore) return;
-    state = FeedState(items: state.items, nextCursor: state.nextCursor, loading: false, loadingMore: true);
-    try {
-      final page = await _fetch(state.nextCursor);
-      final known = {for (final p in state.items) p.id};
-      state = FeedState(items: [...state.items, for (final p in page.items) if (!known.contains(p.id)) p], nextCursor: page.nextCursor, loading: false);
-    } on ApiException catch (e) {
-      state = FeedState(items: state.items, nextCursor: state.nextCursor, loading: false, moreError: e);
-    }
-  }
-
-  /// Met à jour une publication déjà affichée (Utile, enregistrement…), ou la retire.
-  void replace(CommunityPost post) {
-    if (saved && !post.saved) {
-      state = FeedState(items: [for (final p in state.items) if (p.id != post.id) p], nextCursor: state.nextCursor, loading: state.loading);
-    } else {
-      state = FeedState(items: [for (final p in state.items) p.id == post.id ? post : p], nextCursor: state.nextCursor, loading: state.loading);
-    }
-  }
-
-  void remove(String id) => state = FeedState(items: [for (final p in state.items) if (p.id != id) p], nextCursor: state.nextCursor, loading: state.loading);
-}
-
-final communityFeedProvider = NotifierProvider.family<FeedNotifier, FeedState, bool>(FeedNotifier.new);
-
-final communityPostProvider = FutureProvider.autoDispose.family<CommunityPost, String>(
-  (ref, id) => ref.watch(communityRepositoryProvider).post(id),
-);
-
-/// Image de la Communauté : `thumb` (liste) ou `large` (détail). Copies publiques dérivées, jamais un média privé.
-final communityImageProvider = FutureProvider.autoDispose.family<MediaImageSource?, (String, String)>((ref, key) async {
-  try {
-    final config = ref.watch(apiConfigProvider);
-    final headers = await ref.watch(apiClientProvider).authHeaders();
-    return MediaImageSource(config.uri('/v1/community/media/${key.$1}/${key.$2}').toString(), headers);
-  } on ApiException {
-    return null;
-  }
-});
 
 final serviceRequestsRepositoryProvider = Provider<ServiceRequestsRepository>(
   (ref) => HttpServiceRequestsRepository(ref.watch(apiClientProvider)),
@@ -255,23 +167,6 @@ final mediaImageSourceProvider = FutureProvider.autoDispose
       }
     });
 
-/// Publicités. Les tests surchargent ce provider (aucun SDK n'est chargé en test).
-/// `--dart-define=NALVIUM_DISABLE_ADS=true` : développement / captures sans publicité.
-const _adsDisabled = bool.fromEnvironment('NALVIUM_DISABLE_ADS');
-
-const _debugBanner = bool.fromEnvironment('NALVIUM_DEBUG_BANNER');
-
-final adsServiceProvider = Provider<AdsService>(
-  (ref) => _adsDisabled
-      ? const NoopAdsService()
-      : (kDebugMode && _debugBanner)
-      ? const PlaceholderBannerAdsService()
-      : GoogleAdsService(
-          policy: AdPolicy(counter: PrefsDiagnosticCounter()),
-          onEvent: (e) => ref.read(analyticsProvider).log(e),
-        ),
-);
-
 /// Fabrique d'enregistreur vidéo (les tests la remplacent par un faux, sans caméra).
 final videoRecorderFactoryProvider = Provider<VideoRecorder Function()>((ref) => CameraVideoRecorder.new);
 
@@ -289,6 +184,5 @@ Future<void> deleteAllMyData(WidgetRef ref) async {
   ref.read(sessionsRevisionProvider.notifier).bump();
   ref.read(homeRevisionProvider.notifier).bump();
   ref.read(requestsRevisionProvider.notifier).bump();
-  ref.invalidate(communityFeedProvider);
   ref.invalidate(serviceAreaProvider);
 }

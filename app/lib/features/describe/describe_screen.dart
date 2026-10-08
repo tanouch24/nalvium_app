@@ -6,7 +6,6 @@ import '../../core/theme/nalvium_spacing.dart';
 import '../../core/theme/nalvium_typography.dart';
 import '../../core/widgets/buttons.dart';
 import '../../l10n/app_localizations.dart';
-import '../../services/providers.dart';
 import '../capture/analysis_screen.dart';
 
 class DescribeScreen extends ConsumerStatefulWidget {
@@ -27,13 +26,11 @@ class _DescribeScreenState extends ConsumerState<DescribeScreen> {
     super.dispose();
   }
 
-  /// Nouveau diagnostic : interstitiel éventuel (à partir du n°2), puis l'analyse démarre.
+  /// Nouveau diagnostic : l'analyse démarre.
   Future<void> _continue() async {
     final text = _controller.text.trim();
     if (text.isEmpty || _starting) return;
     setState(() => _starting = true);
-    await ref.read(adsServiceProvider).beforeNewDiagnostic();
-    if (!mounted) return;
     context.pushReplacement('/analyze', extra: DescriptionStart(text, equipmentId: widget.equipmentId));
   }
 

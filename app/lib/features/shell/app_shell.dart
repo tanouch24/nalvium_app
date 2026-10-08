@@ -7,7 +7,6 @@ import '../../core/theme/nalvium_colors.dart';
 import '../../core/theme/nalvium_typography.dart';
 import '../../core/widgets/motion.dart';
 import '../../l10n/app_localizations.dart';
-import '../../core/ads/banner_slot.dart';
 import '../capture/capture_flow.dart';
 
 /// Accueil | Maison | [CAMÉRA] | Dépannage | Communauté
@@ -46,8 +45,6 @@ class AppShell extends ConsumerWidget {
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Bannière discrète juste au-dessus de la navigation (le corps se réduit : rien n'est recouvert).
-          BannerSlot(router: GoRouter.of(context), inTabs: true),
           MediaQuery.withClampedTextScaling(
             maxScaleFactor: 1.0, // libellés de navigation à taille fixe (5 destinations sur 360 dp)
             child: SafeArea(
@@ -91,13 +88,6 @@ class AppShell extends ConsumerWidget {
                               Icons.build_circle_rounded,
                               l10n.navRepair,
                               const Key('nav-repair'),
-                            ),
-                            item(
-                              3,
-                              Icons.groups_outlined,
-                              Icons.groups_rounded,
-                              l10n.navCommunity,
-                              const Key('nav-community'),
                             ),
                           ],
                         ),

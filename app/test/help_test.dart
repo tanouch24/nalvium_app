@@ -13,7 +13,6 @@ Finder k(String key) => find.byKey(Key(key));
 
 /// Appels qui ÉCRIVENT (la liste et la relecture ne comptent pas).
 List<String> writes(FakeServiceRequestsRepository r) => [for (final c in r.calls) if (!c.startsWith('get') && c != 'list' && c != 'area') c];
-Finder get ad => find.byKey(const Key('ad-slot')).hitTestable();
 
 Future<void> see(WidgetTester t, String key) async {
   if (k(key).evaluate().isEmpty) {
@@ -52,12 +51,12 @@ const _ctx = {
   'manual': {'consulted': true, 'manufacturer': 'Bosch', 'model': 'SMV4HVX31E', 'pages': [43, 51]},
 };
 
-Future<FakeServiceRequestsRepository> startFromDiagnostic(WidgetTester t, {SessionState? session, FakeServiceRequestsRepository? requests, FakeAdsService? ads, Size? size, double scale = 1.0}) async {
+Future<FakeServiceRequestsRepository> startFromDiagnostic(WidgetTester t, {SessionState? session, FakeServiceRequestsRepository? requests, Size? size, double scale = 1.0}) async {
   final reqs = requests ?? FakeServiceRequestsRepository(draftContext: Map<String, dynamic>.of(_ctx));
   final s = session ?? sessionState(action: NextActionType.askQuestion, message: 'Q ?', choices: const ['Oui'], media: const [
     {'id': 'm1', 'media_type': 'photo'}, {'id': 'm2', 'media_type': 'photo'}, {'id': 'v1', 'media_type': 'video'},
   ]);
-  await pumpApp(t, repo: FakeSessionsRepository(stored: s), requests: reqs, ads: ads, location: '/session/s1', size: size ?? const Size(1080, 3600), textScale: scale);
+  await pumpApp(t, repo: FakeSessionsRepository(stored: s), requests: reqs, location: '/session/s1', size: size ?? const Size(1080, 3600), textScale: scale);
   await tapK(t, 'ask-for-help');
   return reqs;
 }
@@ -70,7 +69,6 @@ void main() {
       expect(find.textContaining('pour que vous n\'ayez pas à tout réexpliquer'), findsOneWidget);
       expect(find.text('Demander une intervention'), findsOneWidget);
       expect(k('repair-empty'), findsOneWidget);
-      expect(ad, findsOneWidget);
     });
 
     testWidgets('liste : seulement les vraies demandes (problème, équipement, statut, ville, date)', (tester) async {
@@ -85,7 +83,6 @@ void main() {
       expect(find.text('Annulée'), findsOneWidget);
       expect(find.textContaining('Lyon'), findsNWidgets(2));
       expect(find.textContaining('professionnel disponible'), findsNothing);
-      expect(ad, findsOneWidget);
     });
 
     testWidgets('erreur de chargement honnête', (tester) async {
@@ -101,12 +98,10 @@ void main() {
 
   group('DEMANDE SANS DIAGNOSTIC', () {
     testWidgets('parcours rapide : aucun appel IA, aucune pub, aucun compteur ; envoi complet', (tester) async {
-      final ads = FakeAdsService();
       final reqs = FakeServiceRequestsRepository();
-      await pumpApp(tester, requests: reqs, ads: ads, location: '/repair');
+      await pumpApp(tester, requests: reqs, location: '/repair');
       await tapK(tester, 'repair-ask');
       expect(k('help-intro'), findsOneWidget);
-      expect(ad, findsNothing); // formulaire sensible : pas de bannière
       await typeK(tester, 'help-summary', 'Mon volet roulant est bloqué');
       await tapK(tester, 'help-cat-handyman');
       await fillContact(tester);
@@ -122,8 +117,6 @@ void main() {
       expect(reqs.mediaSelections.single, isEmpty);
       expect(k('help-done-title'), findsOneWidget);
       expect(find.text('Votre demande est envoyée'), findsOneWidget);
-      expect(ads.newDiagnostics, 0); // demander de l'aide n'est pas un diagnostic
-      expect(ad, findsNothing);
     });
   });
 
@@ -177,9 +170,7 @@ void main() {
 
     testWidgets('aucune bannière pendant le diagnostic ni sur le formulaire', (tester) async {
       await pumpApp(tester, repo: FakeSessionsRepository(stored: sessionState(action: NextActionType.askQuestion, message: 'Q ?', choices: const ['Oui'])), location: '/session/s1');
-      expect(ad, findsNothing);
       await tapK(tester, 'ask-for-help');
-      expect(ad, findsNothing);
     });
   });
 
@@ -196,7 +187,6 @@ void main() {
       expect(find.text('Arrêtez-vous ici'), findsOneWidget); // message de sécurité intact
       expect(k('safety-find-pro'), findsOneWidget);
       expect(find.text("Demander de l'aide"), findsOneWidget);
-      expect(ad, findsNothing);
       await tester.tap(k('safety-find-pro'));
       await tester.pumpAndSettle();
       await see(tester, 'help-stop-reason');
@@ -356,7 +346,6 @@ void main() {
       expect(find.textContaining('Camille'), findsOneWidget);
       expect(find.textContaining('69003'), findsOneWidget);
       expect(find.text('Dès que possible'), findsOneWidget);
-      expect(ad, findsOneWidget); // consultation : bannière autorisée
       await tapK(tester, 'request-cancel');
       await tapK(tester, 'request-cancel-keep');
       expect(reqs.calls, isNot(contains('cancel')));
@@ -456,7 +445,6 @@ void areaTests() {
       expect(find.textContaining('arrive'), findsOneWidget);
       expect(find.textContaining('garanti'), findsNothing);
       expect(find.textContaining('envoyée'), findsNothing);
-      expect(ad, findsNothing);
       expect(writes(reqs), ['from-session']); // aucune écriture, aucun envoi
     });
 

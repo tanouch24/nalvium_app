@@ -32,11 +32,8 @@ void main() {
     });
 
     testWidgets('ouvrir Maison affiche la bannière mais ne compte aucun diagnostic', (tester) async {
-      final ads = FakeAdsService();
-      await pumpApp(tester, home: FakeHomeRepository(), ads: ads);
+      await pumpApp(tester, home: FakeHomeRepository());
       await openHouse(tester);
-      expect(ads.newDiagnostics, 0);
-      expect(find.byKey(const Key('ad-slot')).hitTestable(), findsOneWidget); // bannière discrète : ce n'est pas un diagnostic
     });
 
     testWidgets('maison remplie : groupée par pièce, compteurs honnêtes, sans marque', (tester) async {
@@ -213,8 +210,7 @@ void main() {
 
     testWidgets('formulation prudente + confirmation → étape pièce préremplie', (tester) async {
       final home = FakeHomeRepository();
-      final ads = FakeAdsService();
-      await pumpApp(tester, home: home, ads: ads, captures: [CapturedPhoto(tempPhotoPath('id1'))]);
+      await pumpApp(tester, home: home, captures: [CapturedPhoto(tempPhotoPath('id1'))]);
       await toIdentify(tester);
       expect(find.text('Cela ressemble à un lave-vaisselle Bosch.'), findsOneWidget);
       expect(byKey('identify-not-sure'), findsOneWidget);
@@ -231,7 +227,6 @@ void main() {
       expect(home.created.single.equipmentType, 'dishwasher');
       expect(home.created.single.photoMediaId, 'photo1');
       expect(home.calls.where((c) => c.startsWith('identify')), ['identify:photo1']);
-      expect(ads.newDiagnostics, 0); // ce n'est pas un diagnostic
     });
 
     testWidgets('« Corriger » ouvre le choix du type avec la proposition présélectionnée', (tester) async {
@@ -457,8 +452,7 @@ void main() {
       final repo = FakeSessionsRepository(turns: [
         sessionState(action: NextActionType.askQuestion, message: 'Entendez-vous la pompe ?', choices: const ['Oui', 'Non']),
       ]);
-      final ads = FakeAdsService();
-      await pumpApp(tester, home: home, repo: repo, ads: ads);
+      await pumpApp(tester, home: home, repo: repo);
       await openHouse(tester);
       await tester.tap(byKey('equipment-a'));
       await tester.pumpAndSettle();
@@ -472,7 +466,6 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(repo.createdWithEquipment, ['a']);
-      expect(ads.newDiagnostics, 1); // c'est bien un NOUVEAU diagnostic (publicité éventuelle AVANT la session)
       expect(find.text('Entendez-vous la pompe ?'), findsOneWidget);
     });
 

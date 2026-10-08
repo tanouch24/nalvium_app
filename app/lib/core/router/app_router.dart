@@ -3,11 +3,6 @@ import 'package:go_router/go_router.dart';
 import '../../features/capture/analysis_screen.dart';
 import '../../features/capture/photo_preview_screen.dart';
 import '../../features/describe/describe_screen.dart';
-import '../../features/community/community_screen.dart';
-import '../../features/community/compose_post_screen.dart';
-import '../../features/community/post_detail_screen.dart';
-import '../../features/community/saved_screen.dart';
-import '../../domain/community.dart';
 import '../../features/help/help_done_screen.dart';
 import '../../features/help/help_request_screen.dart';
 import '../../features/help/out_of_zone_screen.dart';
@@ -55,11 +50,6 @@ GoRouter buildRouter({
         StatefulShellBranch(
           routes: [
             GoRoute(path: '/repair', builder: (_, _) => const RepairScreen()),
-          ],
-        ),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(path: '/community', builder: (_, _) => const CommunityScreen()),
           ],
         ),
       ],
@@ -165,27 +155,6 @@ GoRouter buildRouter({
       ],
     ),
     GoRoute(
-      path: '/community/new',
-      pageBuilder: (_, state) => nalviumPage(
-        state,
-        ComposePostScreen(args: state.extra is ComposeArgs ? state.extra! as ComposeArgs : const ComposeArgs()),
-      ),
-    ),
-    GoRoute(
-      path: '/community/saved',
-      pageBuilder: (_, state) => nalviumPage(state, const SavedScreen()),
-    ),
-    GoRoute(
-      path: '/community/post/:id',
-      pageBuilder: (_, state) => nalviumPage(state, PostDetailScreen(postId: state.pathParameters['id']!)),
-      routes: [
-        GoRoute(
-          path: 'edit',
-          pageBuilder: (_, state) => nalviumPage(state, ComposePostScreen(args: ComposeArgs(editing: state.extra! as CommunityPost))),
-        ),
-      ],
-    ),
-    GoRoute(
       path: '/help/new',
       pageBuilder: (_, state) => nalviumPage(
         state,
@@ -219,10 +188,6 @@ GoRouter buildRouter({
     GoRoute(
       path: '/settings/data/delete',
       pageBuilder: (_, state) => nalviumPage(state, const DeleteDataScreen()),
-    ),
-    GoRoute(
-      path: '/settings/ads',
-      pageBuilder: (_, state) => nalviumPage(state, const AdChoicesScreen()),
     ),
     GoRoute(
       path: '/settings/contact',

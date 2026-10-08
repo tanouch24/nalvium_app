@@ -43,7 +43,6 @@ dependencies:
   http: ^1.6.0
   shared_preferences: ^2.5.5
   uuid: ^4.6.0
-  google_mobile_ads: ^9.1.0
   camera: ^0.12.1
   video_player: ^2.14.1
   http_parser: ^4.1.2

@@ -65,15 +65,7 @@ android {
     }
 
     buildTypes {
-        // ID d'application AdMob : TEST pour debug/profile, PRODUCTION uniquement pour release.
-        debug {
-            manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
-        }
-        getByName("profile") {
-            manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
-        }
         release {
-            manifestPlaceholders["admobAppId"] = "ca-app-pub-9787163762873138~8283818658"
             // Sans key.properties : signature de DEBUG (test local uniquement, REFUSÉE par le Play Store).
             signingConfig = if (hasReleaseKey) signingConfigs.getByName("release") else signingConfigs.getByName("debug")
         }

@@ -67,10 +67,10 @@ void main() {
     expect(find.text('La photo est-elle assez nette ?'), findsOneWidget);
   });
 
-  testWidgets('barre de navigation : 4 destinations + caméra, sans overflow, zones tactiles ≥ 48', (tester) async {
+  testWidgets('barre de navigation : 3 destinations + caméra, sans overflow, zones tactiles ≥ 48', (tester) async {
     await pumpApp(tester, size: _small, textScale: 2.0);
     expect(tester.takeException(), isNull);
-    for (final k in ['nav-home', 'nav-house', 'nav-repair', 'nav-community']) {
+    for (final k in ['nav-home', 'nav-house', 'nav-repair']) {
       expect(tester.getSize(find.byKey(Key(k))).height, greaterThanOrEqualTo(48));
     }
     expect(tester.getSize(find.byKey(const Key('nav-camera'))).width, greaterThanOrEqualTo(56));
@@ -107,7 +107,7 @@ void main() {
     expect(find.bySemanticsLabel('Caméra'), findsOneWidget);
     expect(find.byTooltip('Historique'), findsOneWidget);
     expect(find.byTooltip('Réglages'), findsOneWidget);
-    for (final label in ['Accueil', 'Maison', 'Dépannage', 'Communauté']) {
+    for (final label in ['Accueil', 'Maison', 'Dépannage']) {
       expect(find.bySemanticsLabel(label), findsOneWidget, reason: label);
     }
     handle.dispose();

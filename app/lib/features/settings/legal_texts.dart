@@ -49,11 +49,10 @@ const privacyPolicy = LegalDocument(
       "• Votre Maison : équipements, pièces, marque et référence que vous renseignez, photo d'équipement facultative.",
       "• La notice du fabricant de vos équipements, lorsque vous demandez de la rechercher (copie conservée sur nos serveurs et indexée pour répondre à vos questions).",
       "• Vos demandes d'intervention : problème, prénom, téléphone, e-mail (facultatif), ville, code postal, disponibilité, médias que vous avez explicitement choisis, et votre consentement (version, date, catégories).",
-      "• Communauté : vos publications, commentaires, « Utile », signalements, et vos enregistrements (privés).",
       "• Des données techniques minimales : journaux sans contenu personnel (identifiants techniques, statuts, durées).",
     ]),
     LegalSection("Pourquoi (finalités)", [
-      "Vous guider dans un dépannage ; retrouver vos équipements et leur historique ; préparer et transmettre une demande d'intervention que vous décidez d'envoyer ; permettre le partage de solutions dans la Communauté ; assurer la sécurité et le bon fonctionnement du service ; afficher de la publicité (voir plus bas).",
+      "Vous guider dans un dépannage ; retrouver vos équipements et leur historique ; préparer et transmettre une demande d'intervention que vous décidez d'envoyer ; assurer la sécurité et le bon fonctionnement du service.",
     ]),
     LegalSection("Intelligence artificielle", [
       "Pour analyser votre problème, Nalvium envoie à un fournisseur d'IA (aujourd'hui OpenAI) : votre description, vos réponses, les photos ou images extraites d'une vidéo nécessaires à l'analyse, et — si votre diagnostic est lié à un équipement — sa marque, sa référence, sa pièce et des extraits de sa notice. Nous demandons au fournisseur de ne pas conserver la conversation lorsque son option le permet.",
@@ -62,7 +61,7 @@ const privacyPolicy = LegalDocument(
     ]),
     LegalSection("Photos et vidéos", [
       "Les médias de diagnostic restent privés. Leur localisation (GPS) et leurs métadonnées (EXIF) sont supprimées à l'enregistrement.",
-      "Une photo n'est publique que si vous la choisissez pour la Communauté : une COPIE nettoyée est alors créée ; l'original reste privé.",
+      "Vos photos et vidéos ne sont jamais rendues publiques.",
       "Aucun média n'est transmis dans une demande d'intervention sans que vous l'ayez sélectionné explicitement.",
     ]),
     LegalSection("Demandes d'intervention", [
@@ -72,11 +71,8 @@ const privacyPolicy = LegalDocument(
       "Vos photos et vidéos ne sont PAS envoyées à Telegram : seul leur nombre peut apparaître dans la notification. Votre e-mail (facultatif) n'y figure pas non plus.",
       "Votre demande peut ensuite être transmise aux opérateurs ou partenaires concernés lorsqu'elle est effectivement prise en charge, et uniquement après votre consentement explicite. Seules les informations que vous avez choisi de transmettre sont concernées.",
     ]),
-    LegalSection("Communauté", [
-      "Une publication ou un commentaire est visible par tous les membres, sous le nom « Membre Nalvium ». Votre identifiant n'est jamais affiché. Ne publiez pas d'information personnelle.",
-    ]),
     LegalSection("Publicité", [
-      "Nalvium affiche de la publicité via Google AdMob. Dans l'Espace économique européen, un message de consentement (Google UMP) vous est proposé et vous pouvez modifier vos choix à tout moment dans Réglages › Confidentialité et publicité. Aucune donnée de diagnostic n'est transmise aux annonceurs.",
+      "Nalvium n'affiche aucune publicité et n'utilise pas votre identifiant publicitaire.",
     ]),
     LegalSection("Durées de conservation", [
       "Vos données sont conservées tant que vous ne les supprimez pas depuis Réglages › Mes données. Les brouillons et fichiers temporaires abandonnés peuvent être supprimés lors d'opérations de maintenance.",
@@ -87,9 +83,9 @@ const privacyPolicy = LegalDocument(
       "Pour exercer vos droits d'accès, de rectification ou d'export, ou pour toute question : $kLegalContact.",
     ]),
     LegalSection("Sous-traitants et destinataires", [
-      "Fournisseur d'IA : OpenAI. Publicité : Google (AdMob / UMP). Hébergement : Railway Corp., 548 Market St PMB 68956, San Francisco, California 94104, États-Unis. Les services applicatifs et volumes persistants de Nalvium sont actuellement déployés dans la région EU West (Amsterdam, Pays-Bas).",
+      "Fournisseur d'IA : OpenAI. Hébergement : Railway Corp., 548 Market St PMB 68956, San Francisco, California 94104, États-Unis. Les services applicatifs et volumes persistants de Nalvium sont actuellement déployés dans la région EU West (Amsterdam, Pays-Bas).",
       "Notification interne : Telegram, utilisé uniquement comme canal d'alerte à l'exploitant lors d'une demande d'intervention (contenu décrit plus haut). Telegram ne reçoit ni votre diagnostic complet, ni vos photos ou vidéos : il ne porte que le texte de la notification. La base de données de Nalvium reste la source de vérité.",
-      "Plusieurs de ces prestataires (OpenAI, Google, Railway, Telegram) peuvent traiter des données en dehors de l'Union européenne, notamment aux États-Unis. Nalvium ne garantit donc pas que vos données restent limitées à l'Union européenne ; les transferts concernés reposent sur les mécanismes prévus par le RGPD lorsqu'ils sont applicables.",
+      "Plusieurs de ces prestataires (OpenAI, Railway, Telegram) peuvent traiter des données en dehors de l'Union européenne, notamment aux États-Unis. Nalvium ne garantit donc pas que vos données restent limitées à l'Union européenne ; les transferts concernés reposent sur les mécanismes prévus par le RGPD lorsqu'ils sont applicables.",
     ]),
   ],
 );
@@ -99,7 +95,7 @@ const termsOfUse = LegalDocument(
   title: "Conditions d'utilisation",
   sections: [
     LegalSection('Objet', [
-      "Nalvium est un assistant qui aide à comprendre et à traiter de petits problèmes domestiques. Il est fourni gratuitement, avec de la publicité.",
+      "Nalvium est un assistant qui aide à comprendre et à traiter de petits problèmes domestiques. Il est fourni gratuitement, sans publicité.",
     ]),
     LegalSection('Ce que Nalvium est — et n\'est pas', [
       "• Nalvium est un outil d'assistance : ses réponses sont des hypothèses, jamais un diagnostic certain.",
@@ -112,9 +108,6 @@ const termsOfUse = LegalDocument(
     ]),
     LegalSection("Demandes d'intervention", [
       "Avec votre accord explicite, votre demande peut être transmise à un opérateur ou partenaire susceptible de vous aider, lorsqu'elle est effectivement prise en charge. Nalvium ne garantit ni qu'un professionnel soit disponible, ni un délai, ni un prix. Le service est actuellement limité à Lyon et à un rayon de 50 km.",
-    ]),
-    LegalSection("Communauté", [
-      "Les solutions de la Communauté sont partagées par des membres. Elles ne sont ni validées par Nalvium, ni garanties, ni recommandées par un professionnel. Vous êtes responsable de ce que vous publiez : pas de contenu dangereux, illicite, trompeur, publicitaire ou contenant des informations personnelles. Nous pouvons retirer un contenu signalé.",
     ]),
     LegalSection("Disponibilité", [
       "Le service peut être interrompu ou modifié. L'analyse dépend d'un fournisseur d'IA et peut être indisponible.",
@@ -141,7 +134,7 @@ const legalNotice = LegalDocument(
       "Railway Corp., 548 Market St PMB 68956, San Francisco, California 94104, États-Unis. Les services applicatifs et volumes persistants de Nalvium sont actuellement déployés dans la région EU West (Amsterdam, Pays-Bas).",
     ]),
     LegalSection('Propriété', [
-      "Nalvium, son logo et ses contenus sont protégés. Les contenus publiés par les membres restent la responsabilité de leurs auteurs.",
+      "Nalvium, son logo et ses contenus sont protégés.",
     ]),
   ],
 );
@@ -158,7 +151,6 @@ const aboutNalvium = LegalDocument(
       "• Il ne remplace pas un professionnel qualifié.",
       "• Si Nalvium vous demande de vous arrêter, arrêtez-vous : c'est une règle de sécurité.",
       "• Aucun professionnel n'est garanti, ni aucun délai d'intervention.",
-      "• Les solutions de la Communauté sont des témoignages de membres, pas des consignes officielles de Nalvium.",
     ]),
     LegalSection("Sécurité", [
       "Gaz, fumée, fils dénudés, eau près de l'électricité, tableau électrique, risque de structure, grosse fuite, produits dangereux, appareil sous pression : Nalvium s'arrête et vous explique quoi faire. En cas de danger immédiat, appelez le 18 ou le 112.",
@@ -181,7 +173,7 @@ const aiInformation = LegalDocument(
       "L'IA peut mal interpréter une photo ou proposer une hypothèse fausse. Chaque hypothèse est présentée avec prudence. Vérifiez et ne prenez aucun risque.",
     ]),
     LegalSection("Garde-fous", [
-      "Des règles de sécurité de Nalvium s'appliquent avant et après l'IA : elles peuvent interrompre une conversation et priment toujours sur l'IA, sur la publicité et sur les demandes d'aide.",
+      "Des règles de sécurité de Nalvium s'appliquent avant et après l'IA : elles peuvent interrompre une conversation et priment toujours sur l'IA et sur les demandes d'aide.",
       "Une notice de fabricant n'est utilisée que si elle a été retrouvée pour votre appareil exact.",
     ]),
   ],

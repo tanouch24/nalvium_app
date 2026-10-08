@@ -12,7 +12,6 @@ import '../../core/theme/nalvium_typography.dart';
 import '../../core/widgets/buttons.dart';
 import '../../domain/video.dart';
 import '../../l10n/app_localizations.dart';
-import '../../services/providers.dart';
 import '../capture/analysis_screen.dart';
 
 /// Aperçu : lecture / pause, durée, puis « Utiliser cette vidéo » ou « Refilmer ». Aucun montage, aucun filtre.
@@ -65,12 +64,11 @@ class _VideoPreviewScreenState extends ConsumerState<VideoPreviewScreen> {
     c.value.isPlaying ? c.pause() : c.play();
   }
 
-  /// Nouveau diagnostic : interstitiel éventuel (à partir du n°2, compteur global), puis l'analyse démarre.
+  /// Nouveau diagnostic : l'analyse démarre.
   Future<void> _use() async {
     if (_starting) return;
     setState(() => _starting = true);
     await _controller?.pause();
-    await ref.read(adsServiceProvider).beforeNewDiagnostic();
     if (!mounted) return;
     context.pushReplacement('/analyze', extra: VideoStart(widget.clip, equipmentId: widget.equipmentId));
   }

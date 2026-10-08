@@ -27,7 +27,6 @@ void main() {
       for (final key in [
         'st-data',
         'st-privacy',
-        'st-ads',
         'st-about',
         'st-contact',
         'st-terms',
@@ -88,24 +87,6 @@ void main() {
           .readAsLinesSync()
           .firstWhere((l) => l.startsWith('version:'));
       expect(line.split(':')[1].trim(), '$kAppVersionName+$kAppBuildNumber');
-    });
-  });
-
-  group('Choix publicitaires (UMP)', () {
-    testWidgets('requis : le bouton ouvre le formulaire', (tester) async {
-      final ads = FakeAdsService(privacyRequired: true);
-      await pumpApp(tester, location: '/settings/ads', ads: ads);
-      await tester.tap(k('ads-manage'));
-      await tester.pumpAndSettle();
-      expect(ads.privacyFormShown, 1);
-    });
-
-    testWidgets('non requis : aucun bouton, message neutre', (tester) async {
-      final ads = FakeAdsService();
-      await pumpApp(tester, location: '/settings/ads', ads: ads);
-      expect(k('ads-manage'), findsNothing);
-      expect(k('ads-none'), findsOneWidget);
-      expect(ads.privacyFormShown, 0);
     });
   });
 
@@ -230,7 +211,6 @@ void a11y() {
     '/settings',
     '/settings/data',
     '/settings/data/delete',
-    '/settings/ads',
     '/settings/contact',
     '/settings/legal/privacy',
   ]) {
@@ -245,14 +225,6 @@ void a11y() {
       expect(tester.takeException(), isNull);
     });
   }
-  testWidgets('pas de bannière sur la suppression de données', (tester) async {
-    await pumpApp(tester, location: '/settings/data/delete');
-    expect(find.byKey(const Key('ad-slot')), findsNothing);
-  });
-  testWidgets('bannière discrète sur la liste des Réglages', (tester) async {
-    await pumpApp(tester, location: '/settings');
-    expect(find.byKey(const Key('ad-slot')).hitTestable(), findsOneWidget);
-  });
 }
 
 void analyticsWiring() {

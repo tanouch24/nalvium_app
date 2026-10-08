@@ -23,8 +23,7 @@ Future<CapturedPhoto?> capturePhoto(BuildContext context, WidgetRef ref) =>
 Future<CapturedPhoto?> _capture(BuildContext context, WidgetRef ref) async {
   try {
     final capture = ref.read(photoCaptureServiceProvider);
-    // Le retour de la caméra système ne doit jamais déclencher une pub App Open.
-    return await ref.read(adsServiceProvider).suspendAppOpen(capture.takePhoto);
+    return await capture.takePhoto();
   } on CameraUnavailableException {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(

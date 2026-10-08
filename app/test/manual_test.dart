@@ -18,8 +18,8 @@ const _available = ManualInfo(
   official: true, pageCount: 84, matchLevel: 'exact',
 );
 
-Future<void> openDetail(WidgetTester tester, FakeHomeRepository home, {FakeAdsService? ads, FakeSessionsRepository? repo, Size? size, double scale = 1.0}) async {
-  await pumpApp(tester, home: home, ads: ads, repo: repo, location: '/equipment/a', size: size ?? const Size(1080, 3600), textScale: scale);
+Future<void> openDetail(WidgetTester tester, FakeHomeRepository home, {FakeSessionsRepository? repo, Size? size, double scale = 1.0}) async {
+  await pumpApp(tester, home: home, repo: repo, location: '/equipment/a', size: size ?? const Size(1080, 3600), textScale: scale);
 }
 
 Future<void> show(WidgetTester tester, String key) async {
@@ -71,11 +71,10 @@ void main() {
   group('NOTICE — états', () {
     testWidgets('aucune notice : « Rechercher la notice » → recherche en cours → disponible, sans toucher au compteur', (tester) async {
       final gate = Completer<void>();
-      final ads = FakeAdsService();
       final home = FakeHomeRepository(items: [equipment(id: 'a', brand: 'Bosch', model: 'SMS46GI01E')])
         ..searchGate = gate
         ..nextSearch = const ManualSearchResult(outcome: 'found', manual: _available);
-      await openDetail(tester, home, ads: ads);
+      await openDetail(tester, home);
       await show(tester, 'manual-search');
       await tester.tap(k('manual-search'));
       await tester.pump();
@@ -87,7 +86,6 @@ void main() {
       expect(find.textContaining('84 pages'), findsOneWidget);
       expect(find.textContaining('media3.bosch-home.com'), findsOneWidget);
       expect(k('manual-consult'), findsOneWidget);
-      expect(ads.newDiagnostics, 0); // chercher une notice n'est pas un diagnostic
     });
 
     testWidgets('notice exacte introuvable : message honnête, usage normal conservé', (tester) async {
@@ -163,9 +161,8 @@ void main() {
     });
 
     testWidgets('consulter : pages navigables, texte réel, aucune pub plein écran', (tester) async {
-      final ads = FakeAdsService();
       final home = FakeHomeRepository(items: [equipment(id: 'a', brand: 'Bosch', model: 'SMS46GI01E')])..manuals['a'] = _available;
-      await openDetail(tester, home, ads: ads);
+      await openDetail(tester, home);
       await show(tester, 'manual-consult');
       await tester.tap(k('manual-consult'));
       await tester.pumpAndSettle();
@@ -177,7 +174,6 @@ void main() {
       await tester.tap(k('manual-prev'));
       await tester.pumpAndSettle();
       expect(find.text('Page 1 sur 84'), findsOneWidget);
-      expect(ads.newDiagnostics, 0);
     });
   });
 

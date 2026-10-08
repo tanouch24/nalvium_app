@@ -12,9 +12,7 @@ import 'package:nalvium/services/video_recorder_service.dart';
 
 import 'fakes.dart';
 import 'fake_home.dart';
-import 'fake_community.dart';
 import 'fake_requests.dart';
-import 'package:nalvium/core/ads/ads_service.dart';
 
 class FakePhotoCaptureService implements PhotoCaptureService {
   FakePhotoCaptureService(this.results);
@@ -51,12 +49,10 @@ Future<FakePhotoCaptureService> pumpApp(
   double textScale = 1.0,
   bool reduceMotion = false,
   bool settle = true,
-  FakeAdsService? ads,
   FakeVideoRecorder? recorder,
   int fileSize = 5 * 1024 * 1024,
   FakeHomeRepository? home,
   FakeServiceRequestsRepository? requests,
-  FakeCommunityRepository? community,
   FakeAccountRepository? account,
   FakeAnalyticsSink? analytics,
 }) async {
@@ -79,10 +75,8 @@ Future<FakePhotoCaptureService> pumpApp(
       sessionsRepositoryProvider.overrideWithValue(repo ?? FakeSessionsRepository()),
       homeRepositoryProvider.overrideWithValue(home ?? FakeHomeRepository()),
       serviceRequestsRepositoryProvider.overrideWithValue(requests ?? FakeServiceRequestsRepository()),
-      communityRepositoryProvider.overrideWithValue(community ?? FakeCommunityRepository()),
       accountRepositoryProvider.overrideWithValue(account ?? FakeAccountRepository()),
       analyticsSinkProvider.overrideWithValue(analytics ?? FakeAnalyticsSink()),
-      adsServiceProvider.overrideWithValue(ads ?? FakeAdsService()),
       videoRecorderFactoryProvider.overrideWithValue(() => recorder ?? FakeVideoRecorder()),
       videoFileSizeProvider.overrideWithValue((_) async => fileSize),
     ],
@@ -94,46 +88,6 @@ Future<FakePhotoCaptureService> pumpApp(
     await tester.pump();
   }
   return fake;
-}
-
-/// Faux service publicitaire de TEST : enregistre les appels, aucun SDK.
-class FakeAdsService implements AdsService {
-  FakeAdsService({this.banner, this.privacyRequired = false});
-
-  /// UMP simulé : le formulaire d'options est-il requis ? Combien de fois a-t-il été ouvert ?
-  final bool privacyRequired;
-  int privacyFormShown = 0;
-
-  /// Bannière simulée (par défaut un bloc de 60 dp) ; permet de simuler no-fill / chargement retardé.
-  final Widget? banner;
-  int newDiagnostics = 0;
-  int suspendCalls = 0;
-  int initializeCalls = 0;
-  final resumes = <String>[];
-
-  @override
-  Future<void> initialize() async => initializeCalls++;
-
-  @override
-  Future<bool> privacyOptionsRequired() async => privacyRequired;
-
-  @override
-  Future<void> showPrivacyOptions() async => privacyFormShown++;
-
-  @override
-  Widget buildBanner() => banner ?? const DecoratedBox(key: Key('ad-slot'), decoration: BoxDecoration(color: Color(0xFFE3E9F2)), child: SizedBox(height: 60, width: double.infinity));
-
-  @override
-  Future<void> beforeNewDiagnostic() async => newDiagnostics++;
-
-  @override
-  Future<void> onAppResumed({required String route, required Duration backgroundFor}) async => resumes.add(route);
-
-  @override
-  Future<T> suspendAppOpen<T>(Future<T> Function() action) async {
-    suspendCalls++;
-    return action();
-  }
 }
 
 /// Faux enregistreur vidéo de TEST : aucune caméra, comportement piloté par le test.

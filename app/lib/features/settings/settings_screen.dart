@@ -177,12 +177,6 @@ class SettingsScreen extends ConsumerWidget {
                 label: l.stPrivacy,
                 onTap: () => context.push('/settings/legal/privacy'),
               ),
-              _Row(
-                key: const Key('st-ads'),
-                icon: Icons.tune_rounded,
-                label: l.stAdChoices,
-                onTap: () => context.push('/settings/ads'),
-              ),
             ]),
             _Header(l.stSecHelp),
             _Group([
@@ -338,57 +332,6 @@ class ContactScreen extends StatelessWidget {
   }
 }
 
-/// « Gérer mes choix publicitaires » : n'ouvre le formulaire UMP que s'il est réellement requis.
-class AdChoicesScreen extends ConsumerStatefulWidget {
-  const AdChoicesScreen({super.key});
-  @override
-  ConsumerState<AdChoicesScreen> createState() => _AdChoicesScreenState();
-}
-
-class _AdChoicesScreenState extends ConsumerState<AdChoicesScreen> {
-  late final Future<bool> _required = ref
-      .read(adsServiceProvider)
-      .privacyOptionsRequired();
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    return Scaffold(
-      appBar: _bar(context, l.stAdsTitle),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(Space.gutter),
-          children: [
-            Text(l.stAdsBody, style: NalviumText.bodyLarge),
-            const SizedBox(height: Space.x6),
-            FutureBuilder<bool>(
-              future: _required,
-              builder: (context, snap) {
-                if (snap.data == true) {
-                  return PrimaryButton(
-                    key: const Key('ads-manage'),
-                    label: l.stAdsManage,
-                    onPressed: () =>
-                        ref.read(adsServiceProvider).showPrivacyOptions(),
-                  );
-                }
-                if (!snap.hasData) return const SizedBox.shrink();
-                return Text(
-                  l.stAdsNone,
-                  key: const Key('ads-none'),
-                  style: NalviumText.body.copyWith(
-                    color: NalviumColors.textSecondary,
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class DataScreen extends StatelessWidget {
   const DataScreen({super.key});
   @override
@@ -506,7 +449,6 @@ class _DeleteDataScreenState extends ConsumerState<DeleteDataScreen> {
       l.stDelItem2,
       l.stDelItem3,
       l.stDelItem4,
-      l.stDelItem5,
       l.stDelItem6,
     ];
     return Scaffold(
