@@ -82,7 +82,7 @@ Plusieurs de ces prestataires (OpenAI, Railway, Telegram) peuvent traiter des do
 
 ## Conservation
 
-Vos diagnostics, médias, équipements, notices, demandes d'intervention envoyées sont conservés tant que vous ne supprimez pas vos données depuis Réglages › Mes données.
+Vos diagnostics, médias, équipements, notices et demandes d'intervention envoyées sont conservés tant que vous ne supprimez pas vos données depuis Réglages › Mes données.
 
 Les brouillons de demande, photos temporaires non rattachées et fichiers orphelins peuvent être supprimés lors d'opérations de maintenance (délais de quelques heures à 14 jours selon le cas).
 

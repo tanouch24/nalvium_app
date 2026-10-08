@@ -22,9 +22,15 @@ def test_public_without_auth_and_mobile_ready():
 def test_covers_required_topics_and_identity():
     html = _html()
     for needed in ["509 817 649 00080", "NB CONSULTING", "10 rue d&#x27;Hanoï, 69100 Villeurbanne", "contact@nalvium.com",
-                   "2026-10", "octobre 2026", "OpenAI", "Telegram", "Railway", "EU West", "AdMob", "RGPD", "CNIL",
-                   "Communauté", "identifiant anonyme", "notices"]:
+                   "2026-10", "octobre 2026", "OpenAI", "Telegram", "Railway", "EU West", "RGPD", "CNIL",
+                   "aucune publicité", "identifiant anonyme", "notices"]:
         assert needed in html, needed
+
+
+def test_no_ads_no_community():
+    html = _html()
+    for gone in ["AdMob", "Communauté", "UMP"]:
+        assert gone not in html, gone
 
 
 def test_no_false_promises():
