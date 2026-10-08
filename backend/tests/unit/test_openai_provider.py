@@ -7,9 +7,25 @@ import pytest
 from app.ai.openai_provider import MAX_CONFIDENCE, OpenAIProvider, build_input, to_domain
 from app.ai.provider import AIProviderError, AIProviderNotConfigured
 from app.ai.registry import build_provider
-from app.ai.wire import WireAnalysis, WireHypothesis, WireNextAction
+from app.ai.wire import WireAnalysis, WireEstimate, WireHypothesis, WireNextAction, WirePart
 from app.config import Settings
 from app.domain.diagnosis import DiagnosticContext, MediaRef, NextActionType, VerificationOutcome
+
+
+NO_ESTIMATE = WireEstimate(
+    available=False, diy_feasibility=0, difficulty="easy", duration_minutes=0,
+    diy_cost_min=0, diy_cost_max=0, pro_cost_min=0, pro_cost_max=0, parts=[],
+)
+
+
+def estimate(**over) -> WireEstimate:
+    base = dict(  # noqa: C408
+        available=True, diy_feasibility=8, difficulty="easy", duration_minutes=20,
+        diy_cost_min=5, diy_cost_max=12, pro_cost_min=120, pro_cost_max=180,
+        parts=[WirePart(name="Joint fibre 15×21", approx_eur=2), WirePart(name=" ", approx_eur=1)],
+    )
+    base.update(over)
+    return WireEstimate(**base)
 
 
 def wire(**over) -> WireAnalysis:
@@ -28,6 +44,7 @@ def wire(**over) -> WireAnalysis:
         safety_flags=[],
         verification_outcome="none",
         manual_pages_used=[],
+        estimate=NO_ESTIMATE,
     )
     base.update(over)
     return WireAnalysis(**base)
@@ -191,3 +208,32 @@ async def test_video_context_is_passed_through_the_provider_call():
     await prov.analyze(DiagnosticContext(session_id="s", videos=[_video()]))
     sent = responses.kwargs["input"][0]["content"]
     assert sum(1 for c in sent if c["type"] == "input_image") == 4
+
+
+def test_estimate_absent_when_unavailable():
+    assert to_domain(wire()).estimate is None
+
+
+def test_estimate_mapped_and_cleaned():
+    e = to_domain(wire(estimate=estimate())).estimate
+    assert e is not None
+    assert (e.diy_feasibility, e.difficulty, e.duration_minutes) == (8, "easy", 20)
+    assert (e.diy_cost_min, e.diy_cost_max, e.pro_cost_min, e.pro_cost_max) == (5, 12, 120, 180)
+    assert [p.name for p in e.parts] == ["Joint fibre 15×21"]  # pièce vide ignorée
+
+
+def test_estimate_never_on_safety_stop_or_emergency():
+    stop = WireNextAction(action_type="SAFETY_STOP", message="Éloignez-vous.", choices=[])
+    assert to_domain(wire(next_action=stop, estimate=estimate())).estimate is None
+    assert to_domain(wire(risk_level="emergency", estimate=estimate())).estimate is None
+
+
+def test_estimate_bounds_and_coherence():
+    e = to_domain(wire(diy_allowed=False, estimate=estimate(
+        diy_feasibility=14, diy_cost_min=50, diy_cost_max=10, pro_cost_min=-3, pro_cost_max=999999,
+        duration_minutes=0,
+    ))).estimate
+    assert e.diy_feasibility == 3  # le DIY déconseillé plafonne la faisabilité
+    assert (e.diy_cost_min, e.diy_cost_max) == (10, 50)  # bornes remises dans l'ordre
+    assert (e.pro_cost_min, e.pro_cost_max) == (None, 20000)
+    assert e.duration_minutes is None

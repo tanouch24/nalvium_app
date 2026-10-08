@@ -63,6 +63,31 @@ class Hypothesis(BaseModel):
     confidence: float = Field(ge=0.0, lt=1.0)
 
 
+class Difficulty(StrEnum):
+    EASY = "easy"
+    MEDIUM = "medium"
+    HARD = "hard"
+
+
+class EstimatePart(BaseModel):
+    name: str
+    approx_eur: int | None = None
+
+
+class RepairEstimate(BaseModel):
+    """Estimation INDICATIVE (prix moyens en France) : faisabilité, durée, coût soi-même vs artisan, pièces.
+    Jamais un devis. Absente tant que l'IA n'a pas d'hypothèse plausible, et jamais sur un arrêt de sécurité."""
+
+    diy_feasibility: int = Field(ge=0, le=10)
+    difficulty: Difficulty
+    duration_minutes: int | None = Field(default=None, ge=1, le=600)
+    diy_cost_min: int | None = Field(default=None, ge=0)
+    diy_cost_max: int | None = Field(default=None, ge=0)
+    pro_cost_min: int | None = Field(default=None, ge=0)
+    pro_cost_max: int | None = Field(default=None, ge=0)
+    parts: list[EstimatePart] = Field(default_factory=list)
+
+
 class DiagnosticAnalysis(BaseModel):
     """Sortie structurée du moteur IA (contrat provider-agnostique)."""
 
@@ -83,6 +108,7 @@ class DiagnosticAnalysis(BaseModel):
     verification_outcome: VerificationOutcome | None = None
     # Pages de la notice constructeur réellement utilisées pour cette réponse (sous-ensemble des extraits fournis).
     manual_pages_used: list[int] = Field(default_factory=list)
+    estimate: RepairEstimate | None = None
 
 
 class MediaRef(BaseModel):

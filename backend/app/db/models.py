@@ -51,6 +51,8 @@ class DiagnosticSession(Base):
     subcategory: Mapped[str | None] = mapped_column(String(120))
     risk_level: Mapped[str | None] = mapped_column(String(16))
     description: Mapped[str | None] = mapped_column(Text)
+    # Dernière estimation indicative disponible (RepairEstimate sérialisée). Conservée d'un tour à l'autre.
+    estimate: Mapped[dict | None] = mapped_column(JSONB)
     # Équipement de la Maison concerné. Détaché (NULL) si l'équipement est supprimé : le diagnostic reste.
     equipment_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("equipment.id", ondelete="SET NULL"), index=True
@@ -416,4 +418,19 @@ class CommunityReport(Base):
     comment_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("community_comments.id", ondelete="CASCADE"))
     reason: Mapped[str] = mapped_column(String(24))
     details: Mapped[str | None] = mapped_column(String(300))
+    created_at: Mapped[datetime] = _now()
+
+
+class ResultReport(Base):
+    """Signalement d'une réponse de Nalvium jugée fausse, dangereuse ou choquante (exigence des stores pour l'IA).
+    Supprimé avec la session et avec les données de l'utilisateur."""
+
+    __tablename__ = "result_reports"
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    session_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("diagnostic_sessions.id", ondelete="CASCADE"), index=True
+    )
+    reason: Mapped[str] = mapped_column(String(24))
+    details: Mapped[str | None] = mapped_column(String(500))
     created_at: Mapped[datetime] = _now()

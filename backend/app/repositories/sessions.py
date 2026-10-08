@@ -1,11 +1,13 @@
 import uuid
+from datetime import datetime
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.db.models import (
     DiagnosticSession,
     MediaAsset,
+    ResultReport,
     SessionAction,
     SessionHypothesis,
     SessionMessage,
@@ -54,6 +56,18 @@ class MediaRepository:
 class SessionRepository:
     def __init__(self, db: Session) -> None:
         self._db = db
+
+    def count_created_since(self, user_id: uuid.UUID, since: datetime) -> int:
+        stmt = select(func.count()).where(
+            DiagnosticSession.user_id == user_id, DiagnosticSession.created_at >= since
+        )
+        return int(self._db.execute(stmt).scalar_one())
+
+    def add_report(self, session: DiagnosticSession, reason: str, details: str | None) -> ResultReport:
+        report = ResultReport(user_id=session.user_id, session_id=session.id, reason=reason, details=details)
+        self._db.add(report)
+        self._db.commit()
+        return report
 
     def create(self, user_id: uuid.UUID, equipment_id: uuid.UUID | None = None) -> DiagnosticSession:
         session = DiagnosticSession(user_id=user_id, equipment_id=equipment_id)

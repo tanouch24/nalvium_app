@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 from app.db.models import DiagnosticSession, MediaAsset, SessionMessage, VideoFrame
 from app.domain.diagnosis import (
@@ -52,6 +52,10 @@ class InvalidTurn(Exception):
     pass
 
 
+class DailyLimitReached(Exception):
+    pass
+
+
 @dataclass(frozen=True)
 class TurnInput:
     kind: str  # description | answer | photo | action_result
@@ -76,12 +80,25 @@ class SessionService:
         self._storage, self._diagnostics, self._equipment = storage, diagnostics, equipment
 
     # ---- création / lecture -------------------------------------------------
-    def create(self, user_id: uuid.UUID, equipment_id: uuid.UUID | None = None) -> DiagnosticSession:
-        """Un diagnostic lancé depuis une fiche équipement est lié à cet équipement dès sa création."""
+    def create(
+        self, user_id: uuid.UUID, equipment_id: uuid.UUID | None = None, daily_limit: int | None = None
+    ) -> DiagnosticSession:
+        """Un diagnostic lancé depuis une fiche équipement est lié à cet équipement dès sa création.
+        `daily_limit` : nombre maximal de nouveaux diagnostics sur 24 h glissantes (None = illimité)."""
         self._users.ensure(user_id)
+        if daily_limit is not None:
+            since = datetime.now(UTC) - timedelta(hours=24)
+            if self._sessions.count_created_since(user_id, since) >= daily_limit:
+                raise DailyLimitReached
         if equipment_id is not None and self._equipment.get_owned(equipment_id, user_id) is None:
             raise NotFound
         return self._sessions.create(user_id, equipment_id)
+
+    def report(self, user_id: uuid.UUID, session_id: uuid.UUID, reason: str, details: str | None) -> None:
+        """Signalement d'une réponse de Nalvium. Le contenu n'est jamais journalisé."""
+        session = self.get(user_id, session_id)
+        clean = (details or "").strip()[:500] or None
+        self._sessions.add_report(session, reason, clean)
 
     def link_equipment(
         self, user_id: uuid.UUID, session_id: uuid.UUID, equipment_id: uuid.UUID | None
@@ -366,6 +383,8 @@ class SessionService:
         if a.verification_outcome is not None:
             self._sessions.add_verification(session, msg, a.verification_outcome.value)
 
+        if a.estimate is not None:
+            session.estimate = a.estimate.model_dump(mode="json")
         if a.title:
             session.title = a.title[:120]
         session.category = a.category.value

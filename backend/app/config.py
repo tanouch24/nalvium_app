@@ -55,6 +55,8 @@ class Settings(BaseSettings):
     # Documentation interactive : jamais exposée en production.
     # Limites d'abus simples (mémoire du processus, par identité anonyme). Désactivable pour des tests de charge.
     rate_limit_enabled: bool = True
+    # Nouveaux diagnostics par identité sur 24 h glissantes (protège le coût IA ; un usage normal ne l'atteint pas).
+    daily_session_limit: int = 8
 
     # --- Rétention / nettoyage (ajustables après relecture juridique ; voir docs/RETENTION.md) ---
     # Brouillon de demande d'intervention jamais envoyé : l'utilisateur peut revenir dessus quelques jours.

@@ -62,6 +62,38 @@ class NextOut(BaseModel):
     manual: ManualRef | None = None
 
 
+class EstimatePartOut(BaseModel):
+    name: str
+    approx_eur: int | None = None
+
+
+class EstimateOut(BaseModel):
+    """Estimation INDICATIVE (jamais un devis), prix moyens en France, euros TTC."""
+
+    diy_feasibility: int
+    difficulty: str
+    duration_minutes: int | None = None
+    diy_cost_min: int | None = None
+    diy_cost_max: int | None = None
+    pro_cost_min: int | None = None
+    pro_cost_max: int | None = None
+    parts: list[EstimatePartOut] = Field(default_factory=list)
+
+
+def estimate_out(raw: dict | None) -> EstimateOut | None:
+    if not raw:
+        return None
+    try:
+        return EstimateOut.model_validate(raw)
+    except ValueError:
+        return None  # une ancienne forme stockée ne doit jamais casser la lecture d'une session
+
+
+class ReportRequest(BaseModel):
+    reason: Literal["wrong", "dangerous", "offensive", "other"]
+    details: str | None = Field(default=None, max_length=500)
+
+
 class EquipmentRef(BaseModel):
     """Équipement lié à une session (affiché dans le diagnostic et le récapitulatif)."""
 
@@ -98,6 +130,7 @@ class SessionOut(BaseModel):
     actions: list[ActionOut]
     next: NextOut | None
     equipment: EquipmentRef | None = None
+    estimate: EstimateOut | None = None
 
 
 class SessionSummary(BaseModel):
@@ -113,6 +146,7 @@ class SessionSummary(BaseModel):
     # Dernier message de Nalvium (pour la carte « À reprendre » / l'historique).
     last_message: str | None = None
     equipment_id: uuid.UUID | None = None
+    estimate: EstimateOut | None = None
 
 
 def equipment_ref(item) -> EquipmentRef | None:
@@ -181,6 +215,7 @@ def session_out(session: DiagnosticSession) -> SessionOut:
         ],
         next=_next_out(last_nalvium, step, session.equipment.brand if session.equipment else None) if last_nalvium else None,
         equipment=equipment_ref(session.equipment),
+        estimate=estimate_out(session.estimate),
     )
 
 
@@ -198,6 +233,7 @@ def summary_out(session: DiagnosticSession) -> SessionSummary:
         subcategory=session.subcategory,
         last_message=(last.text or None) if last else None,
         equipment_id=session.equipment_id,
+        estimate=estimate_out(session.estimate),
     )
 
 

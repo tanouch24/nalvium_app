@@ -17,7 +17,9 @@ from app.domain.diagnosis import (
     Hypothesis,
     ManualCandidate,
     NextAction,
+    EstimatePart,
     NextActionType,
+    RepairEstimate,
     RiskLevel,
     Urgency,
     VerificationOutcome,
@@ -144,6 +146,47 @@ def identification_to_domain(wire: WireEquipmentIdentification) -> EquipmentIden
     )
 
 
+_MAX_EUR = 20000
+
+
+def _eur(v: int) -> int | None:
+    return min(max(int(v), 0), _MAX_EUR) or None
+
+
+def _span(lo: int, hi: int) -> tuple[int | None, int | None]:
+    a, b = _eur(lo), _eur(hi)
+    if a is not None and b is not None and a > b:
+        a, b = b, a
+    return a, b
+
+
+def estimate_to_domain(wire: WireAnalysis) -> RepairEstimate | None:
+    """Bornes et cohérence : rien sur un arrêt de sécurité ; faisabilité plafonnée si l'IA déconseille le DIY."""
+    e = wire.estimate
+    if not e.available or wire.next_action.action_type == "SAFETY_STOP" or wire.risk_level == "emergency":
+        return None
+    feasibility = min(max(e.diy_feasibility, 0), 10)
+    if not wire.diy_allowed:
+        feasibility = min(feasibility, 3)
+    diy_min, diy_max = _span(e.diy_cost_min, e.diy_cost_max)
+    pro_min, pro_max = _span(e.pro_cost_min, e.pro_cost_max)
+    parts = [
+        EstimatePart(name=clean_text(p.name)[:80], approx_eur=_eur(p.approx_eur))
+        for p in e.parts
+        if p.name.strip()
+    ][:4]
+    return RepairEstimate(
+        diy_feasibility=feasibility,
+        difficulty=e.difficulty,
+        duration_minutes=min(e.duration_minutes, 600) if e.duration_minutes > 0 else None,
+        diy_cost_min=diy_min,
+        diy_cost_max=diy_max,
+        pro_cost_min=pro_min,
+        pro_cost_max=pro_max,
+        parts=parts,
+    )
+
+
 def to_domain(wire: WireAnalysis) -> DiagnosticAnalysis:
     hypotheses = [
         Hypothesis(label=clean_text(h.label), confidence=min(max(h.confidence, 0.0), MAX_CONFIDENCE))
@@ -171,6 +214,7 @@ def to_domain(wire: WireAnalysis) -> DiagnosticAnalysis:
         safety_flags=list(wire.safety_flags),
         verification_outcome=outcome,
         manual_pages_used=sorted({p for p in wire.manual_pages_used if p > 0}),
+        estimate=estimate_to_domain(wire),
     )
 
 

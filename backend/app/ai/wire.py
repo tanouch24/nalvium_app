@@ -26,6 +26,25 @@ class WireNextAction(BaseModel):
     choices: list[str]
 
 
+class WirePart(BaseModel):
+    name: str  # pièce ou consommable générique, avec la dimension standard si utile (« joint fibre 15×21 »)
+    approx_eur: int  # prix indicatif TTC en France ; 0 si inconnu
+
+
+class WireEstimate(BaseModel):
+    """Estimation indicative. available = false tant qu'aucune hypothèse plausible n'existe (ou en cas de danger)."""
+
+    available: bool
+    diy_feasibility: int  # 0 (impossible soi-même) à 10 (très simple)
+    difficulty: Literal["easy", "medium", "hard"]
+    duration_minutes: int  # durée estimée de la réparation soi-même ; 0 si inconnue
+    diy_cost_min: int  # coût total soi-même en euros TTC (pièces + petit matériel)
+    diy_cost_max: int
+    pro_cost_min: int  # coût d'un artisan en euros TTC (déplacement + main-d'œuvre + pièces)
+    pro_cost_max: int
+    parts: list[WirePart]
+
+
 class WireAnalysis(BaseModel):
     title: str
     category: Literal["plumbing", "appliance", "handyman", "electrical", "other"]
@@ -56,6 +75,7 @@ class WireAnalysis(BaseModel):
     ]
     # Numéros des pages d'extraits de la notice constructeur sur lesquelles la réponse s'appuie VRAIMENT ([] sinon).
     manual_pages_used: list[int]
+    estimate: WireEstimate
 
 
 EquipmentTypeWire = Literal[

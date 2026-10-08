@@ -13,6 +13,7 @@ from app.api.schemas import (
     EquipmentSuggestionsOut,
     LinkEquipmentRequest,
     MediaOut,
+    ReportRequest,
     SessionOut,
     SessionSummary,
     TurnRequest,
@@ -24,7 +25,7 @@ from app.config import get_settings
 from app.media.pipeline import InvalidImageError, process_photo
 from app.media.video import InvalidVideoError, VideoTooLongError, process_video
 from app.services.equipment_service import EquipmentService
-from app.services.session_service import InvalidTurn, NotFound, SessionService, TurnInput
+from app.services.session_service import DailyLimitReached, InvalidTurn, NotFound, SessionService, TurnInput
 
 log = logging.getLogger("nalvium.api")
 router = APIRouter(prefix="/v1", tags=["sessions"])
@@ -38,9 +39,14 @@ def create_session(
 ):
     """Corps facultatif : `equipment_id` lie le diagnostic à un équipement de la Maison dès la création."""
     try:
-        session = svc.create(user_id, body.equipment_id if body else None)
+        session = svc.create(
+            user_id, body.equipment_id if body else None, daily_limit=get_settings().daily_session_limit
+        )
     except NotFound as exc:
         raise HTTPException(404, "equipment_not_found") from exc
+    except DailyLimitReached as exc:
+        log.info("session refused reason=daily_limit")
+        raise HTTPException(429, "daily_limit") from exc
     log.info("session created id=%s linked=%s", session.id, session.equipment_id is not None)
     return session_out(session)
 
@@ -64,6 +70,24 @@ def get_session(
         return session_out(svc.get(user_id, session_id))
     except NotFound as exc:
         raise HTTPException(404, "session_not_found") from exc
+
+
+@router.post(
+    "/sessions/{session_id}/report", status_code=201, dependencies=[Depends(rate_limit("report", 20, 3600))]
+)
+def report_result(
+    session_id: uuid.UUID,
+    body: ReportRequest,
+    user_id: uuid.UUID = Depends(current_user_id),
+    svc: SessionService = Depends(get_session_service),
+):
+    """Signaler une réponse de Nalvium (fausse, dangereuse, choquante). Exigence des stores pour le contenu IA."""
+    try:
+        svc.report(user_id, session_id, body.reason, body.details)
+    except NotFound as exc:
+        raise HTTPException(404, "session_not_found") from exc
+    log.info("result reported reason=%s", body.reason)
+    return {"ok": True}
 
 
 @router.post("/sessions/{session_id}/equipment", response_model=SessionOut)
