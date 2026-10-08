@@ -1,1 +1,3 @@
 #include "Generated.xcconfig"
+// ID d'application AdMob : TEST en debug, PRODUCTION en release (lu par Info.plist).
+ADMOB_APP_ID=ca-app-pub-3940256099942544~1458002511
