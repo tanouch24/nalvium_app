@@ -2,13 +2,32 @@
 import pytest
 from sqlalchemy import text
 
+from app.api.deps import get_diagnostic_service, get_storage
 from app.config import get_settings
 from app.domain.diagnosis import Difficulty, EstimatePart, RepairEstimate
 from app.domain.diagnosis import NextActionType as T
-from tests.helpers import make_analysis, new_install_id
-from tests.integration.test_sessions_api import make_env  # noqa: F401  (fixture)
+from app.main import create_app
+from app.media.storage import LocalMediaStorage
+from app.services.diagnostic_service import DiagnosticService
+from tests.helpers import ScriptedProvider, make_analysis, new_install_id
+from tests.integration.test_sessions_api import Env
 
 pytestmark = pytest.mark.integration
+
+@pytest.fixture
+def make_env(clean_db, tmp_path):
+    def _make(*analyses):
+        from fastapi.testclient import TestClient
+
+        provider = ScriptedProvider(*analyses)
+        app = create_app()
+        storage = LocalMediaStorage(tmp_path)
+        app.dependency_overrides[get_diagnostic_service] = lambda: DiagnosticService(provider)
+        app.dependency_overrides[get_storage] = lambda: storage
+        return Env(TestClient(app), provider, {"X-Nalvium-Install-Id": new_install_id()}, storage)
+
+    return _make
+
 
 EST = RepairEstimate(
     diy_feasibility=8, difficulty=Difficulty.EASY, duration_minutes=20, diy_cost_min=5, diy_cost_max=12,

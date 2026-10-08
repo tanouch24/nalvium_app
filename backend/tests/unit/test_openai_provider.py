@@ -11,7 +11,6 @@ from app.ai.wire import WireAnalysis, WireEstimate, WireHypothesis, WireNextActi
 from app.config import Settings
 from app.domain.diagnosis import DiagnosticContext, MediaRef, NextActionType, VerificationOutcome
 
-
 NO_ESTIMATE = WireEstimate(
     available=False, diy_feasibility=0, difficulty="easy", duration_minutes=0,
     diy_cost_min=0, diy_cost_max=0, pro_cost_min=0, pro_cost_max=0, parts=[],

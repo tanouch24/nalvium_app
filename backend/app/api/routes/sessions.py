@@ -25,7 +25,13 @@ from app.config import get_settings
 from app.media.pipeline import InvalidImageError, process_photo
 from app.media.video import InvalidVideoError, VideoTooLongError, process_video
 from app.services.equipment_service import EquipmentService
-from app.services.session_service import DailyLimitReached, InvalidTurn, NotFound, SessionService, TurnInput
+from app.services.session_service import (
+    DailyLimitReached,
+    InvalidTurn,
+    NotFound,
+    SessionService,
+    TurnInput,
+)
 
 log = logging.getLogger("nalvium.api")
 router = APIRouter(prefix="/v1", tags=["sessions"])
