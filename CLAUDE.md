@@ -55,6 +55,19 @@ retirable dans Réglages ; textes légaux à jour. Serveur : estimation
 Installée sur le Samsung (adb `R9ZL304ZVLK`) le 09/10 en profil pour essai par
 Nathanyel — retours à recueillir.
 
+## Audit du 12/10/2026 (3 commits locaux)
+
+Rejet Google (« keeps stopping ») = la **1.0** : WorkManager tiré par AdMob
+plante au démarrage en release. La 1.1 (sans pub) s'ouvre ; vérifiée sur
+émulateur Android 16 de bout en bout. Commits : corrections app (URL API par
+défaut, Urgence sans téléphonie, caméra/micro facultatifs, tablettes 600 dp,
+pourboires), corrections serveur (route /v1/diagnostic/analyze supprimée, pas
+d'estimation sur arrêt de sécurité, OpenAI 55 s, 15 questions max), premium
+(carte à partager share_plus, attente narrée, pastille de confiance, compteur
+d'économies, pourboire après réussite). AAB recompilé :
+`release/nalvium-1.1.0+2.aab` (ancien : `-avant-audit`). Sur Railway, vérifier
+que `NALVIUM_OPENAI_TIMEOUT_S` vaut 55 ou n'existe pas.
+
 ## Reste à faire avant la sortie (détail : `docs/SORTIE_1.1.md`)
 
 1. Recueillir les retours de Nathanyel sur le Samsung.
