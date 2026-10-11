@@ -187,6 +187,8 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
           : null,
     );
 
+    final error = _error;
+    final turnLimit = error is ApiHttpException && error.isTurnLimit;
     Widget body;
     if (_error != null) {
       body = Center(
@@ -194,12 +196,24 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
           padding: const EdgeInsets.all(Space.gutter),
           child: ErrorPanel(
             error: _error!,
-            onRetry: _retry,
-            secondary: TertiaryButton(
-              key: const Key('back-home'),
-              label: l10n.backToHome,
-              color: NalviumColors.textSecondary,
-              onPressed: _home,
+            // Limite de questions : réessayer ne servirait à rien ; on propose un pro ou un nouveau diagnostic.
+            onRetry: turnLimit ? null : _retry,
+            secondary: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (turnLimit)
+                  PrimaryButton(
+                    key: const Key('turn-limit-help'),
+                    label: l10n.askForHelp,
+                    onPressed: () => context.push('/help/new?session=${widget.sessionId}'),
+                  ),
+                TertiaryButton(
+                  key: const Key('back-home'),
+                  label: l10n.backToHome,
+                  color: NalviumColors.textSecondary,
+                  onPressed: _home,
+                ),
+              ],
             ),
           ),
         ),

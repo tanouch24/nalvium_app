@@ -83,8 +83,8 @@ const privacyPolicy = LegalDocument(
     LegalSection("Signalements", [
       "Si vous signalez une réponse de Nalvium, nous conservons la raison choisie et la précision que vous écrivez, rattachées au diagnostic, pour améliorer le service. Ils sont supprimés avec vos données.",
     ]),
-    LegalSection("Soutien (dons)", [
-      "Les dons « Soutenir Nalvium » sont payés via Apple ou Google, selon leurs conditions. Nalvium ne reçoit ni vos coordonnées bancaires, ni votre identité de paiement. Un don ne débloque rien : tout reste gratuit.",
+    LegalSection("Soutien (pourboires)", [
+      "Les pourboires « Soutenir Nalvium » sont payés via Apple ou Google, selon leurs conditions. Nalvium ne reçoit ni vos coordonnées bancaires, ni votre identité de paiement. Un pourboire ne débloque rien : tout reste gratuit.",
     ]),
     LegalSection("Durées de conservation", [
       "Vos données sont conservées tant que vous ne les supprimez pas depuis Réglages › Mes données. Les brouillons et fichiers temporaires abandonnés peuvent être supprimés lors d'opérations de maintenance.",
@@ -125,7 +125,7 @@ const termsOfUse = LegalDocument(
       "Les durées, difficultés et coûts affichés sont des estimations indicatives (prix moyens en France), calculées par l'IA. Ce ne sont ni des devis ni des engagements : le prix réel dépend de votre situation et du professionnel.",
     ]),
     LegalSection("Soutien", [
-      "Nalvium est gratuit. Vous pouvez le soutenir par un don facultatif payé via Apple ou Google, sans aucune contrepartie.",
+      "Nalvium est gratuit. Vous pouvez le soutenir par un pourboire facultatif payé via Apple ou Google, sans aucune contrepartie.",
     ]),
     LegalSection("Disponibilité", [
       "Le service peut être interrompu ou modifié. L'analyse dépend d'un fournisseur d'IA et peut être indisponible.",

@@ -1410,6 +1410,20 @@ class AppLocalizationsFr extends AppLocalizations {
       'Pour que Nalvium reste gratuit, le nombre de nouveaux diagnostics est limité par jour. Revenez demain : vos diagnostics en cours restent accessibles.';
 
   @override
+  String get errTurnLimitTitle => 'Limite de questions atteinte';
+
+  @override
+  String get errTurnLimitBody =>
+      'Ce diagnostic a atteint sa limite de questions. Lancez-en un nouveau ou demandez l\'aide d\'un pro.';
+
+  @override
+  String get errRateLimitTitle => 'Beaucoup de demandes d\'un coup';
+
+  @override
+  String get errRateLimitBody =>
+      'Patientez quelques minutes, puis réessayez : votre diagnostic est conservé.';
+
+  @override
   String get estTitle => 'Estimation';
 
   @override
@@ -1824,6 +1838,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get emDiagnose => 'Diagnostiquer avec Nalvium';
 
   @override
+  String get emNoDialerTitle => 'Appel impossible depuis cet appareil';
+
+  @override
+  String get emNoDialerBody => 'Composez ce numéro depuis un téléphone :';
+
+  @override
   String get houseVitals => 'Points vitaux';
 
   @override
@@ -1911,7 +1931,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get supportNoReward =>
-      'C\'est un don sans contrepartie : rien n\'est débloqué, tout reste gratuit.';
+      'C\'est un pourboire, un soutien sans contrepartie : rien n\'est débloqué, tout reste gratuit.';
 
   @override
   String get supportCoffee => 'Un café';

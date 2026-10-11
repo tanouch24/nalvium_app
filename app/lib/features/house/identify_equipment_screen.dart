@@ -18,8 +18,8 @@ import 'add_equipment_screen.dart';
 
 enum _Phase { intro, working, result, uploadFailed, identifyFailed }
 
-/// « Identifier avec une photo ». Ce n'est PAS un diagnostic : aucune session n'est créée, aucune publicité,
-/// aucun compteur. Une identification est toujours une proposition que l'utilisateur confirme ou corrige.
+/// « Identifier avec une photo ». Ce n'est PAS un diagnostic : aucune session n'est créée, aucun compteur.
+/// Une identification est toujours une proposition que l'utilisateur confirme ou corrige.
 class IdentifyEquipmentScreen extends ConsumerStatefulWidget {
   const IdentifyEquipmentScreen({super.key});
 

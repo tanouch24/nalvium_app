@@ -15,6 +15,9 @@ abstract final class Space {
 
   /// Hauteur minimale d'une zone tactile principale.
   static const tap = 56.0;
+
+  /// Largeur maximale du contenu (tablettes, grands écrans) : l'app reste une colonne de téléphone, centrée.
+  static const maxContentWidth = 600.0;
 }
 
 /// Trois rayons seulement.

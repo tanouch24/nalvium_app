@@ -1,5 +1,6 @@
 /// Configuration de l'URL du backend, fournie à la compilation :
 ///   flutter run --dart-define=NALVIUM_API_URL=http://IP_LAN_DU_MAC:8001
+/// Sans --dart-define, l'URL de production est utilisée.
 /// En release, une URL locale ou privée est refusée : elle ne peut pas être une URL de production.
 class ApiConfigException implements Exception {
   const ApiConfigException(this.reason);
@@ -13,9 +14,12 @@ class ApiConfig {
 
   final Uri baseUrl;
 
-  static const _fromEnv = String.fromEnvironment('NALVIUM_API_URL');
+  /// URL de production, utilisée si aucune `--dart-define=NALVIUM_API_URL=…` n'est fournie.
+  static const productionUrl = 'https://nalvium-api-production.up.railway.app';
 
-  /// URL compilée dans l'app (peut être vide).
+  static const _fromEnv = String.fromEnvironment('NALVIUM_API_URL', defaultValue: productionUrl);
+
+  /// URL compilée dans l'app (production par défaut, surchargeable via --dart-define).
   static String get compiledUrl => _fromEnv;
 
   /// Valide [raw]. Lance [ApiConfigException] si absente ou interdite pour ce mode.

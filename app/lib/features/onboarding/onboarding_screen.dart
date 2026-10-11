@@ -102,8 +102,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       _Step.ready => _Ready(onGo: _finish),
     };
 
+    // Bienvenue : le retour système quitte l'app (Android) ; ensuite, il revient à l'étape précédente.
     return PopScope(
-      canPop: false,
+      canPop: _step == _Step.welcome,
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop) _back();
       },

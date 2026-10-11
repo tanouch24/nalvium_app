@@ -15,7 +15,7 @@ final _manualPageProvider = FutureProvider.autoDispose.family<ManualPage, (Strin
   (ref, key) => ref.watch(homeRepositoryProvider).manualPage(key.$1, key.$2),
 );
 
-/// Consulter la notice : le texte de chaque page, depuis la copie privée du serveur. Aucune publicité plein écran.
+/// Consulter la notice : le texte de chaque page, depuis la copie privée du serveur.
 /// [initialPage] permet d'ouvrir directement la page citée par Nalvium.
 class ManualViewerScreen extends ConsumerStatefulWidget {
   const ManualViewerScreen({super.key, required this.equipmentId, this.initialPage = 1});

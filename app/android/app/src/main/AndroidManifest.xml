@@ -6,7 +6,12 @@
     <!-- Filmer un problème : la caméra et le micro ne sont demandés qu'au moment où l'utilisateur choisit « Filmer ». -->
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <!-- Caméra et micro facultatifs : tablettes et appareils sans caméra peuvent installer l'app (la saisie
+         texte reste possible). camera_android_camerax déclare camera.any comme obligatoire ; RECORD_AUDIO
+         implique le micro : on force required="false". -->
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
+    <uses-feature android:name="android.hardware.camera.any" android:required="false" tools:replace="android:required"/>
+    <uses-feature android:name="android.hardware.microphone" android:required="false" tools:replace="android:required"/>
     <!-- Nalvium ne lit ni n'écrit le stockage partagé (photo via la caméra, fichiers privés de l'app) :
          ces permissions héritées de dépendances sont retirées. -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" tools:node="remove"/>

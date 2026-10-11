@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:image_picker/image_picker.dart';
 
 /// Résultat d'une capture. Le fichier reste local au téléphone.
@@ -14,6 +16,10 @@ class CameraUnavailableException implements Exception {
 abstract interface class PhotoCaptureService {
   /// Ouvre la caméra. Retourne null si l'utilisateur annule.
   Future<CapturedPhoto?> takePhoto();
+
+  /// Android peut fermer l'app pendant que l'appareil photo est ouvert (mémoire basse) : la photo prise
+  /// est alors récupérable au redémarrage. Retourne null s'il n'y a rien (ou hors Android). Ne lance jamais.
+  Future<CapturedPhoto?> recoverLostPhoto();
 }
 
 class ImagePickerPhotoCaptureService implements PhotoCaptureService {
@@ -34,6 +40,19 @@ class ImagePickerPhotoCaptureService implements PhotoCaptureService {
       throw CameraUnavailableException(e);
     }
   }
+
+  @override
+  Future<CapturedPhoto?> recoverLostPhoto() async {
+    if (!Platform.isAndroid) return null;
+    try {
+      final lost = await _picker.retrieveLostData();
+      final file = lost.isEmpty ? null : lost.file;
+      if (file == null || !File(file.path).existsSync()) return null;
+      return CapturedPhoto(file.path);
+    } catch (_) {
+      return null;
+    }
+  }
 }
 
 /// VALIDATION SUR APPAREIL UNIQUEMENT (build debug) : renvoie toujours le même fichier de test, sans ouvrir
@@ -45,4 +64,7 @@ class FixedFilePhotoCaptureService implements PhotoCaptureService {
 
   @override
   Future<CapturedPhoto?> takePhoto() async => CapturedPhoto(path);
+
+  @override
+  Future<CapturedPhoto?> recoverLostPhoto() async => null;
 }

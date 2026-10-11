@@ -100,7 +100,6 @@ class HomeScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            // La bannière est gérée au même endroit pour tous les écrans autorisés (AppShell / BannerSlot).
           ],
         ),
       ),

@@ -19,7 +19,7 @@ import 'fake_home.dart';
 import 'fake_requests.dart';
 
 class FakePhotoCaptureService implements PhotoCaptureService {
-  FakePhotoCaptureService(this.results);
+  FakePhotoCaptureService(this.results, {this.lost});
 
   /// Chaque appel consomme un résultat ; `null` = annulation, [CameraUnavailableException] = erreur.
   final List<Object?> results;
@@ -32,6 +32,12 @@ class FakePhotoCaptureService implements PhotoCaptureService {
     if (r is Exception) throw r;
     return r as CapturedPhoto?;
   }
+
+  /// Photo « perdue » (app fermée par Android pendant la prise de vue), récupérée au redémarrage.
+  final CapturedPhoto? lost;
+
+  @override
+  Future<CapturedPhoto?> recoverLostPhoto() async => lost;
 }
 
 String tempPhotoPath(String name) {
@@ -65,6 +71,7 @@ Future<FakePhotoCaptureService> pumpApp(
   bool guard = false,
   Future<void> Function(String number)? dialer,
   FakeTipsService? tips,
+  CapturedPhoto? lostPhoto,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = dpr;
@@ -83,7 +90,7 @@ Future<FakePhotoCaptureService> pumpApp(
     ...?prefs,
   });
   final store = LocalStore(await SharedPreferences.getInstance());
-  final fake = FakePhotoCaptureService(captures);
+  final fake = FakePhotoCaptureService(captures, lost: lostPhoto);
   await tester.pumpWidget(ProviderScope(
     retry: (_, _) => null,
     overrides: [

@@ -54,6 +54,7 @@ void main() {
     expect(await api.postFile('/v1/sessions/s1/media', field: 'file', filePath: file.path), {'id': 'm1'});
     expect(seen, isA<http.Request>());
     expect(seen.headers['content-type'], contains('multipart/form-data'));
+    expect(seen.contentLength, greaterThan(3)); // le fichier (lu en flux) fait partie du corps
   });
 
   test('503 → ApiHttpException(isAnalysisUnavailable)', () async {
@@ -72,6 +73,19 @@ void main() {
   test('SocketException → ApiNetworkException', () async {
     final api = client((_) async => throw const SocketException('down'));
     expect(api.getJson('/x'), throwsA(isA<ApiNetworkException>()));
+  });
+
+  test('HandshakeException / TlsException (Wi-Fi public, proxy) → ApiNetworkException', () async {
+    expect(client((_) async => throw const HandshakeException('bad cert')).getJson('/x'), throwsA(isA<ApiNetworkException>()));
+    expect(client((_) async => throw const TlsException('tls')).getJson('/x'), throwsA(isA<ApiNetworkException>()));
+  });
+
+  test('upload : fichier disparu → ApiProtocolException (pas de plantage)', () async {
+    final api = client((_) async => http.Response('{}', 201));
+    expect(
+      api.postFile('/v1/sessions/s1/media', field: 'file', filePath: '${Directory.systemTemp.path}/absent-nalvium.mp4'),
+      throwsA(isA<ApiProtocolException>()),
+    );
   });
 
   test('ClientException → ApiNetworkException', () async {

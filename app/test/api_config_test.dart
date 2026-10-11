@@ -48,4 +48,10 @@ void main() {
       expect(ApiConfig.resolve('http://x.test:8000/', release: false).uri('/a').toString(), 'http://x.test:8000/a');
     });
   });
+
+  test('URL par défaut : production en https, valide en release', () {
+    expect(ApiConfig.productionUrl, 'https://nalvium-api-production.up.railway.app');
+    expect(ApiConfig.compiledUrl, isNotEmpty);
+    expect(() => ApiConfig.resolve(ApiConfig.productionUrl, release: true), returnsNormally);
+  });
 }

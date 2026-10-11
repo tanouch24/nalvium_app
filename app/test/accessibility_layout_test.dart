@@ -119,4 +119,23 @@ void main() {
     expect(tester.getSemantics(find.byKey(const Key('guidance-title'))), matchesSemantics(label: 'Essayez ceci', isHeader: true, hasTapAction: false));
     handle.dispose();
   });
+
+  testWidgets('tablette 1280×800 dp (paysage) : contenu limité à 600 dp, centré, fond plein écran, sans overflow', (tester) async {
+    await pumpApp(tester, size: const Size(1280, 800), dpr: 1);
+    expect(tester.takeException(), isNull);
+    final scaffold = tester.getRect(find.byType(Scaffold).first);
+    expect(scaffold.width, 600);
+    expect(scaffold.center.dx, 640);
+    final background = tester.getRect(find.ancestor(of: find.byType(Scaffold).first, matching: find.byType(ColoredBox)).last);
+    expect(background.width, 1280);
+    await tester.scrollUntilVisible(find.byKey(const Key('take-photo')), 200, scrollable: find.byType(Scrollable).first);
+    expect(find.byKey(const Key('take-photo')), findsOneWidget);
+    await tester.ensureVisible(find.byKey(const Key('open-emergency')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('open-emergency')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('em-title')), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    expect(tester.getRect(find.byType(Scaffold).last).width, 600);
+  });
 }

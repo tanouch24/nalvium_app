@@ -269,6 +269,25 @@ void main() {
       expect(find.text('L\'analyse n\'est pas disponible pour le moment'), findsOneWidget);
     });
 
+    testWidgets('limite de questions (429) : message clair, pas de « Réessayer », aide d\'un pro proposée', (tester) async {
+      await openSession(tester, sessionState(message: 'Q', choices: ['Oui']), turns: [const ApiHttpException(429, 'session_turn_limit')]);
+      await tester.tap(find.byKey(const Key('choice-Oui')));
+      await tester.pumpAndSettle();
+      expect(find.text('Ce diagnostic a atteint sa limite de questions. Lancez-en un nouveau ou demandez l\'aide d\'un pro.'), findsOneWidget);
+      expect(find.byKey(const Key('retry')), findsNothing);
+      expect(find.byKey(const Key('turn-limit-help')), findsOneWidget);
+      expect(find.byKey(const Key('back-home')), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('trop de demandes (429 générique) : patienter puis réessayer, rien n\'est perdu', (tester) async {
+      await openSession(tester, sessionState(message: 'Q', choices: ['Oui']), turns: [const ApiHttpException(429, 'rate_limited')]);
+      await tester.tap(find.byKey(const Key('choice-Oui')));
+      await tester.pumpAndSettle();
+      expect(find.text('Beaucoup de demandes d\'un coup'), findsOneWidget);
+      expect(find.byKey(const Key('retry')), findsOneWidget);
+    });
+
     testWidgets('chargement de session impossible : erreur + retour accueil', (tester) async {
       final repo = FakeSessionsRepository()..getError = const ApiNetworkException();
       await pumpApp(tester, repo: repo, location: '/session/s1');

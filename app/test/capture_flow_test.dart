@@ -57,4 +57,14 @@ void main() {
     expect(find.textContaining('Impossible d\'ouvrir la caméra'), findsOneWidget);
     expect(find.text('Un problème à la maison ?'), findsOneWidget);
   });
+
+  testWidgets('photo perdue (app fermée par Android pendant la prise de vue) : l\'aperçu se rouvre au démarrage', (tester) async {
+    await pumpApp(tester, lostPhoto: CapturedPhoto(tempPhotoPath('lost')));
+    expect(find.byKey(const Key('preview-image')), findsOneWidget);
+  });
+
+  testWidgets('photo perdue mais sans accord IA : rien ne s\'ouvre', (tester) async {
+    await pumpApp(tester, aiConsent: false, lostPhoto: CapturedPhoto(tempPhotoPath('lost2')));
+    expect(find.byKey(const Key('preview-image')), findsNothing);
+  });
 }

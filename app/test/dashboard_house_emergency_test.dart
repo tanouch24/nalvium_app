@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nalvium/domain/estimate.dart';
 import 'package:nalvium/domain/home_profile.dart';
@@ -87,6 +88,21 @@ void main() {
     await tapK(tester, 'em-call-gas');
     await tapK(tester, 'em-call-112');
     expect(dialed, ['0800473333', '112']);
+  });
+
+  testWidgets('urgence : pas de composeur (tablette) → le numéro à composer est affiché', (tester) async {
+    await pumpApp(tester, dialer: (_) async => throw PlatformException(code: 'ACTIVITY_NOT_FOUND'));
+    await tapK(tester, 'open-emergency');
+    await tapK(tester, 'em-call-gas');
+    expect(k('em-no-dialer'), findsOneWidget);
+    expect(find.text('Appel impossible depuis cet appareil'), findsOneWidget);
+    expect(find.text('0 800 47 33 33'), findsOneWidget);
+    await tester.tap(find.text('Fermer'));
+    await tester.pumpAndSettle();
+    expect(k('em-no-dialer'), findsNothing);
+    await tapK(tester, 'em-call-112');
+    expect(find.text('112'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   for (final scale in [1.0, 2.0]) {

@@ -14,6 +14,7 @@ import 'core/theme/nalvium_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  installErrorLogging();
   final prefs = await SharedPreferences.getInstance();
   SystemChrome.setSystemUIOverlayStyle(nalviumSystemOverlay);
   // Téléphone, portrait uniquement.
@@ -26,6 +27,20 @@ Future<void> main() async {
       child: NalviumApp(router: _debugRouter()),
     ),
   );
+}
+
+/// Erreurs non rattrapées : journalisées (console de développement), jamais de fermeture de l'app.
+/// Aucun service tiers : rien ne quitte le téléphone.
+@visibleForTesting
+void installErrorLogging() {
+  FlutterError.onError = (details) {
+    if (kDebugMode) FlutterError.presentError(details);
+    debugPrint('[Nalvium] FlutterError: ${details.exceptionAsString()}');
+  };
+  PlatformDispatcher.instance.onError = (error, stack) {
+    debugPrint('[Nalvium] uncaught: $error');
+    return true; // erreur traitée : l'app continue
+  };
 }
 
 /// VALIDATION VISUELLE UNIQUEMENT (build debug) : ouvre l'aperçu photo avec un fichier de test

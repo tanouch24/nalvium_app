@@ -96,32 +96,31 @@ class ApiClient {
       _send(
         'POST',
         path,
-        (headers) => http.MultipartRequest('POST', config.uri(path))
+        (headers) async => http.MultipartRequest('POST', config.uri(path))
           ..headers.addAll(headers)
-          ..files.add(_fileSync(field, filePath, filename, contentType)),
+          ..files.add(await _file(field, filePath, filename, contentType)),
         timeout,
       );
 
-  http.MultipartFile _fileSync(String field, String path, String filename, String? contentType) {
-    final bytes = File(path).readAsBytesSync();
-    return http.MultipartFile.fromBytes(
-      field,
-      bytes,
-      filename: filename,
-      contentType: contentType == null ? null : MediaType.parse(contentType),
-    );
-  }
+  /// Fichier lu en flux (une vidéo peut peser plusieurs dizaines de Mo : jamais chargée entière en mémoire).
+  Future<http.MultipartFile> _file(String field, String path, String filename, String? contentType) =>
+      http.MultipartFile.fromPath(
+        field,
+        path,
+        filename: filename,
+        contentType: contentType == null ? null : MediaType.parse(contentType),
+      );
 
   Future<dynamic> _send(
     String method,
     String path,
-    http.BaseRequest Function(Map<String, String> headers) build,
+    FutureOr<http.BaseRequest> Function(Map<String, String> headers) build,
     Duration limit,
   ) async {
     final watch = Stopwatch()..start();
     _log('[API] $method $path');
     try {
-      final request = build(await authHeaders());
+      final request = await build(await authHeaders());
       final streamed = await _http.send(request).timeout(limit);
       final response = await http.Response.fromStream(streamed).timeout(limit);
       _log('[API] status=${response.statusCode}');
@@ -138,6 +137,10 @@ class ApiClient {
       _log('[API] status=network_error');
       throw const ApiNetworkException();
     } on http.ClientException {
+      _log('[API] status=network_error');
+      throw const ApiNetworkException();
+    } on TlsException {
+      // Certificat refusé, poignée de main TLS interrompue (Wi-Fi public, proxy) : même message que le réseau.
       _log('[API] status=network_error');
       throw const ApiNetworkException();
     } on FileSystemException {

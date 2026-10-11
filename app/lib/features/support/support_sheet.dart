@@ -63,7 +63,10 @@ class _SupportSheetState extends State<_SupportSheet> {
       'nalvium.tip.two_coffees': l10n.supportTwoCoffees,
       'nalvium.tip.meal': l10n.supportMeal,
     };
-    return SafeArea(
+    // Pendant le paiement, retour et tap hors de la feuille sont ignorés : le résultat du store est attendu.
+    return PopScope(
+      canPop: !_paying,
+      child: SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(Space.gutter, 0, Space.gutter, Space.x5),
         child: FutureBuilder<List<TipProduct>>(
@@ -115,6 +118,7 @@ class _SupportSheetState extends State<_SupportSheet> {
             );
           },
         ),
+      ),
       ),
     );
   }

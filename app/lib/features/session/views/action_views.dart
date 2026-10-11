@@ -33,8 +33,6 @@ class SessionActions {
 
   /// Proposition SECONDAIRE après résolution (null = déjà lié à un équipement : rien à proposer).
   final VoidCallback? onSaveEquipment;
-
-  /// Proposition SECONDAIRE après résolution : partager la solution à la Communauté (jamais automatique).
 }
 
 /// « Arrêtez-vous ici. » est déjà le titre de l'écran : on le retire du corps pour ne pas le répéter.

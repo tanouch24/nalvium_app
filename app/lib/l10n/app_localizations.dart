@@ -2686,6 +2686,30 @@ abstract class AppLocalizations {
   /// **'Pour que Nalvium reste gratuit, le nombre de nouveaux diagnostics est limité par jour. Revenez demain : vos diagnostics en cours restent accessibles.'**
   String get errDailyLimitBody;
 
+  /// No description provided for @errTurnLimitTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Limite de questions atteinte'**
+  String get errTurnLimitTitle;
+
+  /// No description provided for @errTurnLimitBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce diagnostic a atteint sa limite de questions. Lancez-en un nouveau ou demandez l\'aide d\'un pro.'**
+  String get errTurnLimitBody;
+
+  /// No description provided for @errRateLimitTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Beaucoup de demandes d\'un coup'**
+  String get errRateLimitTitle;
+
+  /// No description provided for @errRateLimitBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Patientez quelques minutes, puis réessayez : votre diagnostic est conservé.'**
+  String get errRateLimitBody;
+
   /// No description provided for @estTitle.
   ///
   /// In fr, this message translates to:
@@ -3406,6 +3430,18 @@ abstract class AppLocalizations {
   /// **'Diagnostiquer avec Nalvium'**
   String get emDiagnose;
 
+  /// No description provided for @emNoDialerTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Appel impossible depuis cet appareil'**
+  String get emNoDialerTitle;
+
+  /// No description provided for @emNoDialerBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Composez ce numéro depuis un téléphone :'**
+  String get emNoDialerBody;
+
   /// No description provided for @houseVitals.
   ///
   /// In fr, this message translates to:
@@ -3565,7 +3601,7 @@ abstract class AppLocalizations {
   /// No description provided for @supportNoReward.
   ///
   /// In fr, this message translates to:
-  /// **'C\'est un don sans contrepartie : rien n\'est débloqué, tout reste gratuit.'**
+  /// **'C\'est un pourboire, un soutien sans contrepartie : rien n\'est débloqué, tout reste gratuit.'**
   String get supportNoReward;
 
   /// No description provided for @supportCoffee.

@@ -26,6 +26,12 @@ class ApiHttpException extends ApiException {
 
   /// 503 `analysis_unavailable` : le moteur IA n'est pas disponible côté serveur.
   bool get isAnalysisUnavailable => status == 503;
+
+  /// Limite de questions atteinte pour CE diagnostic (code dédié côté serveur, quel que soit son nom exact).
+  bool get isTurnLimit => status == 429 && code != null && code!.contains('turn');
+
+  /// Trop de demandes (429) hors limite quotidienne et hors limite de questions : patienter puis réessayer.
+  bool get isRateLimited => status == 429 && code != 'daily_limit' && !isTurnLimit;
 }
 
 class ApiProtocolException extends ApiException {

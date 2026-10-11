@@ -12,7 +12,7 @@ import '../../l10n/app_localizations.dart';
 import '../../services/providers.dart';
 
 /// Zone « Notice constructeur » de la fiche équipement. Discrète : un état, une phrase, une action.
-/// Chercher une notice n'est PAS un diagnostic (aucun compteur, aucune publicité).
+/// Chercher une notice n'est PAS un diagnostic (aucun compteur).
 class ManualSection extends ConsumerStatefulWidget {
   const ManualSection({super.key, required this.equipment, required this.manual});
   final EquipmentSummary equipment;

@@ -24,13 +24,17 @@ abstract interface class TipsService {
 }
 
 class StoreTipsService implements TipsService {
-  StoreTipsService([InAppPurchase? iap]) : _iap = iap ?? InAppPurchase.instance {
+  StoreTipsService([InAppPurchase? iap, this.timeout = const Duration(seconds: 10)])
+    : _iap = iap ?? InAppPurchase.instance {
     // Écoute permanente : un achat en attente (paiement différé, app fermée) est toujours finalisé,
     // sinon Google le rembourse au bout de 3 jours.
     _sub = _iap.purchaseStream.listen(_onPurchases, onError: (_) => _settle(TipOutcome.failed));
   }
 
   final InAppPurchase _iap;
+
+  /// Délai maximal pour joindre le store (sinon : « indisponible », jamais de chargement sans fin).
+  final Duration timeout;
   late final StreamSubscription<List<PurchaseDetails>> _sub;
   final Map<String, ProductDetails> _details = {};
   Completer<TipOutcome>? _pending;
@@ -38,8 +42,8 @@ class StoreTipsService implements TipsService {
   @override
   Future<List<TipProduct>> products() async {
     try {
-      if (!await _iap.isAvailable()) return const [];
-      final resp = await _iap.queryProductDetails(kTipProductIds.toSet());
+      if (!await _iap.isAvailable().timeout(timeout)) return const [];
+      final resp = await _iap.queryProductDetails(kTipProductIds.toSet()).timeout(timeout);
       for (final d in resp.productDetails) {
         _details[d.id] = d;
       }
@@ -55,7 +59,10 @@ class StoreTipsService implements TipsService {
   @override
   Future<TipOutcome> tip(String productId) async {
     final d = _details[productId];
-    if (d == null || _pending != null) return TipOutcome.failed;
+    if (d == null) return TipOutcome.failed;
+    // Un paiement précédent resté sans réponse (feuille fermée en cours de route) ne bloque jamais les
+    // suivants : il est clos ici. S'il aboutit plus tard, l'écoute permanente le finalise quand même.
+    _settle(TipOutcome.cancelled);
     final c = _pending = Completer<TipOutcome>();
     try {
       final started = await _iap.buyConsumable(purchaseParam: PurchaseParam(productDetails: d));

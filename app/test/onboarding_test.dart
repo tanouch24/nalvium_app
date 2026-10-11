@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nalvium/core/router/app_router.dart';
 import 'package:nalvium/domain/home_profile.dart';
@@ -75,6 +76,25 @@ void main() {
     expect(p.vitals[VitalPoint.electricalPanel], isNull);
   });
 
+  testWidgets('bienvenue : le retour système quitte l\'app ; plus loin, il revient à l\'étape précédente', (tester) async {
+    final calls = <String>[];
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+      calls.add(call.method);
+      return null;
+    });
+    addTearDown(() => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(SystemChannels.platform, null));
+    await pumpApp(tester, onboarded: false, aiConsent: false, guard: true);
+    await tapK(tester, 'ob-start');
+    expect(k('consent-title'), findsOneWidget);
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(k('ob-welcome'), findsOneWidget);
+    expect(calls, isNot(contains('SystemNavigator.pop')));
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(calls, contains('SystemNavigator.pop'));
+  });
+
   testWidgets('tout passer est possible ; refuser l\'accord n\'empêche pas d\'entrer', (tester) async {
     await pumpApp(tester, onboarded: false, aiConsent: false, guard: true);
     await tapK(tester, 'ob-start');
@@ -87,6 +107,17 @@ void main() {
     expect(find.text('Un problème à la maison ?'), findsOneWidget);
     final prefs = await SharedPreferences.getInstance();
     expect(prefs.getString('nalvium.ai_consent'), isNull);
+  });
+
+  testWidgets('sans accord : « Prendre une photo » et Scanner demandent l\'accord AVANT d\'ouvrir la caméra', (tester) async {
+    final camera = await pumpApp(tester, aiConsent: false, guard: true);
+    await tapK(tester, 'take-photo');
+    expect(k('consent-title'), findsOneWidget);
+    expect(camera.calls, 0);
+    await tapK(tester, 'consent-close');
+    await tapK(tester, 'nav-camera');
+    expect(k('consent-title'), findsOneWidget);
+    expect(camera.calls, 0);
   });
 
   testWidgets('sans accord : « Décrire » ouvre l\'accord ; accepter puis relancer', (tester) async {

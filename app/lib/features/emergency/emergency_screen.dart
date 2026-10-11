@@ -13,12 +13,54 @@ import '../../domain/home_profile.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/providers.dart';
 
+/// Aucun composeur disponible (tablette sans téléphonie, etc.).
+class DialerUnavailableException implements Exception {
+  const DialerUnavailableException();
+}
+
 /// Appel téléphonique (surchargé en test). Ne lance jamais l'appel seul : il ouvre le composeur du téléphone.
+/// Lance [DialerUnavailableException] si l'appareil ne peut pas ouvrir de composeur.
 final phoneDialerProvider = Provider<Future<void> Function(String number)>(
   (ref) => (number) async {
-    await launchUrl(Uri(scheme: 'tel', path: number.replaceAll(' ', '')));
+    final opened = await launchUrl(Uri(scheme: 'tel', path: number.replaceAll(' ', '')));
+    if (!opened) throw const DialerUnavailableException();
   },
 );
+
+/// Ouvre le composeur ; en cas d'échec (pas de téléphonie, erreur de plateforme), affiche le numéro à composer.
+Future<void> _dial(BuildContext context, Future<void> Function(String) dialer, String number) async {
+  try {
+    await dialer(number);
+  } catch (_) {
+    if (!context.mounted) return;
+    final l10n = AppLocalizations.of(context);
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        key: const Key('em-no-dialer'),
+        title: Text(l10n.emNoDialerTitle),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.emNoDialerBody, style: NalviumText.body),
+            const SizedBox(height: Space.x3),
+            SelectableText(
+              _formatNumber(number),
+              key: const Key('em-no-dialer-number'),
+              style: NalviumText.titleLarge.copyWith(color: NalviumColors.dangerText),
+            ),
+          ],
+        ),
+        actions: [TextButton(onPressed: () => Navigator.of(ctx).pop(), child: Text(l10n.close))],
+      ),
+    );
+  }
+}
+
+/// « 0800473333 » → « 0 800 47 33 33 » ; les numéros courts restent tels quels.
+String _formatNumber(String n) =>
+    n == '0800473333' ? '0 800 47 33 33' : n;
 
 /// Urgence : consignes de mise en sécurité FIXES (aucune IA), numéros officiels, et les points vitaux de
 /// l'utilisateur s'il les a photographiés. Disponible même sans réseau.
@@ -29,7 +71,8 @@ class EmergencyScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final vitals = ref.watch(homeProfileProvider).vitals;
-    final call = ref.read(phoneDialerProvider);
+    final dialer = ref.read(phoneDialerProvider);
+    void call(String number) => _dial(context, dialer, number);
     return Scaffold(
       backgroundColor: NalviumColors.dangerBackground,
       appBar: AppBar(

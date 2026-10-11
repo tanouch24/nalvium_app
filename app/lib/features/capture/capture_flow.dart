@@ -8,7 +8,12 @@ import '../../services/providers.dart';
 
 /// CAMÉRA = ACTION (pas un onglet) : ouvre directement la caméra puis l'aperçu.
 /// [equipmentId] : diagnostic lancé depuis une fiche équipement (la session sera liée à cet équipement).
+/// Sans accord IA, l'accord est demandé AVANT d'ouvrir la caméra (la photo ne serait pas utilisable).
 Future<void> startPhotoCapture(BuildContext context, WidgetRef ref, {String? equipmentId}) async {
+  if (!ref.read(aiConsentProvider)) {
+    context.go('/consent');
+    return;
+  }
   final photo = await _capture(context, ref);
   if (photo == null || !context.mounted) return;
   context.push(

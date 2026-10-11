@@ -44,6 +44,8 @@ class ErrorPanel extends StatelessWidget {
       VideoException(failure: VideoFailure.tooShort) => (Icons.timer_outlined, l10n.errVideoTooShortTitle, l10n.errVideoTooShortBody),
       VideoException(failure: VideoFailure.tooLarge) => (Icons.sd_storage_outlined, l10n.errVideoTooLargeTitle, l10n.errVideoTooLargeBody),
       ApiHttpException(code: 'daily_limit') => (Icons.hourglass_bottom_rounded, l10n.errDailyLimitTitle, l10n.errDailyLimitBody),
+      ApiHttpException(isTurnLimit: true) => (Icons.forum_outlined, l10n.errTurnLimitTitle, l10n.errTurnLimitBody),
+      ApiHttpException(isRateLimited: true) => (Icons.hourglass_bottom_rounded, l10n.errRateLimitTitle, l10n.errRateLimitBody),
       ApiHttpException(code: 'video_too_long') => (Icons.timer_off_outlined, l10n.errVideoTooLongTitle, l10n.errVideoTooLongBody),
       ApiHttpException(code: 'file_too_large') => (Icons.sd_storage_outlined, l10n.errVideoTooLargeTitle, l10n.errVideoTooLargeBody),
       ApiHttpException(code: 'invalid_video') => (Icons.video_file_outlined, l10n.errVideoInvalidTitle, l10n.errVideoInvalidBody),

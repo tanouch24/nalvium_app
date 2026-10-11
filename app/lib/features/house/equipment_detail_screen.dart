@@ -272,7 +272,7 @@ class _DiagnosticRow extends StatelessWidget {
 }
 
 /// Lancer un diagnostic depuis l'équipement : la session sera liée à cet équipement dès sa création.
-/// Même parcours que l'accueil (photo, description, vidéo), donc mêmes règles publicitaires (avant la session).
+/// Même parcours que l'accueil (photo, description, vidéo).
 Future<void> showDiagnoseSheet(BuildContext context, WidgetRef ref, String equipmentId) async {
   final l10n = AppLocalizations.of(context);
   final choice = await showModalBottomSheet<String>(

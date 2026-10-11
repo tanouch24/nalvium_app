@@ -21,7 +21,7 @@ import '../../core/analytics/analytics.dart';
 
 /// « Votre demande d'intervention » : un écran simple, sections claires, une action principale.
 /// Depuis un diagnostic, le contexte est déjà prêt (rien à réexpliquer). Aucun média n'est joint sans choix explicite ;
-/// le consentement n'est jamais précoché. Créer une demande n'est PAS un diagnostic : aucune publicité.
+/// le consentement n'est jamais précoché.
 class HelpRequestScreen extends ConsumerStatefulWidget {
   const HelpRequestScreen({super.key, this.sessionId});
   final String? sessionId;
