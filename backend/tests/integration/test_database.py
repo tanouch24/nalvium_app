@@ -38,23 +38,13 @@ def test_health_endpoints(engine):
     assert client.get("/health/db").json()["database"] == "up"
 
 
-def test_analyze_without_provider_is_unavailable_not_simulated():
+def test_legacy_unauthenticated_analyze_route_is_gone():
+    # Ancienne route sans identité ni limite (coût IA) : retirée, l'app passe par /v1/sessions/{id}/turn.
     from app.main import create_app
 
     client = TestClient(create_app())
     r = client.post("/v1/diagnostic/analyze", json={"session_id": "s", "description": "robinet qui goutte"})
-    assert r.status_code == 503
-
-
-def test_analyze_dangerous_returns_stop_even_without_provider():
-    from app.main import create_app
-
-    client = TestClient(create_app())
-    r = client.post("/v1/diagnostic/analyze", json={"session_id": "s", "description": "odeur de gaz"})
-    assert r.status_code == 200
-    body = r.json()
-    assert body["next_action"]["type"] == "SAFETY_STOP"
-    assert body["diy_allowed"] is False
+    assert r.status_code == 404
 
 
 def test_home_schema_supports_future_multi_home_but_one_default(engine):

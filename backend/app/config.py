@@ -37,7 +37,9 @@ class Settings(BaseSettings):
     openai_reasoning_effort: str | None = Field(
         default=None, validation_alias=AliasChoices("OPENAI_REASONING_EFFORT", "NALVIUM_OPENAI_REASONING_EFFORT")
     )
-    openai_timeout_s: float = 60.0
+    # Une seule tentative de 55 s maximum (aucune relance) : l'app abandonne un tour d'analyse à 70 s ;
+    # au-delà, le serveur paierait une réponse que personne ne lira. 55 s couvrent les analyses multimodales lentes.
+    openai_timeout_s: float = 55.0
     max_upload_bytes: int = 12 * 1024 * 1024
     # Vidéo (V1) : 15 s max (+1 s de tolérance), 30 Mo en entrée ; stockée en H.264/AAC ≤ 720p, sans métadonnées.
     max_video_bytes: int = 30 * 1024 * 1024
@@ -57,6 +59,8 @@ class Settings(BaseSettings):
     rate_limit_enabled: bool = True
     # Nouveaux diagnostics par identité sur 24 h glissantes (protège le coût IA ; un usage normal ne l'atteint pas).
     daily_session_limit: int = 8
+    # Entrées utilisateur par diagnostic : au-delà, la session est conclue sans IA (orientation professionnel).
+    max_session_turns: int = 15
 
     # --- Rétention / nettoyage (ajustables après relecture juridique ; voir docs/RETENTION.md) ---
     # Brouillon de demande d'intervention jamais envoyé : l'utilisateur peut revenir dessus quelques jours.

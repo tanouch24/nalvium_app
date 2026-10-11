@@ -6,7 +6,6 @@ from fastapi.responses import JSONResponse
 from app.api.routes import (
     account,
     community,
-    diagnostic,
     equipment,
     health,
     legal,
@@ -45,7 +44,6 @@ def create_app() -> FastAPI:
         return JSONResponse({"detail": "internal_error"}, status_code=500)
     app.include_router(health.router)
     app.include_router(legal.router)
-    app.include_router(diagnostic.router)
     app.include_router(sessions.router)
     app.include_router(equipment.router)
     app.include_router(service_requests.router)

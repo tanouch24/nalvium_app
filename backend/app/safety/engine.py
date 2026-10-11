@@ -232,6 +232,7 @@ def enforce(analysis: DiagnosticAnalysis, decision: SafetyDecision) -> Diagnosti
                     "urgency": Urgency.NOW,
                     "diy_allowed": False,
                     "required_items": [],
+                    "estimate": None,  # jamais d'estimation de coût sur un arrêt de sécurité
                     "next_action": NextAction(type=NextActionType.SAFETY_STOP, message=body),
                 }
             )
@@ -241,6 +242,7 @@ def enforce(analysis: DiagnosticAnalysis, decision: SafetyDecision) -> Diagnosti
                 "urgency": Urgency.NOW,
                 "diy_allowed": False,
                 "required_items": [],
+                "estimate": None,  # jamais d'estimation de coût sur un arrêt de sécurité
                 "next_action": NextAction(
                     type=NextActionType.SAFETY_STOP,
                     message=f"{decision.title} {decision.explanation}",
@@ -254,6 +256,7 @@ def enforce(analysis: DiagnosticAnalysis, decision: SafetyDecision) -> Diagnosti
         # L'IA elle-même demande l'arrêt : jamais de DIY, jamais de risque faible.
         update["diy_allowed"] = False
         update["required_items"] = []
+        update["estimate"] = None
         if analysis.risk_level.rank < RiskLevel.HIGH.rank:
             update["risk_level"] = RiskLevel.HIGH
     elif not analysis.diy_allowed and action.type in (

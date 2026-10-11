@@ -143,7 +143,7 @@ async def upload_media(
     if len(raw) > limit:
         raise HTTPException(413, "file_too_large")
     try:
-        image = process_photo(raw)
+        image = await run_in_threadpool(process_photo, raw)  # Pillow : hors de la boucle d'événements
         asset = svc.add_photo(user_id, session_id, image)
     except InvalidImageError as exc:
         raise HTTPException(422, "invalid_image") from exc
@@ -213,7 +213,7 @@ async def turn(
     )
     started = time.monotonic()
     try:
-        result = await svc.turn(user_id, session_id, inp)
+        result = await svc.turn(user_id, session_id, inp, max_user_turns=get_settings().max_session_turns)
         out = session_out(result)
         log.info(
             "turn session=%s input=%s -> state=%s status=%s duration=%.1fs",

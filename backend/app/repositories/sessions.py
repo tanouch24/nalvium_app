@@ -31,6 +31,14 @@ class UserRepository:
             self._db.commit()
         return user
 
+    def lock(self, user_id: uuid.UUID) -> None:
+        """Verrouille la ligne de l'utilisateur jusqu'au prochain commit/rollback (SELECT … FOR UPDATE) :
+        sérialise les créations concurrentes d'un même utilisateur pour un contrôle de quota exact."""
+        self._db.execute(select(User.id).where(User.id == user_id).with_for_update()).scalar_one()
+
+    def release(self) -> None:
+        self._db.rollback()
+
 
 class MediaRepository:
     def __init__(self, db: Session) -> None:

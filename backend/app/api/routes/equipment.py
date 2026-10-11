@@ -2,6 +2,7 @@ import logging
 import uuid
 
 from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile
+from fastapi.concurrency import run_in_threadpool
 
 from app.ai.provider import AIProviderError, AIProviderNotConfigured
 from app.api.deps import current_user_id, get_equipment_service, get_manual_service
@@ -92,7 +93,8 @@ async def upload_equipment_photo(
     if len(raw) > limit:
         raise HTTPException(413, "file_too_large")
     try:
-        asset = svc.add_photo(user_id, process_photo(raw))
+        image = await run_in_threadpool(process_photo, raw)  # Pillow : hors de la boucle d'événements
+        asset = svc.add_photo(user_id, image)
     except InvalidImageError as exc:
         raise HTTPException(422, "invalid_image") from exc
     log.info("equipment photo uploaded media=%s bytes_stored=%d private", asset.id, asset.size_bytes)

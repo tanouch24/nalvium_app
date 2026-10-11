@@ -5,10 +5,12 @@ from app.domain.diagnosis import (
     Category,
     DiagnosticAnalysis,
     DiagnosticContext,
+    Difficulty,
     Hypothesis,
     MediaRef,
     NextAction,
     NextActionType,
+    RepairEstimate,
     RiskLevel,
     Urgency,
     VerificationOutcome,
@@ -209,3 +211,20 @@ async def test_keyword_stop_still_uses_engine_text_over_ai_text():
     out, p = await run(analysis(NextActionType.SAFETY_STOP, "Texte IA"), description="odeur de gaz")
     assert "gaz" in out.next_action.message.lower() and "Texte IA" not in out.next_action.message
     assert p.calls == []
+
+
+EST = RepairEstimate(diy_feasibility=8, difficulty=Difficulty.EASY, diy_cost_min=5, diy_cost_max=12)
+
+
+@pytest.mark.asyncio
+async def test_safety_stop_never_carries_a_cost_estimate():
+    # Arrêt forcé par le moteur (drapeau IA), arrêt demandé par l'IA (seule ou à faible risque) : jamais de chiffrage.
+    cases = [
+        analysis(NextActionType.INSTRUCTION, "Continuez", safety_flags=["gas"], estimate=EST),
+        analysis(NextActionType.SAFETY_STOP, "Éloignez-vous.", risk=RiskLevel.EMERGENCY, estimate=EST),
+        analysis(NextActionType.SAFETY_STOP, "Éloignez-vous.", risk=RiskLevel.LOW, estimate=EST),
+    ]
+    for result in cases:
+        out, _ = await run(result)
+        assert out.next_action.type is NextActionType.SAFETY_STOP
+        assert out.estimate is None

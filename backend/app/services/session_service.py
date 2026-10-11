@@ -7,11 +7,13 @@ from datetime import UTC, datetime, timedelta
 
 from app.db.models import DiagnosticSession, MediaAsset, SessionMessage, VideoFrame
 from app.domain.diagnosis import (
+    Category,
     DiagnosticAnalysis,
     DiagnosticContext,
     EquipmentContext,
     MediaRef,
     NextActionType,
+    RiskLevel,
     VerificationOutcome,
     VideoDiagnosticInput,
     VideoFrameInput,
@@ -86,12 +88,16 @@ class SessionService:
         """Un diagnostic lancé depuis une fiche équipement est lié à cet équipement dès sa création.
         `daily_limit` : nombre maximal de nouveaux diagnostics sur 24 h glissantes (None = illimité)."""
         self._users.ensure(user_id)
-        if daily_limit is not None:
-            since = datetime.now(UTC) - timedelta(hours=24)
-            if self._sessions.count_created_since(user_id, since) >= daily_limit:
-                raise DailyLimitReached
         if equipment_id is not None and self._equipment.get_owned(equipment_id, user_id) is None:
             raise NotFound
+        if daily_limit is not None:
+            # Compte + création sous verrou de la ligne utilisateur : deux requêtes simultanées ne peuvent pas
+            # dépasser la limite. Le verrou est libéré par le commit de la création (ou le rollback du refus).
+            self._users.lock(user_id)
+            since = datetime.now(UTC) - timedelta(hours=24)
+            if self._sessions.count_created_since(user_id, since) >= daily_limit:
+                self._users.release()
+                raise DailyLimitReached
         return self._sessions.create(user_id, equipment_id)
 
     def report(self, user_id: uuid.UUID, session_id: uuid.UUID, reason: str, details: str | None) -> None:
@@ -200,12 +206,14 @@ class SessionService:
 
     # ---- tour de conversation ----------------------------------------------
     async def turn(
-        self, user_id: uuid.UUID, session_id: uuid.UUID, turn: TurnInput | None
+        self, user_id: uuid.UUID, session_id: uuid.UUID, turn: TurnInput | None, max_user_turns: int | None = None
     ) -> DiagnosticSession:
         """Enregistre l'entrée utilisateur (si fournie) puis analyse.
 
         `turn=None` relance l'analyse d'un message utilisateur resté sans réponse (retry).
         Une session terminée (dont SAFETY_STOP) n'appelle JAMAIS l'IA.
+        `max_user_turns` : au-delà de ce nombre d'entrées utilisateur, la session est conclue SANS IA
+        (orientation vers un professionnel, ou arrêt de sécurité si le dernier message le justifie).
         """
         session = self.get(user_id, session_id)
         if session.status in TERMINAL_STATUSES:
@@ -219,6 +227,18 @@ class SessionService:
         self._sessions.commit()  # on ne garde pas de transaction ouverte pendant l'appel IA
 
         ctx = self._build_context(session)
+        user_turns = sum(1 for m in session.messages if m.role == "user")
+        if max_user_turns is not None and user_turns > max_user_turns:
+            analysis = self._diagnostics.conclude_without_ai(
+                ctx,
+                Category(session.category) if session.category else Category.OTHER,
+                session.subcategory,
+                RiskLevel(session.risk_level) if session.risk_level else RiskLevel.MODERATE,
+            )
+            self._store_analysis(session, analysis)
+            self._sessions.commit()
+            return self.get(user_id, session_id)
+
         manual_doc = None
         if self._manuals is not None and session.equipment_id:
             # Recherche LOCALE automatique dans la notice de CET équipement (pas d'Internet, pas de clic).
@@ -383,7 +403,10 @@ class SessionService:
         if a.verification_outcome is not None:
             self._sessions.add_verification(session, msg, a.verification_outcome.value)
 
-        if a.estimate is not None:
+        if action.type is NextActionType.SAFETY_STOP:
+            # Arrêt de sécurité : l'estimation d'un tour précédent ne doit JAMAIS rester affichée.
+            session.estimate = None
+        elif a.estimate is not None:
             session.estimate = a.estimate.model_dump(mode="json")
         if a.title:
             session.title = a.title[:120]
