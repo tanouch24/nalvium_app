@@ -767,5 +767,68 @@
   "stAiWithdrawTitle": "Retirer votre accord ?",
   "stAiWithdrawBody": "Nalvium n'enverra plus rien à l'IA. Pour un nouveau diagnostic, votre accord vous sera redemandé. Vos données déjà envoyées ne sont pas effacées : utilisez « Supprimer mes données » pour cela.",
   "stAiWithdraw": "Retirer mon accord",
-  "stCancel": "Annuler"
+  "stCancel": "Annuler",
+  "shareAction": "Partager",
+  "shareResultText": "Diagnostiqué en 30 secondes avec Nalvium · nalvium.com",
+  "shareSavingsText": "J'ai économisé {amount} sur mes dépannages avec Nalvium · nalvium.com",
+  "@shareSavingsText": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "shareSavingsPossible": "Économie possible : {amount}",
+  "@shareSavingsPossible": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "shareLevel": "Niveau : {level}",
+  "@shareLevel": {
+    "placeholders": {
+      "level": {
+        "type": "String"
+      }
+    }
+  },
+  "shareDisclaimer": "Estimation indicative, pas un devis",
+  "shareSavingsLead": "J'ai économisé",
+  "shareSavingsTail": "sur mes dépannages avec Nalvium",
+  "shareSavingsDisclaimer": "Économies estimées, prix moyens en France",
+  "shareFailed": "Le partage n'a pas pu s'ouvrir. Réessayez dans un instant.",
+  "shareSavingsTooltip": "Partager mes économies",
+  "estBadgeDiy": "Faisable vous-même",
+  "estBadgeCareful": "Avec prudence",
+  "estBadgePro": "Appelez un pro",
+  "estVerified": "Vérifié par le moteur de sécurité Nalvium",
+  "stepReadPhoto": "Lecture de votre photo…",
+  "stepReadVideo": "Lecture de votre vidéo…",
+  "stepReadText": "Lecture de votre description…",
+  "stepIdentify": "Identification de l'équipement…",
+  "stepCost": "Calcul du coût…",
+  "stepSafety": "Vérification sécurité…",
+  "stepDoneSemantics": "terminé",
+  "stepCurrentSemantics": "en cours",
+  "dashMilestone": "Palier atteint : {amount} économisés",
+  "@dashMilestone": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "tipTitle": "Nalvium vous a fait économiser {amount}. Un petit pourboire pour soutenir l'app ?",
+  "@tipTitle": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "tipBody": "Sans contrepartie : tout reste gratuit et sans publicité.",
+  "tipCta": "Laisser un pourboire",
+  "tipLater": "Plus tard"
 }

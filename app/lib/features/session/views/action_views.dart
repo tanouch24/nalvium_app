@@ -909,7 +909,11 @@ class _ResolvedViewState extends State<ResolvedView>
             onPressed: widget.actions.onSaveEquipment,
           ),
         const SizedBox(height: Space.x6),
-        const SupportCard(),
+        // Gratitude : économie réelle → proposition de pourboire (rare) ; sinon la carte « Soutenir » habituelle.
+        if ((widget.savings ?? 0) > 0)
+          GratitudeTipCard(savings: widget.savings!)
+        else
+          const SupportCard(),
       ],
     );
   }

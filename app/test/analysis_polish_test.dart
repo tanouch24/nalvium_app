@@ -48,7 +48,7 @@ void main() {
         final repo = await openAnalysis(tester, size: cfg.$2, dpr: cfg.$3, scale: scale);
         expect(tester.takeException(), isNull);
         expect(find.text('J\'analyse le problème…'), findsOneWidget);
-        expect(find.text('Je regarde ce qui pourrait provoquer ça.'), findsOneWidget);
+        expect(find.text('Lecture de votre photo…'), findsOneWidget);
         final cancel = find.byKey(const Key('cancel-analysis'));
         await tester.ensureVisible(cancel);
         await tester.pump();
@@ -61,12 +61,15 @@ void main() {
     }
   }
 
-  testWidgets('ANALYSE : « Annuler » ne bouge pas quand la phrase change', (tester) async {
+  testWidgets('ANALYSE : « Annuler » ne bouge pas quand les étapes avancent', (tester) async {
     final repo = await openAnalysis(tester);
     final before = tester.getTopLeft(find.byKey(const Key('cancel-analysis')));
     await tester.pump(const Duration(seconds: 5));
     await tester.pump(const Duration(milliseconds: 600));
-    expect(find.text('J\'observe les éléments visibles.'), findsOneWidget);
+    expect(find.byKey(const Key('analysis-step-1-done')), findsOneWidget);
+    await tester.pump(const Duration(seconds: 25));
+    await tester.pump(const Duration(milliseconds: 600));
+    expect(find.text('Cela prend un peu plus de temps que d\'habitude…'), findsOneWidget);
     expect(tester.getTopLeft(find.byKey(const Key('cancel-analysis'))), before);
     repo.turnGate!.complete();
     await tester.pumpAndSettle();

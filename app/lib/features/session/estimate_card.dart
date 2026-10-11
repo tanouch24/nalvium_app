@@ -8,9 +8,13 @@ import '../../l10n/app_localizations.dart';
 
 /// Carte résultat chiffrée : faisabilité, durée, niveau ; vous-même contre artisan ; pièces à acheter.
 /// Toujours présentée comme une ESTIMATION indicative, jamais comme un devis.
+/// Jamais affichée sur un arrêt de sécurité (c'est à l'appelant de ne pas la construire).
 class EstimateCard extends StatelessWidget {
-  const EstimateCard({super.key, required this.estimate});
+  const EstimateCard({super.key, required this.estimate, this.diyAllowed = true});
   final RepairEstimate estimate;
+
+  /// Faux quand le guidage recommande un professionnel : la pastille et les coûts suivent la réponse.
+  final bool diyAllowed;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +25,8 @@ class EstimateCard extends StatelessWidget {
       'hard' => l10n.estHard,
       _ => l10n.estMedium,
     };
-    final notDiy = e.diyFeasibility <= 3;
+    final verdict = e.verdict(diyAllowed: diyAllowed);
+    final notDiy = verdict == DiyVerdict.pro;
     final hasCosts = e.diyMid != null || e.proMid != null;
 
     return Semantics(
@@ -32,6 +37,8 @@ class EstimateCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Semantics(header: true, child: Text(l10n.estTitle, style: NalviumText.title.copyWith(fontSize: 19))),
+          const SizedBox(height: Space.x2),
+          Align(alignment: Alignment.centerLeft, child: TrustBadge(verdict: verdict)),
           const SizedBox(height: Space.x3),
           _Tiles(children: [
             _Tile(
@@ -73,6 +80,17 @@ class EstimateCard extends StatelessWidget {
           ],
           const SizedBox(height: Space.x2),
           Text(l10n.estDisclaimer, style: NalviumText.caption.copyWith(fontSize: 12.5, color: NalviumColors.textMuted)),
+          const SizedBox(height: Space.x1),
+          Row(
+            key: const Key('estimate-verified'),
+            children: [
+              const Icon(Icons.verified_user_outlined, size: 14, color: NalviumColors.textMuted),
+              const SizedBox(width: Space.x1 + 2),
+              Expanded(
+                child: Text(l10n.estVerified, style: NalviumText.caption.copyWith(fontSize: 12.5, color: NalviumColors.textMuted)),
+              ),
+            ],
+          ),
           if (e.parts.isNotEmpty && !notDiy) ...[
             const SizedBox(height: Space.x3),
             Container(
@@ -99,6 +117,49 @@ class EstimateCard extends StatelessWidget {
               ),
             ),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Libellé de la pastille de confiance (aussi utilisé par la carte à partager, rendue hors de l'app).
+String trustBadgeLabel(AppLocalizations l10n, DiyVerdict verdict) => switch (verdict) {
+  DiyVerdict.diy => l10n.estBadgeDiy,
+  DiyVerdict.careful => l10n.estBadgeCareful,
+  DiyVerdict.pro => l10n.estBadgePro,
+};
+
+/// Pastille de confiance : le verdict en trois mots, icône + texte (jamais la couleur seule).
+/// [label] fourni : aucune dépendance aux traductions (rendu hors arbre, carte à partager).
+class TrustBadge extends StatelessWidget {
+  const TrustBadge({super.key, required this.verdict, this.label, this.large = false});
+  final DiyVerdict verdict;
+  final String? label;
+  final bool large;
+
+  @override
+  Widget build(BuildContext context) {
+    final (IconData icon, Color fg, Color bg) = switch (verdict) {
+      DiyVerdict.diy => (Icons.check_circle_rounded, NalviumColors.success, NalviumColors.successSoft),
+      DiyVerdict.careful => (Icons.back_hand_outlined, NalviumColors.warning, NalviumColors.warningSoft),
+      DiyVerdict.pro => (Icons.engineering_rounded, NalviumColors.textPrimary, NalviumColors.surfaceSubtle),
+    };
+    return Container(
+      key: Key('trust-badge-${verdict.name}'),
+      padding: EdgeInsets.symmetric(horizontal: large ? Space.x4 : Space.x3, vertical: large ? Space.x2 : Space.x1 + 2),
+      decoration: ShapeDecoration(color: bg, shape: const StadiumBorder()),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: large ? 18 : 16, color: fg),
+          const SizedBox(width: Space.x1 + 2),
+          Flexible(
+            child: Text(
+              label ?? trustBadgeLabel(AppLocalizations.of(context), verdict),
+              style: NalviumText.caption.copyWith(color: fg, fontWeight: FontWeight.w700, fontSize: large ? 15 : 14),
+            ),
+          ),
         ],
       ),
     );

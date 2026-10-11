@@ -25,9 +25,25 @@ class LocalStore {
   HomeProfile get profile => HomeProfile.fromJsonString(_prefs.getString(_profile));
   Future<void> saveProfile(HomeProfile p) => _prefs.setString(_profile, p.toJsonString());
 
+  static const _savingsSeen = 'nalvium.savings_seen';
+  static const _tipPromptAt = 'nalvium.tip_prompt_at';
+
+  /// Dernier total d'économies vu sur l'accueil (le compteur s'anime seulement s'il a augmenté depuis).
+  int? get savingsSeen => _prefs.getInt(_savingsSeen);
+  Future<void> setSavingsSeen(int total) => _prefs.setInt(_savingsSeen, total);
+
+  /// Dernière proposition de pourboire après une réparation (au plus une tous les 14 jours).
+  DateTime? get tipPromptAt {
+    final ms = _prefs.getInt(_tipPromptAt);
+    return ms == null ? null : DateTime.fromMillisecondsSinceEpoch(ms);
+  }
+
+  Future<void> setTipPromptAt(DateTime when) => _prefs.setInt(_tipPromptAt, when.millisecondsSinceEpoch);
+
   /// Après « Supprimer mes données » : le profil local et l'accord IA sont effacés aussi.
   Future<void> clearPersonal() async {
     await _prefs.remove(_profile);
     await _prefs.remove(_aiConsent);
+    await _prefs.remove(_savingsSeen);
   }
 }

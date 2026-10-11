@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import '../core/analytics/analytics.dart';
 import '../domain/home_profile.dart';
 import 'local_store.dart';
+import 'share_service.dart';
 import 'tips_service.dart';
 import '../core/config/api_config.dart';
 import '../core/network/api_client.dart';
@@ -76,6 +77,9 @@ final tipsServiceProvider = Provider<TipsService>((ref) {
   ref.onDispose(s.dispose);
   return s;
 });
+
+/// Partage système (carte résultat, économies). Surchargé en test.
+final shareServiceProvider = Provider<ShareService>((ref) => const PlatformShareService());
 
 final homeProfileProvider = NotifierProvider<HomeProfileNotifier, HomeProfile>(HomeProfileNotifier.new);
 

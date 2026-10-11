@@ -53,6 +53,15 @@ class SessionState {
 
   bool get isActive => status == 'active';
 
+  /// Le faire-soi-même reste envisageable : ni arrêt de sécurité, ni recommandation d'un pro, ni refus explicite.
+  bool get diyAllowed {
+    final n = next;
+    if (n == null) return true;
+    return n.diyAllowed != false &&
+        n.actionType != NextActionType.safetyStop &&
+        n.actionType != NextActionType.recommendProfessional;
+  }
+
   factory SessionState.fromJson(Map<String, dynamic> j) => SessionState(
     id: j['id'] as String,
     status: j['status'] as String,

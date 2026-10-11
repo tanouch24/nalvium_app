@@ -246,7 +246,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
       await tester.pump(const Duration(milliseconds: 600));
       expect(find.text('J\'analyse votre vidéo…'), findsOneWidget);
-      expect(find.text('J\'observe ce qui change dans la vidéo.'), findsOneWidget);
+      expect(find.text('Lecture de votre vidéo…'), findsOneWidget);
       expect(find.byType(LinearProgressIndicator), findsNothing);
       expect(find.textContaining('%'), findsNothing);
       for (final lie in ['écoute', 'entend', 'bruit détecté', 'son analysé']) {

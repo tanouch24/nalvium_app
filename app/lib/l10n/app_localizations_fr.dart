@@ -1986,4 +1986,102 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get stCancel => 'Annuler';
+
+  @override
+  String get shareAction => 'Partager';
+
+  @override
+  String get shareResultText =>
+      'Diagnostiqué en 30 secondes avec Nalvium · nalvium.com';
+
+  @override
+  String shareSavingsText(String amount) {
+    return 'J\'ai économisé $amount sur mes dépannages avec Nalvium · nalvium.com';
+  }
+
+  @override
+  String shareSavingsPossible(String amount) {
+    return 'Économie possible : $amount';
+  }
+
+  @override
+  String shareLevel(String level) {
+    return 'Niveau : $level';
+  }
+
+  @override
+  String get shareDisclaimer => 'Estimation indicative, pas un devis';
+
+  @override
+  String get shareSavingsLead => 'J\'ai économisé';
+
+  @override
+  String get shareSavingsTail => 'sur mes dépannages avec Nalvium';
+
+  @override
+  String get shareSavingsDisclaimer =>
+      'Économies estimées, prix moyens en France';
+
+  @override
+  String get shareFailed =>
+      'Le partage n\'a pas pu s\'ouvrir. Réessayez dans un instant.';
+
+  @override
+  String get shareSavingsTooltip => 'Partager mes économies';
+
+  @override
+  String get estBadgeDiy => 'Faisable vous-même';
+
+  @override
+  String get estBadgeCareful => 'Avec prudence';
+
+  @override
+  String get estBadgePro => 'Appelez un pro';
+
+  @override
+  String get estVerified => 'Vérifié par le moteur de sécurité Nalvium';
+
+  @override
+  String get stepReadPhoto => 'Lecture de votre photo…';
+
+  @override
+  String get stepReadVideo => 'Lecture de votre vidéo…';
+
+  @override
+  String get stepReadText => 'Lecture de votre description…';
+
+  @override
+  String get stepIdentify => 'Identification de l\'équipement…';
+
+  @override
+  String get stepCost => 'Calcul du coût…';
+
+  @override
+  String get stepSafety => 'Vérification sécurité…';
+
+  @override
+  String get stepDoneSemantics => 'terminé';
+
+  @override
+  String get stepCurrentSemantics => 'en cours';
+
+  @override
+  String dashMilestone(String amount) {
+    return 'Palier atteint : $amount économisés';
+  }
+
+  @override
+  String tipTitle(String amount) {
+    return 'Nalvium vous a fait économiser $amount. Un petit pourboire pour soutenir l\'app ?';
+  }
+
+  @override
+  String get tipBody =>
+      'Sans contrepartie : tout reste gratuit et sans publicité.';
+
+  @override
+  String get tipCta => 'Laisser un pourboire';
+
+  @override
+  String get tipLater => 'Plus tard';
 }

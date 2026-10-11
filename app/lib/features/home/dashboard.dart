@@ -8,11 +8,13 @@ import '../../core/theme/nalvium_colors.dart';
 import '../../core/theme/nalvium_spacing.dart';
 import '../../core/theme/nalvium_typography.dart';
 import '../../core/widgets/motion.dart';
+import '../../domain/estimate.dart';
 import '../../domain/home_profile.dart';
 import '../../domain/session.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/providers.dart';
 import '../house/maintenance_section.dart';
+import '../share/share_card.dart';
 
 /// Économies estimées : diagnostics RÉSOLUS que l'utilisateur pouvait faire lui-même (faisabilité > 3).
 ({int total, int repairs}) savingsOf(List<SessionSummary> sessions) {
@@ -26,6 +28,18 @@ import '../house/maintenance_section.dart';
     repairs++;
   }
   return (total: total, repairs: repairs);
+}
+
+/// Paliers d'économies célébrés sur l'accueil.
+const kSavingsMilestones = [50, 100, 250, 500, 1000];
+
+/// Plus haut palier atteint (null en dessous de 50 €).
+int? savingsMilestone(int total) {
+  int? reached;
+  for (final m in kSavingsMilestones) {
+    if (total >= m) reached = m;
+  }
+  return reached;
 }
 
 /// Tableau de bord de l'accueil : suivi de la maison, économies, prochain entretien, urgence.
@@ -43,7 +57,9 @@ class HomeDashboard extends ConsumerWidget {
     final due = tasks.where((t) => !t.isUpToDate(p, now)).length;
     final vitalsKnown = VitalPoint.values.where((v) => p.vitals[v]?.known ?? false).length;
     final next = nextMaintenance(p, now);
-    final saved = savingsOf(ref.watch(allSessionsProvider).value ?? const []);
+    final sessions = ref.watch(allSessionsProvider);
+    final saved = savingsOf(sessions.value ?? const []);
+    final milestone = savingsMilestone(saved.total);
 
     final band = score >= 75 ? l10n.dashFollowUpGood : (score >= 40 ? l10n.dashFollowUpMid : l10n.dashFollowUpLow);
     final hint = vitalsKnown == 0 ? l10n.dashAddVitals : l10n.dashTasksDue(due);
@@ -86,14 +102,43 @@ class HomeDashboard extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(l10n.dashSaved, style: NalviumText.caption.copyWith(color: Colors.white.withValues(alpha: 0.8))),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(l10n.dashSaved, style: NalviumText.caption.copyWith(color: Colors.white.withValues(alpha: 0.8))),
+                          ),
+                          if (saved.total > 0) _ShareSavings(total: saved.total, milestone: milestone),
+                        ],
+                      ),
                       const SizedBox(height: Space.x1),
                       if (saved.repairs > 0) ...[
-                        Text('${saved.total} €', style: NalviumText.display.copyWith(color: Colors.white, fontSize: 30)),
+                        _SavingsAmount(total: saved.total),
                         Text(
                           l10n.dashSavedRepairs(saved.repairs),
                           style: NalviumText.caption.copyWith(color: Colors.white.withValues(alpha: 0.8)),
                         ),
+                        if (milestone != null) ...[
+                          const SizedBox(height: Space.x2),
+                          Row(
+                            key: const Key('dash-milestone'),
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.only(top: 1),
+                                child: Icon(Icons.workspace_premium_rounded, size: 16, color: NalviumColors.accentSoft),
+                              ),
+                              const SizedBox(width: Space.x1),
+                              Expanded(
+                                child: Text(
+                                  // Insécable : « 250 € » ne se coupe jamais en fin de ligne.
+                                  l10n.dashMilestone(formatEurosInt(milestone).replaceAll(' €', '\u00a0€')),
+                                  style: NalviumText.caption.copyWith(color: NalviumColors.accentSoft, fontWeight: FontWeight.w700, fontSize: 12.5),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ] else
                         Text(
                           l10n.dashSavedEmpty,
@@ -168,6 +213,102 @@ class HomeDashboard extends ConsumerWidget {
       ],
     );
   }
+}
+
+/// Total économisé : compte de l'ancien total vu vers le nouveau, seulement s'il a augmenté depuis la
+/// dernière visite (mémorisé sur le téléphone). Réduire les animations : le chiffre s'affiche directement.
+class _SavingsAmount extends ConsumerStatefulWidget {
+  const _SavingsAmount({required this.total});
+  final int total;
+
+  @override
+  ConsumerState<_SavingsAmount> createState() => _SavingsAmountState();
+}
+
+class _SavingsAmountState extends ConsumerState<_SavingsAmount> {
+  late int _from;
+
+  @override
+  void initState() {
+    super.initState();
+    final seen = ref.read(localStoreProvider).savingsSeen ?? 0;
+    _from = seen < widget.total ? seen : widget.total;
+    _remember();
+  }
+
+  @override
+  void didUpdateWidget(_SavingsAmount old) {
+    super.didUpdateWidget(old);
+    if (old.total != widget.total) _remember();
+  }
+
+  void _remember() => ref.read(localStoreProvider).setSavingsSeen(widget.total);
+
+  @override
+  Widget build(BuildContext context) {
+    final style = NalviumText.display.copyWith(color: Colors.white, fontSize: 30);
+    return Semantics(
+      label: formatEurosInt(widget.total),
+      excludeSemantics: true,
+      child: TweenAnimationBuilder<double>(
+        key: const Key('dash-savings-amount'),
+        tween: Tween(begin: _from.toDouble(), end: widget.total.toDouble()),
+        duration: motionDuration(context, const Duration(milliseconds: 800)),
+        curve: Curves.easeOutCubic,
+        builder: (_, v, _) => Text(formatEurosInt(v.round()), style: style),
+      ),
+    );
+  }
+}
+
+/// Partager ses économies (carte « économies » rendue hors écran). Discret, dans le coin de la carte.
+class _ShareSavings extends ConsumerStatefulWidget {
+  const _ShareSavings({required this.total, this.milestone});
+  final int total;
+  final int? milestone;
+
+  @override
+  ConsumerState<_ShareSavings> createState() => _ShareSavingsState();
+}
+
+class _ShareSavingsState extends ConsumerState<_ShareSavings> {
+  bool _busy = false;
+
+  Future<void> _share() async {
+    if (_busy) return;
+    final l10n = AppLocalizations.of(context);
+    final amount = formatEurosInt(widget.total);
+    setState(() => _busy = true);
+    await shareCard(
+      context,
+      ref,
+      card: SavingsShareCard(
+        lead: l10n.shareSavingsLead,
+        amount: amount,
+        tail: l10n.shareSavingsTail,
+        disclaimer: l10n.shareSavingsDisclaimer,
+        milestone: widget.milestone == null ? null : l10n.dashMilestone(formatEurosInt(widget.milestone!)),
+      ),
+      text: l10n.shareSavingsText(amount),
+      fileName: 'nalvium-economies.png',
+    );
+    if (mounted) setState(() => _busy = false);
+  }
+
+  @override
+  Widget build(BuildContext context) => Transform.translate(
+    // Rentré dans le coin : la zone tactile reste de 48 dp sans agrandir la carte.
+    offset: const Offset(Space.x3, -Space.x3),
+    child: IconButton(
+      key: const Key('dash-share-savings'),
+      tooltip: AppLocalizations.of(context).shareSavingsTooltip,
+      onPressed: _busy ? null : _share,
+      icon: const Icon(Icons.ios_share_rounded, size: 20),
+      color: Colors.white,
+      constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+      padding: EdgeInsets.zero,
+    ),
+  );
 }
 
 class _Card extends StatelessWidget {

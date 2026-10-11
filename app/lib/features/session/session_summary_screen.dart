@@ -18,6 +18,7 @@ import '../../domain/session.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/providers.dart';
 import '../history/session_labels.dart';
+import '../share/share_card.dart';
 import 'views/action_views.dart';
 
 /// Récapitulatif d'une session terminée : ce que Nalvium en retient, pas la conversation brute.
@@ -206,7 +207,9 @@ class _Body extends StatelessWidget {
         ],
         if (state.estimate != null && !isStop) ...[
           const SizedBox(height: Space.x8),
-          EstimateCard(estimate: state.estimate!),
+          EstimateCard(estimate: state.estimate!, diyAllowed: state.diyAllowed),
+          const SizedBox(height: Space.x4),
+          ShareResultButton(state: state),
         ],
         const SizedBox(height: Space.x6),
         ReportResultLink(sessionId: state.id),

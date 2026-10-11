@@ -29,19 +29,23 @@ void main() {
     await tester.pump(const Duration(milliseconds: 400));
     expect(find.text('J\'analyse le problème…'), findsOneWidget);
     expect(find.byType(Image), findsWidgets); // la photo prise est visible
-    expect(find.text('Je regarde ce qui pourrait provoquer ça.'), findsOneWidget);
+    // Étapes narrées : la première est en cours, aucune n'est cochée d'emblée.
+    expect(find.text('Lecture de votre photo…'), findsOneWidget);
+    expect(find.byKey(const Key('analysis-step-0-current')), findsOneWidget);
     expect(find.byType(LinearProgressIndicator), findsNothing);
     expect(find.textContaining('%'), findsNothing);
     expect(find.textContaining('IA'), findsNothing); // pas de jargon
 
-    await tester.pump(const Duration(seconds: 5));
+    await tester.pump(const Duration(milliseconds: 2400));
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.byKey(const Key('analysis-step-0-done')), findsOneWidget);
+    expect(find.byKey(const Key('analysis-step-1-current')), findsOneWidget);
+    // Bien après la durée habituelle : la vérification sécurité reste EN COURS tant que la réponse n'est pas là.
+    await tester.pump(const Duration(seconds: 25));
     await tester.pump(const Duration(milliseconds: 600));
-    expect(find.text('J\'observe les éléments visibles.'), findsOneWidget);
-    await tester.pump(const Duration(seconds: 5));
-    await tester.pump(const Duration(milliseconds: 600));
-    expect(find.text('Je vérifie ce qui mérite votre attention.'), findsOneWidget);
-    await tester.pump(const Duration(seconds: 15));
-    await tester.pump(const Duration(milliseconds: 600));
+    expect(find.byKey(const Key('analysis-step-2-done')), findsOneWidget);
+    expect(find.byKey(const Key('analysis-step-3-current')), findsOneWidget);
+    expect(find.byKey(const Key('analysis-step-3-done')), findsNothing);
     expect(find.text('Cela prend un peu plus de temps que d\'habitude…'), findsOneWidget);
 
     repo.turnGate!.complete();

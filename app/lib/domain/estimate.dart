@@ -57,7 +57,18 @@ class RepairEstimate {
     final s = pro - diy;
     return s > 0 ? s : null;
   }
+
+  /// Verdict lisible d'un coup d'œil (pastille de confiance). [diyAllowed] = faux dès que le guidage
+  /// déconseille le faire-soi-même (recommandation d'un pro) : le verdict ne contredit jamais la réponse.
+  DiyVerdict verdict({bool diyAllowed = true}) {
+    if (!diyAllowed || diyFeasibility <= 3) return DiyVerdict.pro;
+    if (diyFeasibility >= 7 && difficulty != 'hard') return DiyVerdict.diy;
+    return DiyVerdict.careful;
+  }
 }
+
+/// Faisable vous-même · avec prudence · appelez un pro.
+enum DiyVerdict { diy, careful, pro }
 
 class EstimatePart {
   const EstimatePart({required this.name, this.approxEur});
@@ -77,4 +88,15 @@ String formatDuration(int minutes) {
   if (minutes < 60) return '$minutes min';
   final h = minutes ~/ 60, m = minutes % 60;
   return m == 0 ? '$h h' : '$h h ${m.toString().padLeft(2, '0')}';
+}
+
+/// « 120 € », « 1 000 € » (espace fine insécable pour les milliers, comme en français).
+String formatEurosInt(int amount) {
+  final digits = amount.abs().toString();
+  final b = StringBuffer(amount < 0 ? '-' : '');
+  for (var i = 0; i < digits.length; i++) {
+    if (i > 0 && (digits.length - i) % 3 == 0) b.write('\u202f');
+    b.write(digits[i]);
+  }
+  return '$b €';
 }

@@ -17,6 +17,7 @@ import '../capture/analysis_wait.dart';
 import '../capture/capture_flow.dart';
 import '../history/session_labels.dart';
 import 'context_header.dart';
+import '../share/share_card.dart';
 import 'estimate_card.dart';
 import 'report_sheet.dart';
 import '../house/manual_citation.dart';
@@ -384,7 +385,12 @@ class _Content extends StatelessWidget {
           // Carte résultat chiffrée : dès que Nalvium a une estimation (jamais sur un arrêt de sécurité).
           if (state.estimate != null && type != NextActionType.safetyStop) ...[
             const SizedBox(height: Space.x6),
-            EstimateCard(estimate: state.estimate!),
+            EstimateCard(estimate: state.estimate!, diyAllowed: state.diyAllowed),
+            // Partage : seulement une fois le problème réglé (jamais en cours de guidage ni sur un arrêt).
+            if (type == NextActionType.resolved) ...[
+              const SizedBox(height: Space.x4),
+              ShareResultButton(state: state),
+            ],
           ],
           const SizedBox(height: Space.x4),
           ReportResultLink(sessionId: state.id),

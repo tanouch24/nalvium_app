@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../core/theme/nalvium_colors.dart';
 import '../../core/theme/nalvium_spacing.dart';
@@ -10,9 +11,13 @@ import '../../core/widgets/motion.dart';
 import '../../core/widgets/viewfinder.dart';
 import '../../l10n/app_localizations.dart';
 
+/// Rythme des étapes narrées : la dernière est atteinte vers 7 s, l'analyse dure ≈10 s.
+const kAnalysisStepEvery = Duration(milliseconds: 2400);
+
 /// L'attente (≈10 s) : Nalvium observe CET objet. Les coins du viseur respirent très lentement.
-/// Les phrases tournent pour rassurer ; elles ne prétendent JAMAIS qu'une étape précise a eu lieu,
-/// et il n'y a ni pourcentage ni barre de progression.
+/// Sans [steps], les phrases tournent pour rassurer. Avec [steps] (première analyse), une liste narrée avance
+/// au rythme d'une minuterie : la DERNIÈRE étape (la vérification sécurité) reste en cours tant que la vraie
+/// réponse n'est pas arrivée — l'écran ne prétend jamais avoir fini. Ni pourcentage ni barre de progression.
 class AnalysisWait extends StatefulWidget {
   const AnalysisWait({
     super.key,
@@ -22,6 +27,7 @@ class AnalysisWait extends StatefulWidget {
     this.video = false,
     this.refined = false,
     this.lightweight = false,
+    this.steps,
     required this.onCancel,
   });
 
@@ -46,6 +52,9 @@ class AnalysisWait extends StatefulWidget {
   /// Variante vidéo : même cadre que la photo, première phrase d'attente adaptée.
   final bool video;
 
+  /// Étapes narrées (« Lecture de votre photo… », …). Null : phrases tournantes.
+  final List<String>? steps;
+
   @override
   State<AnalysisWait> createState() => _AnalysisWaitState();
 }
@@ -57,7 +66,11 @@ class _AnalysisWaitState extends State<AnalysisWait>
     duration: const Duration(milliseconds: 2600),
   );
   Timer? _timer;
+  Timer? _stepTimer;
   int _tick = 0;
+
+  /// Étape en cours (les précédentes sont cochées). Ne dépasse jamais la dernière.
+  int _step = 0;
 
   @override
   void initState() {
@@ -65,6 +78,15 @@ class _AnalysisWaitState extends State<AnalysisWait>
     _timer = Timer.periodic(const Duration(seconds: 5), (_) {
       if (mounted) setState(() => _tick++);
     });
+    final steps = widget.steps;
+    if (steps != null && steps.length > 1) {
+      _stepTimer = Timer.periodic(kAnalysisStepEvery, (t) {
+        if (!mounted) return;
+        HapticFeedback.selectionClick();
+        setState(() => _step++);
+        if (_step >= steps.length - 1) t.cancel();
+      });
+    }
   }
 
   @override
@@ -80,6 +102,7 @@ class _AnalysisWaitState extends State<AnalysisWait>
   @override
   void dispose() {
     _timer?.cancel();
+    _stepTimer?.cancel();
     _breath.dispose();
     super.dispose();
   }
@@ -114,8 +137,12 @@ class _AnalysisWaitState extends State<AnalysisWait>
       builder: (context, _) {
         final t = Curves.easeInOut.transform(_breath.value);
         return SizedBox(
-          width: hasPhoto ? (widget.lightweight ? 224 : 276) : (widget.lightweight ? 108 : 124),
-          height: hasPhoto ? (widget.lightweight ? 272 : 336) : (widget.lightweight ? 108 : 124),
+          width: hasPhoto
+              ? (widget.lightweight ? 224 : 276)
+              : (widget.lightweight ? 108 : 124),
+          height: hasPhoto
+              ? (widget.lightweight ? 272 : 336)
+              : (widget.lightweight ? 108 : 124),
           child: Stack(
             fit: StackFit.expand,
             children: [
@@ -169,10 +196,16 @@ class _AnalysisWaitState extends State<AnalysisWait>
           mainAxisSize: MainAxisSize.min,
           children: [
             frame,
-            SizedBox(height: hasPhoto ? (widget.lightweight ? Space.x6 : Space.x8) : Space.x6),
+            SizedBox(
+              height: hasPhoto
+                  ? (widget.lightweight ? Space.x6 : Space.x8)
+                  : Space.x6,
+            ),
             Text(
               widget.title ??
-                  (widget.lightweight ? l10n.preparingNext : l10n.analyzingTitle),
+                  (widget.lightweight
+                      ? l10n.preparingNext
+                      : l10n.analyzingTitle),
               key: const Key('analyzing-title'),
               style: widget.lightweight
                   ? NalviumText.titleLarge.copyWith(fontSize: 24)
@@ -194,30 +227,55 @@ class _AnalysisWaitState extends State<AnalysisWait>
                 ),
               ),
             ],
-            const SizedBox(height: Space.x3),
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: widget.refined ? 300 : double.infinity,
-              ),
-              child: SizedBox(
-                // Hauteur réservée : le bouton « Annuler » ne bouge pas quand la phrase change.
-                height: widget.refined ? _phraseBoxHeight(context) : 48,
-                child: AnimatedSwitcher(
-                  duration: motionDuration(
-                    context,
-                    const Duration(milliseconds: 500),
-                  ),
-                  child: Text(
-                    _phrase(l10n),
-                    key: ValueKey(_phrase(l10n)),
-                    style: widget.refined
-                        ? NalviumText.body.copyWith(height: 1.45)
-                        : NalviumText.body,
-                    textAlign: TextAlign.center,
+            if (widget.steps != null) ...[
+              const SizedBox(height: Space.x5),
+              _Steps(labels: widget.steps!, current: _step),
+              // Ligne réservée : « Annuler » ne bouge pas quand la note « plus long que d'habitude » apparaît.
+              SizedBox(
+                height: _phraseBoxHeight(context),
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: AnimatedOpacity(
+                    opacity: _tick >= 5 ? 1 : 0,
+                    duration: motionDuration(
+                      context,
+                      const Duration(milliseconds: 300),
+                    ),
+                    child: Text(
+                      l10n.analyzingSlow,
+                      key: const Key('analysis-slow'),
+                      textAlign: TextAlign.center,
+                      style: NalviumText.caption,
+                    ),
                   ),
                 ),
               ),
-            ),
+            ] else ...[
+              const SizedBox(height: Space.x3),
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: widget.refined ? 300 : double.infinity,
+                ),
+                child: SizedBox(
+                  // Hauteur réservée : le bouton « Annuler » ne bouge pas quand la phrase change.
+                  height: widget.refined ? _phraseBoxHeight(context) : 48,
+                  child: AnimatedSwitcher(
+                    duration: motionDuration(
+                      context,
+                      const Duration(milliseconds: 500),
+                    ),
+                    child: Text(
+                      _phrase(l10n),
+                      key: ValueKey(_phrase(l10n)),
+                      style: widget.refined
+                          ? NalviumText.body.copyWith(height: 1.45)
+                          : NalviumText.body,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ),
+            ],
             SizedBox(height: widget.refined ? Space.x3 : Space.x2),
             TertiaryButton(
               key: const Key('cancel-analysis'),
@@ -227,6 +285,116 @@ class _AnalysisWaitState extends State<AnalysisWait>
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Liste narrée : ✓ fait · indicateur discret = en cours · cercle vide = à venir.
+/// Toutes les lignes sont posées dès le départ (rien ne saute) ; seule l'icône change, en fondu bref.
+class _Steps extends StatelessWidget {
+  const _Steps({required this.labels, required this.current});
+  final List<String> labels;
+  final int current;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final still = reduceMotion(context);
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 300),
+      child: Column(
+        key: const Key('analysis-steps'),
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (var i = 0; i < labels.length; i++)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: Space.x1 + 1),
+              child: Semantics(
+                label:
+                    '${labels[i]} ${i < current ? l10n.stepDoneSemantics : (i == current ? l10n.stepCurrentSemantics : '')}'
+                        .trim(),
+                excludeSemantics: true,
+                liveRegion: i == current,
+                child: Row(
+                  key: Key(
+                    'analysis-step-$i-${i < current ? 'done' : (i == current ? 'current' : 'next')}',
+                  ),
+                  children: [
+                    SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: AnimatedSwitcher(
+                        duration: motionDuration(
+                          context,
+                          const Duration(milliseconds: 260),
+                        ),
+                        switchInCurve: Curves.easeOutCubic,
+                        transitionBuilder: (child, a) => FadeTransition(
+                          opacity: a,
+                          child: ScaleTransition(
+                            scale: Tween(begin: 0.6, end: 1.0).animate(a),
+                            child: child,
+                          ),
+                        ),
+                        child: i < current
+                            ? const Icon(
+                                Icons.check_circle_rounded,
+                                key: ValueKey('done'),
+                                size: 22,
+                                color: NalviumColors.success,
+                              )
+                            : i == current
+                            ? Center(
+                                key: const ValueKey('current'),
+                                child: still
+                                    ? Container(
+                                        width: 10,
+                                        height: 10,
+                                        decoration: const BoxDecoration(
+                                          color: NalviumColors.primary,
+                                          shape: BoxShape.circle,
+                                        ),
+                                      )
+                                    : const SizedBox(
+                                        width: 16,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: NalviumColors.primary,
+                                        ),
+                                      ),
+                              )
+                            : const Icon(
+                                Icons.radio_button_unchecked_rounded,
+                                key: ValueKey('next'),
+                                size: 22,
+                                color: NalviumColors.borderSubtle,
+                              ),
+                      ),
+                    ),
+                    const SizedBox(width: Space.x3),
+                    Flexible(
+                      child: Text(
+                        labels[i],
+                        style: NalviumText.body.copyWith(
+                          height: 1.35,
+                          color: i == current
+                              ? NalviumColors.textPrimary
+                              : (i < current
+                                    ? NalviumColors.textSecondary
+                                    : NalviumColors.textMuted),
+                          fontWeight: i == current
+                              ? FontWeight.w600
+                              : FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

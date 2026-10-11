@@ -102,6 +102,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
       }
       _inputSent = true;
       if (!mounted) return;
+      HapticFeedback.mediumImpact(); // la vraie réponse est là
       ref.read(sessionsRevisionProvider.notifier).bump();
       context.pushReplacement('/session/$_sessionId');
     } on ApiException catch (e) {
@@ -142,6 +143,17 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                 : null,
             video: start is VideoStart,
             refined: true,
+            // La vérification sécurité vient en dernier : elle reste « en cours » jusqu'à la vraie réponse.
+            steps: [
+              switch (start) {
+                PhotoStart() => l10n.stepReadPhoto,
+                VideoStart() => l10n.stepReadVideo,
+                DescriptionStart() => l10n.stepReadText,
+              },
+              l10n.stepIdentify,
+              l10n.stepCost,
+              l10n.stepSafety,
+            ],
             subject: start is DescriptionStart ? start.text : null,
             photo: start is PhotoStart
                 ? Image.file(

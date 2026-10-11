@@ -3705,6 +3705,174 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Annuler'**
   String get stCancel;
+
+  /// No description provided for @shareAction.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager'**
+  String get shareAction;
+
+  /// No description provided for @shareResultText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Diagnostiqué en 30 secondes avec Nalvium · nalvium.com'**
+  String get shareResultText;
+
+  /// No description provided for @shareSavingsText.
+  ///
+  /// In fr, this message translates to:
+  /// **'J\'ai économisé {amount} sur mes dépannages avec Nalvium · nalvium.com'**
+  String shareSavingsText(String amount);
+
+  /// No description provided for @shareSavingsPossible.
+  ///
+  /// In fr, this message translates to:
+  /// **'Économie possible : {amount}'**
+  String shareSavingsPossible(String amount);
+
+  /// No description provided for @shareLevel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Niveau : {level}'**
+  String shareLevel(String level);
+
+  /// No description provided for @shareDisclaimer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Estimation indicative, pas un devis'**
+  String get shareDisclaimer;
+
+  /// No description provided for @shareSavingsLead.
+  ///
+  /// In fr, this message translates to:
+  /// **'J\'ai économisé'**
+  String get shareSavingsLead;
+
+  /// No description provided for @shareSavingsTail.
+  ///
+  /// In fr, this message translates to:
+  /// **'sur mes dépannages avec Nalvium'**
+  String get shareSavingsTail;
+
+  /// No description provided for @shareSavingsDisclaimer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Économies estimées, prix moyens en France'**
+  String get shareSavingsDisclaimer;
+
+  /// No description provided for @shareFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le partage n\'a pas pu s\'ouvrir. Réessayez dans un instant.'**
+  String get shareFailed;
+
+  /// No description provided for @shareSavingsTooltip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager mes économies'**
+  String get shareSavingsTooltip;
+
+  /// No description provided for @estBadgeDiy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Faisable vous-même'**
+  String get estBadgeDiy;
+
+  /// No description provided for @estBadgeCareful.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avec prudence'**
+  String get estBadgeCareful;
+
+  /// No description provided for @estBadgePro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Appelez un pro'**
+  String get estBadgePro;
+
+  /// No description provided for @estVerified.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifié par le moteur de sécurité Nalvium'**
+  String get estVerified;
+
+  /// No description provided for @stepReadPhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lecture de votre photo…'**
+  String get stepReadPhoto;
+
+  /// No description provided for @stepReadVideo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lecture de votre vidéo…'**
+  String get stepReadVideo;
+
+  /// No description provided for @stepReadText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lecture de votre description…'**
+  String get stepReadText;
+
+  /// No description provided for @stepIdentify.
+  ///
+  /// In fr, this message translates to:
+  /// **'Identification de l\'équipement…'**
+  String get stepIdentify;
+
+  /// No description provided for @stepCost.
+  ///
+  /// In fr, this message translates to:
+  /// **'Calcul du coût…'**
+  String get stepCost;
+
+  /// No description provided for @stepSafety.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérification sécurité…'**
+  String get stepSafety;
+
+  /// No description provided for @stepDoneSemantics.
+  ///
+  /// In fr, this message translates to:
+  /// **'terminé'**
+  String get stepDoneSemantics;
+
+  /// No description provided for @stepCurrentSemantics.
+  ///
+  /// In fr, this message translates to:
+  /// **'en cours'**
+  String get stepCurrentSemantics;
+
+  /// No description provided for @dashMilestone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Palier atteint : {amount} économisés'**
+  String dashMilestone(String amount);
+
+  /// No description provided for @tipTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nalvium vous a fait économiser {amount}. Un petit pourboire pour soutenir l\'app ?'**
+  String tipTitle(String amount);
+
+  /// No description provided for @tipBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sans contrepartie : tout reste gratuit et sans publicité.'**
+  String get tipBody;
+
+  /// No description provided for @tipCta.
+  ///
+  /// In fr, this message translates to:
+  /// **'Laisser un pourboire'**
+  String get tipCta;
+
+  /// No description provided for @tipLater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus tard'**
+  String get tipLater;
 }
 
 class _AppLocalizationsDelegate

@@ -6,9 +6,12 @@ import '../../core/theme/nalvium_colors.dart';
 import '../../core/theme/nalvium_spacing.dart';
 import '../../core/theme/nalvium_typography.dart';
 import '../../core/widgets/buttons.dart';
+import '../../core/widgets/motion.dart';
+import '../../domain/estimate.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/providers.dart';
 import '../../services/tips_service.dart';
+import '../house/maintenance_section.dart';
 
 /// « Soutenir Nalvium » : trois pourboires au prix du store, paiement Apple / Google, aucune contrepartie.
 /// L'app ne renvoie jamais vers un paiement externe.
@@ -191,6 +194,115 @@ class SupportCard extends ConsumerWidget {
             onPressed: () => showSupportSheet(context, ref),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Au moment de la gratitude (réparation réussie, économie réelle) : une proposition de pourboire, douce et rare.
+/// Au plus une fois tous les 14 jours (mémorisé sur le téléphone), seulement si le store répond.
+/// Sinon, ou en attendant, la carte « Soutenir » habituelle ([fallback]) ; « Plus tard » retire les deux.
+class GratitudeTipCard extends ConsumerStatefulWidget {
+  const GratitudeTipCard({super.key, required this.savings, this.fallback = const SupportCard()});
+
+  /// Économie estimée de CETTE réparation (> 0), en euros.
+  final int savings;
+  final Widget fallback;
+
+  static const cooldown = Duration(days: 14);
+
+  @override
+  ConsumerState<GratitudeTipCard> createState() => _GratitudeTipCardState();
+}
+
+class _GratitudeTipCardState extends ConsumerState<GratitudeTipCard> {
+  /// null : vérification en cours ; true : proposition affichée ; false : carte habituelle.
+  bool? _offer;
+  bool _dismissed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _decide();
+  }
+
+  Future<void> _decide() async {
+    final store = ref.read(localStoreProvider);
+    final now = ref.read(clockProvider)();
+    final last = store.tipPromptAt;
+    final due = widget.savings > 0 && (last == null || now.difference(last) >= GratitudeTipCard.cooldown);
+    var offer = false;
+    if (due) {
+      // Store indisponible ou produits absents : jamais de proposition qui mènerait à une impasse.
+      final products = await ref.read(tipsServiceProvider).products();
+      offer = products.isNotEmpty;
+      if (offer) await store.setTipPromptAt(now);
+    }
+    if (mounted) setState(() => _offer = offer);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final Widget child;
+    if (_dismissed || _offer == null) {
+      child = const SizedBox(width: double.infinity);
+    } else if (_offer == false) {
+      child = widget.fallback;
+    } else {
+      child = Container(
+        key: const Key('tip-card'),
+        padding: const EdgeInsets.all(Space.x4),
+        decoration: BoxDecoration(color: NalviumColors.surface, borderRadius: BorderRadius.circular(Corner.medium)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: const BoxDecoration(color: NalviumColors.accentSoft, shape: BoxShape.circle),
+                  child: const Icon(Icons.favorite_border_rounded, size: 19, color: NalviumColors.primaryText),
+                ),
+                const SizedBox(width: Space.x3),
+                Expanded(
+                  child: Text(
+                    l10n.tipTitle(formatEurosInt(widget.savings).replaceAll(' €', '\u00a0€')), // montant insécable
+                    key: const Key('tip-title'),
+                    style: NalviumText.title.copyWith(fontSize: 16.5, height: 1.35),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: Space.x2),
+            Text(l10n.tipBody, style: NalviumText.caption.copyWith(fontSize: 13.5)),
+            const SizedBox(height: Space.x3),
+            SecondaryButton(
+              key: const Key('tip-open'),
+              label: l10n.tipCta,
+              icon: Icons.favorite_border_rounded,
+              onPressed: () => showSupportSheet(context, ref),
+            ),
+            TertiaryButton(
+              key: const Key('tip-later'),
+              label: l10n.tipLater,
+              color: NalviumColors.textSecondary,
+              onPressed: () => setState(() => _dismissed = true),
+            ),
+          ],
+        ),
+      );
+    }
+    return AnimatedSize(
+      duration: motionDuration(context, const Duration(milliseconds: 280)),
+      curve: Curves.easeOutCubic,
+      alignment: Alignment.topCenter,
+      child: AnimatedSwitcher(
+        duration: motionDuration(context, const Duration(milliseconds: 280)),
+        switchInCurve: Curves.easeOutCubic,
+        child: KeyedSubtree(key: ValueKey('${_offer}_$_dismissed'), child: child),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +12,8 @@ import 'package:nalvium/features/emergency/emergency_screen.dart';
 import 'package:nalvium/services/local_store.dart';
 import 'package:nalvium/services/providers.dart';
 import 'package:nalvium/services/tips_service.dart';
+import 'package:nalvium/services/share_service.dart';
+import 'package:nalvium/features/share/share_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nalvium/services/video_recorder_service.dart';
 
@@ -72,6 +75,7 @@ Future<FakePhotoCaptureService> pumpApp(
   Future<void> Function(String number)? dialer,
   FakeTipsService? tips,
   CapturedPhoto? lostPhoto,
+  FakeShareService? share,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = dpr;
@@ -91,12 +95,19 @@ Future<FakePhotoCaptureService> pumpApp(
   });
   final store = LocalStore(await SharedPreferences.getInstance());
   final fake = FakePhotoCaptureService(captures, lost: lostPhoto);
+  final shareFake = share ?? FakeShareService();
   await tester.pumpWidget(ProviderScope(
     retry: (_, _) => null,
     overrides: [
       localStoreProvider.overrideWithValue(store),
       phoneDialerProvider.overrideWithValue(dialer ?? (_) async {}),
       tipsServiceProvider.overrideWithValue(tips ?? FakeTipsService()),
+      shareServiceProvider.overrideWithValue(shareFake),
+      // Le vrai rendu PNG exige le moteur graphique (voir share_card_test) : ici, la carte est seulement notée.
+      shareCardRendererProvider.overrideWithValue((card, _) async {
+        shareFake.rendered.add(card);
+        return Uint8List.fromList(const [1, 2, 3]);
+      }),
       vitalPhotoSaverProvider.overrideWithValue((path, _) async => path),
       photoCaptureServiceProvider.overrideWithValue(fake),
       sessionsRepositoryProvider.overrideWithValue(repo ?? FakeSessionsRepository()),
@@ -193,5 +204,20 @@ class FakeTipsService implements TipsService {
   Future<TipOutcome> tip(String productId) async {
     bought.add(productId);
     return outcome;
+  }
+}
+
+
+/// Faux partage de TEST : rien ne quitte l'app, on garde ce qui aurait été partagé.
+class FakeShareService implements ShareService {
+  FakeShareService({this.fail = false});
+  final bool fail;
+  final rendered = <Widget>[];
+  final shared = <({String text, String fileName, int bytes})>[];
+
+  @override
+  Future<void> shareImage(Uint8List png, {required String fileName, required String text, Rect? origin}) async {
+    if (fail) throw StateError('share');
+    shared.add((text: text, fileName: fileName, bytes: png.length));
   }
 }
