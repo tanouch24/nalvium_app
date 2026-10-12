@@ -67,6 +67,10 @@ d'estimation sur arrêt de sécurité, OpenAI 55 s, 15 questions max), premium
 d'économies, pourboire après réussite). AAB recompilé :
 `release/nalvium-1.1.0+2.aab` (ancien : `-avant-audit`). Sur Railway, vérifier
 que `NALVIUM_OPENAI_TIMEOUT_S` vaut 55 ou n'existe pas.
+Puis : scan proposé dès le démarrage (profil ensuite), rappels d'entretien en
+notifications locales inexactes (flutter_local_notifications, vérifié en
+release sur émulateur), photo « après » + carte Avant/Après ; kit de lancement
+`docs/LANCEMENT_VIRAL.md`. Icône de notification monochrome à créer.
 
 ## Reste à faire avant la sortie (détail : `docs/SORTIE_1.1.md`)
 
