@@ -30,7 +30,7 @@ vidéo, texte), l'IA guide pas à pas. Flutter (`app/`) + FastAPI/PostgreSQL
 ## Décisions produit (08/10/2026)
 
 - Plus de publicités, plus de Communauté. iPhone seul, portrait.
-- Gratuit + **« Soutenir Nalvium »** : dons en achat intégré consommables
+- Gratuit + **« Soutenir Nalvium »** : pourboires en achat intégré consommables
   `nalvium.tip.coffee` / `two_coffees` / `meal` (2,99 / 4,99 / 9,99 €), sans
   contrepartie. Lien Stripe **uniquement sur nalvium.com**, jamais dans l'app
   (ni lien vers la page qui le contient).
@@ -48,7 +48,7 @@ Historique + bouton Scanner ; démarrage (accord IA nommant OpenAI, profil,
 points vitaux) ; carte résultat chiffrée (faisabilité, durée, coût vous-même vs
 artisan, pièces) ; « Signaler ce résultat » ; tableau de bord (suivi, économies
 réelles, prochain entretien) ; Ma maison (points vitaux, entretiens) ; écran
-Urgence (consignes fixes, 0 800 47 33 33, 18, 15, 112) ; dons ; accord IA
+Urgence (consignes fixes, 0 800 47 33 33, 18, 15, 112) ; pourboires ; accord IA
 retirable dans Réglages ; textes légaux à jour. Serveur : estimation
 (migration 0009), `POST /v1/sessions/{id}/report`, limite 8 diagnostics/24 h.
 
@@ -72,7 +72,7 @@ que `NALVIUM_OPENAI_TIMEOUT_S` vaut 55 ou n'existe pas.
 
 1. Recueillir les retours de Nathanyel sur le Samsung.
 2. Déployer le serveur `premium-refonte` (avec son go) AVANT l'app.
-3. Créer les 3 dons dans App Store Connect et la Play Console.
+3. Créer les 3 pourboires dans App Store Connect et la Play Console.
 4. Mettre à jour Confidentialité (Apple) et Sécurité des données (Google) :
    plus de pub ni d'identifiant publicitaire ; déclarer le contenu IA.
 5. Nouvelles captures ; notes Apple (texte prêt dans le guide).

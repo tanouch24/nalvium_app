@@ -23,7 +23,7 @@ résultats, limite de 8 diagnostics par jour, page `/privacy` mise à jour.
 L'ancienne app 1.0 continue de fonctionner avec ce serveur (les nouveaux champs
 sont simplement ignorés).
 
-## 2. Créer les 3 dons (achats intégrés CONSOMMABLES)
+## 2. Créer les 3 pourboires (achats intégrés CONSOMMABLES)
 
 Mêmes identifiants sur les deux stores, sinon le bouton « Soutenir » affiche
 « pas disponible ».
@@ -35,7 +35,7 @@ Mêmes identifiants sur les deux stores, sinon le bouton « Soutenir » affiche
 | `nalvium.tip.meal` | Un repas | 9,99 € |
 
 - **Apple** (App Store Connect › Nalvium › Achats intégrés) : type *Consommable*.
-  Description : « Un don pour soutenir Nalvium. Aucune contrepartie : tout reste
+  Description : « Un pourboire pour soutenir Nalvium. Aucune contrepartie : tout reste
   gratuit. » Ajouter la capture de la feuille « Soutenir Nalvium » pour la
   vérification. Les rattacher à la version 1.1 avant de la soumettre.
 - **Google** (Play Console › Monétiser › Produits intégrés) : mêmes ID, actifs.
