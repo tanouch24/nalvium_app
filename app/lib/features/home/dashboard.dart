@@ -67,6 +67,7 @@ class HomeDashboard extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        const _CompleteProfileCard(),
         _Card(
           key: const Key('dash-follow-up'),
           onTap: () => context.go('/house'),
@@ -309,6 +310,67 @@ class _ShareSavingsState extends ConsumerState<_ShareSavings> {
       padding: EdgeInsets.zero,
     ),
   );
+}
+
+/// « Complétez votre carnet maison (1 min) » : seulement si le premier diagnostic a été lancé avant le profil.
+/// Discrète, masquable ; disparaît en douceur (immédiatement si les animations sont réduites).
+class _CompleteProfileCard extends ConsumerWidget {
+  const _CompleteProfileCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final pending = ref.watch(profileSetupPendingProvider);
+    return AnimatedSize(
+      duration: motionDuration(context, const Duration(milliseconds: 280)),
+      curve: Curves.easeOutCubic,
+      alignment: Alignment.topCenter,
+      child: !pending
+          ? const SizedBox(width: double.infinity)
+          : Padding(
+              padding: const EdgeInsets.only(bottom: Space.x3),
+              child: _Card(
+                key: const Key('dash-complete-profile'),
+                onTap: () => context.push('/profile-setup'),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(color: NalviumColors.accentSoft, borderRadius: BorderRadius.circular(14)),
+                      child: const Icon(Icons.house_outlined, color: NalviumColors.primaryText, size: 22),
+                    ),
+                    const SizedBox(width: Space.x3),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(l10n.dashCompleteProfileTitle, style: NalviumText.title.copyWith(fontSize: 16.5, height: 1.25)),
+                          const SizedBox(height: 2),
+                          Text(l10n.dashCompleteProfileBody, style: NalviumText.caption),
+                        ],
+                      ),
+                    ),
+                    Transform.translate(
+                      // Rentré dans le coin : zone tactile de 48 dp sans agrandir la carte.
+                      offset: const Offset(Space.x3, -Space.x3),
+                      child: IconButton(
+                        key: const Key('dash-complete-profile-dismiss'),
+                        tooltip: l10n.dashCompleteProfileDismiss,
+                        onPressed: () => ref.read(profileSetupPendingProvider.notifier).set(false),
+                        icon: const Icon(Icons.close_rounded, size: 20),
+                        color: NalviumColors.textMuted,
+                        constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                        padding: EdgeInsets.zero,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+    );
+  }
 }
 
 class _Card extends StatelessWidget {

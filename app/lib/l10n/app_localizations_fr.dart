@@ -2084,4 +2084,105 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get tipLater => 'Plus tard';
+
+  @override
+  String get obWowTitle => 'Montrez-nous un problème maintenant';
+
+  @override
+  String get obWowBody =>
+      'Un premier avis en moins d\'une minute. Vous compléterez votre carnet maison juste après.';
+
+  @override
+  String get obWowLater => 'Plus tard';
+
+  @override
+  String get dashCompleteProfileTitle =>
+      'Complétez votre carnet maison (1 min)';
+
+  @override
+  String get dashCompleteProfileBody =>
+      'Quelques questions pour vous proposer les bons entretiens.';
+
+  @override
+  String get dashCompleteProfileDismiss => 'Masquer';
+
+  @override
+  String get mtRemind => 'Me le rappeler';
+
+  @override
+  String mtReminderSet(String date) {
+    return 'Rappel prévu le $date, vers 10 h.';
+  }
+
+  @override
+  String mtReminderOn(String date) {
+    return 'Rappel le $date';
+  }
+
+  @override
+  String get mtReminderDenied =>
+      'Les notifications sont désactivées pour Nalvium. Vous pouvez les autoriser dans les réglages du téléphone.';
+
+  @override
+  String get mtMarkedPlain => 'Entretien noté.';
+
+  @override
+  String get notifChannelName => 'Rappels d\'entretien';
+
+  @override
+  String get notifChannelDescription =>
+      'Un rappel le jour prévu pour vos entretiens.';
+
+  @override
+  String get notifBody =>
+      'C\'est le jour prévu. Touchez pour le retrouver dans Ma maison.';
+
+  @override
+  String get stSecReminders => 'Rappels';
+
+  @override
+  String get stReminders => 'Rappels d\'entretien';
+
+  @override
+  String get stRemindersHint =>
+      'Une notification le jour prévu, vers 10 h. Programmée sur votre téléphone : rien n\'est envoyé.';
+
+  @override
+  String get afterPhotoTitle => 'Prenez une photo du résultat';
+
+  @override
+  String get afterPhotoBody =>
+      'Gardée sur votre téléphone, pour votre avant / après.';
+
+  @override
+  String get afterPhotoRetake => 'Reprendre la photo';
+
+  @override
+  String get afterPhotoSaved =>
+      'Photo du résultat enregistrée sur votre téléphone.';
+
+  @override
+  String get afterPhotoSemantics => 'Photo du résultat';
+
+  @override
+  String get beforeLabel => 'Avant';
+
+  @override
+  String get afterLabel => 'Après';
+
+  @override
+  String get beforeAfterTitle => 'Avant / après';
+
+  @override
+  String get shareBeforeAfter => 'Partager l\'avant / après';
+
+  @override
+  String get shareBeforeAfterText => 'Avant / après : réparé avec Nalvium.';
+
+  @override
+  String get shareBeforeAfterLead => 'Réparé avec Nalvium';
+
+  @override
+  String get shareBeforeAfterDisclaimer =>
+      'Photos partagées par la personne qui a fait la réparation.';
 }

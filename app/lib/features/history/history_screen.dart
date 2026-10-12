@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -150,9 +152,7 @@ class _HistoryRow extends StatelessWidget {
                 child: SizedBox(
                   width: 64,
                   height: 64,
-                  child: s.firstMediaId == null
-                      ? const ColoredBox(color: NalviumColors.primarySoft, child: Icon(Icons.edit_note_rounded, color: NalviumColors.primary, size: 30))
-                      : AuthedImage(mediaId: s.firstMediaId!),
+                  child: _Thumb(session: s),
                 ),
               ),
               const SizedBox(width: Space.x4),
@@ -179,6 +179,40 @@ class _HistoryRow extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Vignette : photo du problème ; après une réparation avec photo « après », l'avant et l'après côte à côte.
+class _Thumb extends ConsumerWidget {
+  const _Thumb({required this.session});
+  final SessionSummary session;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = session;
+    final after = s.status == 'resolved' ? ref.watch(afterPhotosProvider)[s.id] : null;
+    final Widget before = s.firstMediaId == null
+        ? const ColoredBox(color: NalviumColors.primarySoft, child: Icon(Icons.edit_note_rounded, color: NalviumColors.primary, size: 30))
+        : AuthedImage(mediaId: s.firstMediaId!);
+    if (after == null) return before;
+    return Row(
+      key: Key('history-before-after-${s.id}'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (s.firstMediaId != null) ...[
+          Expanded(child: before),
+          const SizedBox(width: 2),
+        ],
+        Expanded(
+          child: Image.file(
+            File(after),
+            fit: BoxFit.cover,
+            cacheWidth: 192,
+            errorBuilder: (_, _, _) => const ColoredBox(color: NalviumColors.surfaceSubtle),
+          ),
+        ),
+      ],
     );
   }
 }

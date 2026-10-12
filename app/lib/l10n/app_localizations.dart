@@ -3873,6 +3873,180 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Plus tard'**
   String get tipLater;
+
+  /// No description provided for @obWowTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montrez-nous un problème maintenant'**
+  String get obWowTitle;
+
+  /// No description provided for @obWowBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un premier avis en moins d\'une minute. Vous compléterez votre carnet maison juste après.'**
+  String get obWowBody;
+
+  /// No description provided for @obWowLater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus tard'**
+  String get obWowLater;
+
+  /// No description provided for @dashCompleteProfileTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Complétez votre carnet maison (1 min)'**
+  String get dashCompleteProfileTitle;
+
+  /// No description provided for @dashCompleteProfileBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quelques questions pour vous proposer les bons entretiens.'**
+  String get dashCompleteProfileBody;
+
+  /// No description provided for @dashCompleteProfileDismiss.
+  ///
+  /// In fr, this message translates to:
+  /// **'Masquer'**
+  String get dashCompleteProfileDismiss;
+
+  /// No description provided for @mtRemind.
+  ///
+  /// In fr, this message translates to:
+  /// **'Me le rappeler'**
+  String get mtRemind;
+
+  /// No description provided for @mtReminderSet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rappel prévu le {date}, vers 10 h.'**
+  String mtReminderSet(String date);
+
+  /// No description provided for @mtReminderOn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rappel le {date}'**
+  String mtReminderOn(String date);
+
+  /// No description provided for @mtReminderDenied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les notifications sont désactivées pour Nalvium. Vous pouvez les autoriser dans les réglages du téléphone.'**
+  String get mtReminderDenied;
+
+  /// No description provided for @mtMarkedPlain.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entretien noté.'**
+  String get mtMarkedPlain;
+
+  /// No description provided for @notifChannelName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rappels d\'entretien'**
+  String get notifChannelName;
+
+  /// No description provided for @notifChannelDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un rappel le jour prévu pour vos entretiens.'**
+  String get notifChannelDescription;
+
+  /// No description provided for @notifBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'C\'est le jour prévu. Touchez pour le retrouver dans Ma maison.'**
+  String get notifBody;
+
+  /// No description provided for @stSecReminders.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rappels'**
+  String get stSecReminders;
+
+  /// No description provided for @stReminders.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rappels d\'entretien'**
+  String get stReminders;
+
+  /// No description provided for @stRemindersHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une notification le jour prévu, vers 10 h. Programmée sur votre téléphone : rien n\'est envoyé.'**
+  String get stRemindersHint;
+
+  /// No description provided for @afterPhotoTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prenez une photo du résultat'**
+  String get afterPhotoTitle;
+
+  /// No description provided for @afterPhotoBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gardée sur votre téléphone, pour votre avant / après.'**
+  String get afterPhotoBody;
+
+  /// No description provided for @afterPhotoRetake.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reprendre la photo'**
+  String get afterPhotoRetake;
+
+  /// No description provided for @afterPhotoSaved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo du résultat enregistrée sur votre téléphone.'**
+  String get afterPhotoSaved;
+
+  /// No description provided for @afterPhotoSemantics.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo du résultat'**
+  String get afterPhotoSemantics;
+
+  /// No description provided for @beforeLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avant'**
+  String get beforeLabel;
+
+  /// No description provided for @afterLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Après'**
+  String get afterLabel;
+
+  /// No description provided for @beforeAfterTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avant / après'**
+  String get beforeAfterTitle;
+
+  /// No description provided for @shareBeforeAfter.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager l\'avant / après'**
+  String get shareBeforeAfter;
+
+  /// No description provided for @shareBeforeAfterText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avant / après : réparé avec Nalvium.'**
+  String get shareBeforeAfterText;
+
+  /// No description provided for @shareBeforeAfterLead.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réparé avec Nalvium'**
+  String get shareBeforeAfterLead;
+
+  /// No description provided for @shareBeforeAfterDisclaimer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photos partagées par la personne qui a fait la réparation.'**
+  String get shareBeforeAfterDisclaimer;
 }
 
 class _AppLocalizationsDelegate

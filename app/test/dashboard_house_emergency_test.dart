@@ -74,7 +74,8 @@ void main() {
     expect(k('task-boiler'), findsNothing); // pas de chaudière déclarée
     await tapK(tester, 'task-vmc-done');
     expect(find.textContaining('Dans 180 jours'), findsOneWidget);
-    expect(find.text('Entretien noté. Nalvium vous le rappellera.'), findsOneWidget);
+    // Rappels désactivés par défaut : on ne promet pas de rappel.
+    expect(find.text('Entretien noté.'), findsOneWidget);
   });
 
   testWidgets('urgence : consignes fixes, numéros, composeur ouvert sans appel automatique', (tester) async {

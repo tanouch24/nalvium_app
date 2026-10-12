@@ -35,7 +35,7 @@ void main() {
     });
   });
 
-  testWidgets('premier lancement : bienvenue → accord → profil → points vitaux → prêt → accueil', (tester) async {
+  testWidgets('premier lancement : bienvenue → accord → « Plus tard » → profil → points vitaux → prêt → accueil', (tester) async {
     await pumpApp(
       tester,
       onboarded: false,
@@ -49,6 +49,9 @@ void main() {
     expect(find.textContaining('OpenAI'), findsWidgets);
     await tapK(tester, 'consent-accept');
 
+    // Moment wow proposé juste après l'accord ; « Plus tard » mène au profil de la maison.
+    expect(k('ob-wow'), findsOneWidget);
+    await tapK(tester, 'ob-wow-later');
     await tapK(tester, 'ob-apartment');
     await tapK(tester, 'ob-tenant');
     await tapK(tester, 'ob-gas');
@@ -139,6 +142,9 @@ void main() {
       await tapK(tester, 'ob-start');
       expect(tester.takeException(), isNull);
       await tapK(tester, 'consent-accept');
+      expect(k('ob-wow'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await tapK(tester, 'ob-wow-later');
       for (var i = 0; i < 5; i++) {
         expect(tester.takeException(), isNull);
         await tapK(tester, 'ob-skip');

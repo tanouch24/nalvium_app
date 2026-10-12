@@ -11,6 +11,7 @@ import '../../core/theme/nalvium_typography.dart';
 import '../../core/widgets/buttons.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/providers.dart';
+import '../house/maintenance_reminders.dart';
 import 'legal_texts.dart';
 
 AppBar _bar(BuildContext context, String title) => AppBar(
@@ -148,6 +149,73 @@ class _Row extends StatelessWidget {
   );
 }
 
+/// Rappels d'entretien : l'autorisation de notifier n'est demandée qu'en activant ce réglage.
+class _RemindersRow extends ConsumerStatefulWidget {
+  const _RemindersRow();
+
+  @override
+  ConsumerState<_RemindersRow> createState() => _RemindersRowState();
+}
+
+class _RemindersRowState extends ConsumerState<_RemindersRow> {
+  bool _busy = false;
+
+  Future<void> _toggle(bool on) async {
+    if (_busy) return;
+    final l = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    setState(() => _busy = true);
+    final reminders = ref.read(maintenanceRemindersProvider.notifier);
+    if (on) {
+      final ok = await reminders.enable();
+      if (!ok) messenger.showSnackBar(SnackBar(key: const Key('reminder-denied'), content: Text(l.mtReminderDenied)));
+    } else {
+      await reminders.disable();
+    }
+    if (mounted) setState(() => _busy = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final on = ref.watch(maintenanceRemindersProvider);
+    return MergeSemantics(
+      child: InkWell(
+        onTap: _busy ? null : () => _toggle(!on),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: Space.tap),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: Space.x4, vertical: Space.x3),
+            child: Row(
+              children: [
+                const Icon(Icons.notifications_none_rounded, size: 22, color: NalviumColors.primary),
+                const SizedBox(width: Space.x3),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(l.stReminders, style: NalviumText.bodyLarge.copyWith(color: NalviumColors.textPrimary)),
+                      const SizedBox(height: 2),
+                      Text(l.stRemindersHint, style: NalviumText.caption),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: Space.x2),
+                Switch.adaptive(
+                  key: const Key('st-reminders'),
+                  value: on,
+                  activeTrackColor: NalviumColors.primary,
+                  onChanged: _busy ? null : _toggle,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// Accord IA : le retirer (avec confirmation) ou le donner.
 Future<void> _manageAiConsent(BuildContext context, WidgetRef ref) async {
   final l = AppLocalizations.of(context);
@@ -207,6 +275,8 @@ class SettingsScreen extends ConsumerWidget {
                 onTap: () => _manageAiConsent(context, ref),
               ),
             ]),
+            _Header(l.stSecReminders),
+            const _Group([_RemindersRow()]),
             _Header(l.stSecHelp),
             _Group([
               _Row(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'estimate_card.dart';
+import 'after_photo.dart';
 import 'report_sheet.dart';
 
 import '../../core/theme/nalvium_colors.dart';
@@ -58,15 +59,18 @@ class SessionSummaryScreen extends ConsumerWidget {
   }
 }
 
-class _Body extends StatelessWidget {
+class _Body extends ConsumerWidget {
   const _Body({required this.state});
   final SessionState state;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final next = state.next;
     final isStop = next?.actionType == NextActionType.safetyStop;
+    // Avant / après : seulement une réparation réussie, jamais un arrêt de sécurité.
+    final resolved = state.status == 'resolved' && !isStop;
+    final afterPath = resolved ? ref.watch(afterPhotosProvider)[state.id] : null;
     final tone = sessionTone(state.status);
     final toneColor = switch (tone) {
       StatusTone.success => NalviumColors.success,
@@ -104,7 +108,10 @@ class _Body extends StatelessWidget {
       ),
       children: [
         // ── PROBLÈME ────────────────────────────────────────────────
-        if (state.latestMediaId != null && !isStop) ...[
+        if (afterPath != null) ...[
+          BeforeAfterPair(beforeMediaId: state.latestMediaId, afterPath: afterPath),
+          const SizedBox(height: Space.x5),
+        ] else if (state.latestMediaId != null && !isStop) ...[
           AspectRatio(
             aspectRatio: 16 / 9,
             child: Stack(
@@ -210,6 +217,15 @@ class _Body extends StatelessWidget {
           EstimateCard(estimate: state.estimate!, diyAllowed: state.diyAllowed),
           const SizedBox(height: Space.x4),
           ShareResultButton(state: state),
+        ],
+        if (resolved) ...[
+          const SizedBox(height: Space.x6),
+          AfterPhotoSection(
+            sessionId: state.id,
+            problemTitle: state.title ?? '',
+            beforeMediaId: state.latestMediaId,
+            showPair: false,
+          ),
         ],
         const SizedBox(height: Space.x6),
         ReportResultLink(sessionId: state.id),

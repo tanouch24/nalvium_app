@@ -79,6 +79,8 @@ const privacyPolicy = LegalDocument(
     ]),
     LegalSection("Ce qui reste sur votre téléphone", [
       "Le profil de votre logement (type, statut, chauffage, eau chaude, niveau en bricolage), les photos de vos points vitaux (vanne d'eau, tableau électrique, gaz) et vos entretiens notés sont enregistrés uniquement sur votre téléphone. Ils ne sont pas envoyés à Nalvium ni à l'IA, et sont effacés avec « Supprimer mes données » ou en désinstallant l'application.",
+      "Les photos « après » que vous prenez à la fin d'une réparation sont elles aussi enregistrées uniquement sur votre téléphone. Elles ne quittent votre téléphone que si vous choisissez vous-même de partager une carte « Avant / après ».",
+      "Les rappels d'entretien sont des notifications programmées sur votre téléphone : rien n'est envoyé à Nalvium pour les déclencher. Vous pouvez les désactiver dans Réglages › Rappels d'entretien.",
     ]),
     LegalSection("Signalements", [
       "Si vous signalez une réponse de Nalvium, nous conservons la raison choisie et la précision que vous écrivez, rattachées au diagnostic, pour améliorer le service. Ils sont supprimés avec vos données.",

@@ -10,6 +10,7 @@ import 'core/theme/nalvium_theme.dart';
 import 'l10n/app_localizations.dart';
 import 'services/providers.dart';
 import 'core/analytics/analytics.dart';
+import 'features/house/maintenance_reminders.dart';
 
 class NalviumApp extends ConsumerStatefulWidget {
   const NalviumApp({super.key, this.router});
@@ -38,8 +39,13 @@ class _NalviumAppState extends ConsumerState<NalviumApp> {
         ref.read(analyticsProvider).log(AnalyticsEvent.appOpened);
         ref.read(tipsServiceProvider); // écoute des achats en attente dès l'ouverture
         _recoverLostPhoto();
+        // Rappels d'entretien (seulement s'ils sont déjà activés : aucune autorisation demandée ici).
+        // Toucher un rappel ouvre Ma maison.
+        ref.read(maintenanceRemindersProvider.notifier).start(onOpen: () => _router.go('/house'));
       },
     );
+    // Un entretien noté ou un profil complété : les rappels sont reprogrammés.
+    ref.listenManual(homeProfileProvider, (_, _) => ref.read(maintenanceRemindersProvider.notifier).sync());
   }
 
   /// Photo prise juste avant qu'Android ne ferme l'app : on rouvre son aperçu au lieu de la perdre.

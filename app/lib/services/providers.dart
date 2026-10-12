@@ -71,6 +71,61 @@ final vitalPhotoSaverProvider = Provider<Future<String> Function(String tempPath
   },
 );
 
+/// Carnet maison à compléter (premier diagnostic lancé avant le profil) : carte discrète sur l'accueil.
+class ProfileSetupPending extends Notifier<bool> {
+  @override
+  bool build() => ref.read(localStoreProvider).profileSetupPending;
+
+  Future<void> set(bool pending) async {
+    await ref.read(localStoreProvider).setProfileSetupPending(pending);
+    state = pending;
+  }
+}
+
+final profileSetupPendingProvider = NotifierProvider<ProfileSetupPending, bool>(ProfileSetupPending.new);
+
+/// Copie une photo « après » dans le dossier PRIVÉ de l'app (jamais envoyée au serveur). Surchargé en test.
+final afterPhotoSaverProvider = Provider<Future<String> Function(String tempPath, String sessionId)>(
+  (ref) => (tempPath, sessionId) async {
+    final dir = Directory('${(await getApplicationDocumentsDirectory()).path}/after');
+    await dir.create(recursive: true);
+    final target = '${dir.path}/${sessionId}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+    await File(tempPath).copy(target);
+    return target;
+  },
+);
+
+/// Photos « après » par session (chemins locaux). Rien n'est envoyé : seul un partage explicite les fait sortir.
+class AfterPhotos extends Notifier<Map<String, String>> {
+  @override
+  Map<String, String> build() => ref.read(localStoreProvider).afterPhotos;
+
+  Future<void> save(String sessionId, String tempPath) async {
+    final previous = state[sessionId];
+    final path = await ref.read(afterPhotoSaverProvider)(tempPath, sessionId);
+    state = {...state, sessionId: path};
+    await ref.read(localStoreProvider).saveAfterPhotos(state);
+    if (previous != null && previous != path) _deleteQuietly(previous);
+  }
+
+  /// Après « Supprimer mes données » : les fichiers sont effacés du téléphone.
+  void clear() {
+    for (final path in state.values) {
+      _deleteQuietly(path);
+    }
+    state = const {};
+  }
+
+  static void _deleteQuietly(String path) {
+    try {
+      final f = File(path);
+      if (f.existsSync()) f.deleteSync();
+    } catch (_) {}
+  }
+}
+
+final afterPhotosProvider = NotifierProvider<AfterPhotos, Map<String, String>>(AfterPhotos.new);
+
 /// Pourboires (achats intégrés). Créé au démarrage pour finaliser tout achat resté en attente.
 final tipsServiceProvider = Provider<TipsService>((ref) {
   final s = StoreTipsService();
@@ -250,6 +305,8 @@ Future<void> deleteAllMyData(WidgetRef ref) async {
   await ref.read(installIdStoreProvider).reset();
   await ref.read(localStoreProvider).clearPersonal();
   ref.read(homeProfileProvider.notifier).reset();
+  ref.read(afterPhotosProvider.notifier).clear();
+  ref.invalidate(profileSetupPendingProvider);
   ref.invalidate(aiConsentProvider);
   ref.read(sessionsRevisionProvider.notifier).bump();
   ref.read(homeRevisionProvider.notifier).bump();

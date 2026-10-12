@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../domain/home_profile.dart';
@@ -40,10 +42,53 @@ class LocalStore {
 
   Future<void> setTipPromptAt(DateTime when) => _prefs.setInt(_tipPromptAt, when.millisecondsSinceEpoch);
 
-  /// Après « Supprimer mes données » : le profil local et l'accord IA sont effacés aussi.
+  static const _profilePending = 'nalvium.profile_pending';
+  static const _reminders = 'nalvium.maintenance_reminders';
+  static const _remindersSince = 'nalvium.maintenance_reminders_since';
+  static const _afterPhotos = 'nalvium.after_photos';
+
+  /// Premier diagnostic lancé avant le profil (« moment wow ») : le carnet maison reste à compléter.
+  bool get profileSetupPending => _prefs.getBool(_profilePending) ?? false;
+  Future<void> setProfileSetupPending(bool pending) =>
+      pending ? _prefs.setBool(_profilePending, true) : _prefs.remove(_profilePending);
+
+  /// Rappels d'entretien (notifications programmées sur le téléphone, rien n'est envoyé).
+  bool get maintenanceReminders => _prefs.getBool(_reminders) ?? false;
+
+  /// Date d'activation des rappels : repère des entretiens jamais notés (« à planifier »).
+  DateTime? get maintenanceRemindersSince {
+    final ms = _prefs.getInt(_remindersSince);
+    return ms == null ? null : DateTime.fromMillisecondsSinceEpoch(ms);
+  }
+
+  Future<void> setMaintenanceReminders(bool on, {DateTime? since}) async {
+    await _prefs.setBool(_reminders, on);
+    if (on && since != null) {
+      await _prefs.setInt(_remindersSince, since.millisecondsSinceEpoch);
+    } else if (!on) {
+      await _prefs.remove(_remindersSince);
+    }
+  }
+
+  /// Photos « après » (chemin local dans le dossier privé de l'app), par session. Jamais envoyées.
+  Map<String, String> get afterPhotos {
+    final raw = _prefs.getString(_afterPhotos);
+    if (raw == null || raw.isEmpty) return const {};
+    try {
+      return (jsonDecode(raw) as Map<String, dynamic>).map((k, v) => MapEntry(k, v as String));
+    } catch (_) {
+      return const {}; // illisible : jamais bloquant
+    }
+  }
+
+  Future<void> saveAfterPhotos(Map<String, String> photos) => _prefs.setString(_afterPhotos, jsonEncode(photos));
+
+  /// Après « Supprimer mes données » : le profil local, l'accord IA et les photos « après » sont effacés aussi.
   Future<void> clearPersonal() async {
     await _prefs.remove(_profile);
     await _prefs.remove(_aiConsent);
     await _prefs.remove(_savingsSeen);
+    await _prefs.remove(_afterPhotos);
+    await _prefs.remove(_profilePending);
   }
 }

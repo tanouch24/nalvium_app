@@ -53,6 +53,11 @@ GoRouter buildRouter({
   redirect: redirect,
   routes: [
     GoRoute(path: '/welcome', builder: (_, _) => const OnboardingScreen()),
+    // Carnet maison à compléter après un premier diagnostic lancé dès le démarrage.
+    GoRoute(
+      path: '/profile-setup',
+      pageBuilder: (_, state) => nalviumPage(state, const OnboardingScreen(profileOnly: true)),
+    ),
     GoRoute(
       path: '/emergency',
       pageBuilder: (_, state) => nalviumPage(state, const EmergencyScreen()),

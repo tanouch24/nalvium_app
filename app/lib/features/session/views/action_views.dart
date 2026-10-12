@@ -1,4 +1,5 @@
 import '../../support/support_sheet.dart';
+import '../after_photo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -716,10 +717,18 @@ class ResolvedView extends StatefulWidget {
     required this.actions,
     this.problemTitle,
     this.savings,
+    this.sessionId,
+    this.beforeMediaId,
   });
   final NextStep step;
   final SessionActions actions;
   final String? problemTitle;
+
+  /// Session réussie : propose la photo « après » (null = pas de proposition).
+  final String? sessionId;
+
+  /// Photo du problème (l'« avant »), si elle existe.
+  final String? beforeMediaId;
 
   /// Économie estimée (artisan − vous-même), affichée seulement si l'estimation la rend crédible.
   final int? savings;
@@ -908,6 +917,14 @@ class _ResolvedViewState extends State<ResolvedView>
             color: NalviumColors.textSecondary,
             onPressed: widget.actions.onSaveEquipment,
           ),
+        if (widget.sessionId != null) ...[
+          const SizedBox(height: Space.x4),
+          AfterPhotoSection(
+            sessionId: widget.sessionId!,
+            problemTitle: widget.problemTitle ?? '',
+            beforeMediaId: widget.beforeMediaId,
+          ),
+        ],
         const SizedBox(height: Space.x6),
         // Gratitude : économie réelle → proposition de pourboire (rare) ; sinon la carte « Soutenir » habituelle.
         if ((widget.savings ?? 0) > 0)

@@ -297,6 +297,8 @@ class _Content extends StatelessWidget {
         actions: actions,
         problemTitle: state.title,
         savings: (state.estimate?.diyFeasibility ?? 0) > 3 ? state.estimate?.savings : null,
+        sessionId: state.id,
+        beforeMediaId: state.latestMediaId,
       ),
     };
     // Contexte constant (vignette + titre + catégorie). REQUEST_PHOTO montre déjà la photo (paire), RESOLVED

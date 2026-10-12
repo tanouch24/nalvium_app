@@ -5,10 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/nalvium_colors.dart';
 import '../../core/theme/nalvium_spacing.dart';
 import '../../core/theme/nalvium_typography.dart';
+import '../../core/widgets/motion.dart';
 import '../../domain/home_profile.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/providers.dart';
 import '../history/session_labels.dart';
+import 'maintenance_reminders.dart';
 
 /// Horloge injectable (les tests figent la date).
 final clockProvider = Provider<DateTime Function()>((ref) => DateTime.now);
@@ -63,11 +65,16 @@ class MaintenanceSection extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final p = ref.watch(homeProfileProvider);
     final now = ref.watch(clockProvider)();
+    final reminders = ref.watch(maintenanceRemindersProvider);
+    final since = ref.read(maintenanceRemindersProvider.notifier).since(now);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         for (final t in MaintenanceTask.forProfile(p)) ...[
           _TaskRow(
+            reminderAt: reminderDateFor(t, p, now, since: since),
+            remindersOn: reminders,
+            onRemind: () => _remind(context, ref, t),
             task: t,
             status: maintenanceStatus(l10n, t, p, now),
             late: t.dueDate(p)?.isBefore(now) ?? false,
@@ -78,7 +85,8 @@ class MaintenanceSection extends ConsumerWidget {
               HapticFeedback.lightImpact();
               await ref.read(homeProfileProvider.notifier).markMaintenanceDone(t.id, now);
               if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.mtMarked)));
+                final text = ref.read(maintenanceRemindersProvider) ? l10n.mtMarked : l10n.mtMarkedPlain;
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
               }
             },
           ),
@@ -89,13 +97,41 @@ class MaintenanceSection extends ConsumerWidget {
   }
 }
 
+/// « Me le rappeler » : l'autorisation de notifier n'est demandée qu'ici (ou dans Réglages), jamais au lancement.
+Future<void> _remind(BuildContext context, WidgetRef ref, MaintenanceTask t) async {
+  final l10n = AppLocalizations.of(context);
+  final messenger = ScaffoldMessenger.of(context);
+  HapticFeedback.selectionClick();
+  final ok = await ref.read(maintenanceRemindersProvider.notifier).enable();
+  final now = ref.read(clockProvider)();
+  final at = reminderDateFor(t, ref.read(homeProfileProvider), now, since: ref.read(maintenanceRemindersProvider.notifier).since(now));
+  messenger.showSnackBar(SnackBar(
+    key: Key(ok ? 'reminder-set' : 'reminder-denied'),
+    content: Text(ok && at != null ? l10n.mtReminderSet(formatDay(at)) : l10n.mtReminderDenied),
+  ));
+}
+
 class _TaskRow extends StatelessWidget {
-  const _TaskRow({required this.task, required this.status, required this.late, required this.detail, required this.onDone});
+  const _TaskRow({
+    required this.task,
+    required this.status,
+    required this.late,
+    required this.detail,
+    required this.onDone,
+    required this.reminderAt,
+    required this.remindersOn,
+    required this.onRemind,
+  });
   final MaintenanceTask task;
   final String status;
   final bool late;
   final String? detail;
   final VoidCallback onDone;
+
+  /// Moment du rappel (null : pas de rappel possible, ex. entretien en retard).
+  final DateTime? reminderAt;
+  final bool remindersOn;
+  final VoidCallback onRemind;
 
   @override
   Widget build(BuildContext context) {
@@ -138,19 +174,58 @@ class _TaskRow extends StatelessWidget {
               ),
             ],
           ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton.icon(
-              key: Key('task-${task.id}-done'),
-              onPressed: onDone,
-              icon: const Icon(Icons.check_rounded, size: 18),
-              label: Text(l10n.mtDone),
-              style: TextButton.styleFrom(
-                foregroundColor: NalviumColors.textPrimary,
-                minimumSize: const Size(48, 44),
-                textStyle: NalviumText.button.copyWith(fontSize: 15),
+          Wrap(
+            alignment: WrapAlignment.end,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: Space.x2,
+            children: [
+              if (reminderAt != null)
+                AnimatedSwitcher(
+                  duration: motionDuration(context),
+                  child: remindersOn
+                      ? Padding(
+                          key: Key('task-${task.id}-reminder'),
+                          padding: const EdgeInsets.symmetric(horizontal: Space.x2, vertical: Space.x3),
+                          child: Text.rich(
+                            TextSpan(
+                              children: [
+                                const WidgetSpan(
+                                  alignment: PlaceholderAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(right: Space.x1),
+                                    child: Icon(Icons.notifications_active_outlined, size: 16, color: NalviumColors.textSecondary),
+                                  ),
+                                ),
+                                TextSpan(text: l10n.mtReminderOn(formatDay(reminderAt!))),
+                              ],
+                            ),
+                            style: NalviumText.caption.copyWith(color: NalviumColors.textSecondary, fontWeight: FontWeight.w600),
+                          ),
+                        )
+                      : TextButton.icon(
+                          key: Key('task-${task.id}-remind'),
+                          onPressed: onRemind,
+                          icon: const Icon(Icons.notifications_none_rounded, size: 18),
+                          label: Text(l10n.mtRemind),
+                          style: TextButton.styleFrom(
+                            foregroundColor: NalviumColors.primaryText,
+                            minimumSize: const Size(48, 44),
+                            textStyle: NalviumText.button.copyWith(fontSize: 15),
+                          ),
+                        ),
+                ),
+              TextButton.icon(
+                key: Key('task-${task.id}-done'),
+                onPressed: onDone,
+                icon: const Icon(Icons.check_rounded, size: 18),
+                label: Text(l10n.mtDone),
+                style: TextButton.styleFrom(
+                  foregroundColor: NalviumColors.textPrimary,
+                  minimumSize: const Size(48, 44),
+                  textStyle: NalviumText.button.copyWith(fontSize: 15),
+                ),
               ),
-            ),
+            ],
           ),
         ],
       ),

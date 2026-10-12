@@ -42,7 +42,9 @@ void main() {
         expect(k(key), findsOneWidget, reason: key);
       }
       expect(find.text('$kAppVersionName ($kAppBuildNumber)'), findsOneWidget);
-      expect(find.byType(Switch), findsNothing);
+      // Un seul interrupteur : les rappels d'entretien (utile, et désactivé par défaut).
+      expect(find.byType(Switch), findsOneWidget);
+      expect(tester.widget<Switch>(find.byType(Switch)).value, isFalse);
     });
 
     testWidgets(

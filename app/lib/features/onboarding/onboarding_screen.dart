@@ -9,32 +9,72 @@ import '../../core/theme/nalvium_typography.dart';
 import '../../core/widgets/buttons.dart';
 import '../../core/widgets/choice_tile.dart';
 import '../../core/widgets/motion.dart';
+import '../../core/widgets/viewfinder.dart';
 import '../../domain/home_profile.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/providers.dart';
+import '../capture/capture_flow.dart';
 import 'consent_view.dart';
 import 'vitals_editor.dart';
 
-/// Premier lancement : bienvenue → accord IA → profil de la maison (facultatif) → points vitaux (facultatifs)
-/// → « Votre carnet maison est prêt ». Rien n'est bloquant sauf l'accord IA pour lancer un diagnostic.
+/// Premier lancement : bienvenue → accord IA → « Montrez-nous un problème maintenant » (moment wow : un premier
+/// résultat en moins d'une minute) → profil de la maison (facultatif) → points vitaux (facultatifs) → « Votre
+/// carnet maison est prêt ». L'accord IA vient TOUJOURS avant tout envoi ; sans accord, l'étape wow est sautée.
+/// Si l'utilisateur lance un diagnostic tout de suite, le carnet maison lui est reproposé sur l'accueil
+/// ([profileOnly] : seulement les questions du profil et les points vitaux).
 class OnboardingScreen extends ConsumerStatefulWidget {
-  const OnboardingScreen({super.key});
+  const OnboardingScreen({super.key, this.profileOnly = false});
+  final bool profileOnly;
   @override
   ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-enum _Step { welcome, consent, housing, tenure, heating, hotWater, diy, vitals, ready }
+enum _Step { welcome, consent, wow, housing, tenure, heating, hotWater, diy, vitals, ready }
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
-  _Step _step = _Step.welcome;
+  late final List<_Step> _steps = widget.profileOnly ? _Step.values.sublist(_Step.housing.index) : _Step.values;
+  int _i = 0;
+  _Step get _step => _steps[_i];
+
+  void _go(_Step step) {
+    HapticFeedback.selectionClick();
+    setState(() => _i = _steps.indexOf(step));
+  }
 
   void _next() {
     HapticFeedback.selectionClick();
-    setState(() => _step = _Step.values[_step.index + 1]);
+    setState(() => _i++);
   }
 
   void _back() {
-    if (_step.index > 0) setState(() => _step = _Step.values[_step.index - 1]);
+    if (_i == 0) {
+      if (widget.profileOnly && context.canPop()) context.pop();
+      return;
+    }
+    // Sans accord IA, l'étape wow n'a pas été proposée : on revient directement à l'accord.
+    final previous = _steps[_i - 1];
+    setState(() => _i = previous == _Step.wow && !ref.read(aiConsentProvider) ? _i - 2 : _i - 1);
+  }
+
+  /// Moment wow : le diagnostic part tout de suite ; le carnet maison sera reproposé sur l'accueil.
+  Future<void> _scanNow(_ScanKind kind) async {
+    final router = GoRouter.of(context);
+    String? photoPath;
+    if (kind == _ScanKind.photo) {
+      final photo = await capturePhoto(context, ref);
+      if (photo == null || !mounted) return; // annulé : on reste sur l'étape, « Plus tard » reste possible
+      photoPath = photo.path;
+    }
+    await ref.read(localStoreProvider).setOnboarded();
+    await ref.read(profileSetupPendingProvider.notifier).set(true);
+    switch (kind) {
+      case _ScanKind.photo:
+        router.push('/capture/preview', extra: photoPath);
+      case _ScanKind.describe:
+        router.push('/describe');
+      case _ScanKind.film:
+        router.push('/video/capture');
+    }
   }
 
   Future<void> _answer(HomeProfile Function(HomeProfile) change) async {
@@ -44,7 +84,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   Future<void> _finish() async {
     await ref.read(localStoreProvider).setOnboarded();
-    if (mounted) context.go('/home');
+    await ref.read(profileSetupPendingProvider.notifier).set(false);
+    if (!mounted) return;
+    if (widget.profileOnly && context.canPop()) {
+      context.pop();
+    } else {
+      context.go('/home');
+    }
   }
 
   @override
@@ -52,11 +98,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final l10n = AppLocalizations.of(context);
     final p = ref.watch(homeProfileProvider);
     final showBar = _step != _Step.welcome && _step != _Step.ready;
-    final progress = _step.index / (_Step.values.length - 1);
+    final progress = (_i + (widget.profileOnly ? 1 : 0)) / (_steps.length - (widget.profileOnly ? 0 : 1));
 
     final Widget body = switch (_step) {
       _Step.welcome => _Welcome(onStart: _next),
-      _Step.consent => ConsentView(onDone: (_) => _next()),
+      _Step.consent => ConsentView(onDone: (accepted) => accepted ? _next() : _go(_Step.housing)),
+      _Step.wow => _Wow(onScan: _scanNow, onLater: _next),
       _Step.housing => _Choice(
         title: l10n.obHousingTitle,
         selected: p.housing,
@@ -104,7 +151,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
     // Bienvenue : le retour système quitte l'app (Android) ; ensuite, il revient à l'étape précédente.
     return PopScope(
-      canPop: _step == _Step.welcome,
+      canPop: _i == 0,
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop) _back();
       },
@@ -209,6 +256,88 @@ class _Welcome extends StatelessWidget {
         bullet(Icons.house_outlined, l10n.obWelcomeBullet3),
         const SizedBox(height: Space.x4),
         PrimaryButton(key: const Key('ob-start'), label: l10n.obStart, onPressed: onStart),
+      ],
+    );
+  }
+}
+
+enum _ScanKind { photo, describe, film }
+
+/// « Montrez-nous un problème maintenant » : photo (le plus rapide), décrire ou filmer ; « Plus tard » mène au
+/// profil de la maison.
+class _Wow extends StatelessWidget {
+  const _Wow({required this.onScan, required this.onLater});
+  final ValueChanged<_ScanKind> onScan;
+  final VoidCallback onLater;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final stack = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
+    final describe = SecondaryButton(
+      key: const Key('ob-wow-describe'),
+      label: l10n.describeShort,
+      icon: Icons.edit_note_rounded,
+      onPressed: () => onScan(_ScanKind.describe),
+    );
+    final film = SecondaryButton(
+      key: const Key('ob-wow-film'),
+      label: l10n.filmShort,
+      icon: Icons.videocam_outlined,
+      onPressed: () => onScan(_ScanKind.film),
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Viseur qui « se pose » : discret, et immédiat si les animations sont réduites.
+        TweenAnimationBuilder<double>(
+          tween: Tween(begin: 0, end: 1),
+          duration: motionDuration(context, const Duration(milliseconds: 700)),
+          curve: Curves.easeOutCubic,
+          builder: (_, v, child) => Opacity(
+            opacity: v,
+            child: Transform.scale(scale: 0.94 + 0.06 * v, child: child),
+          ),
+          child: Container(
+            height: stack ? 120 : 168,
+            decoration: BoxDecoration(color: NalviumColors.surface, borderRadius: BorderRadius.circular(Corner.large)),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(Space.x5),
+                  child: ViewfinderCorners(color: NalviumColors.accent, length: 26, stroke: 3.5, radius: 12),
+                ),
+                Center(child: Icon(Icons.photo_camera_outlined, size: stack ? 36 : 48, color: NalviumColors.textPrimary)),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: Space.x6),
+        Semantics(
+          header: true,
+          child: Text(l10n.obWowTitle, key: const Key('ob-wow'), style: NalviumText.titleLarge.copyWith(fontSize: 29)),
+        ),
+        const SizedBox(height: Space.x3),
+        Text(l10n.obWowBody, style: NalviumText.body.copyWith(fontSize: 17)),
+        const SizedBox(height: Space.x6),
+        PrimaryButton(
+          key: const Key('ob-wow-photo'),
+          label: l10n.takePhoto,
+          icon: Icons.photo_camera_outlined,
+          onPressed: () => onScan(_ScanKind.photo),
+        ),
+        const SizedBox(height: Space.x3),
+        if (stack) ...[describe, const SizedBox(height: Space.x3), film]
+        else
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [Expanded(child: describe), const SizedBox(width: Space.x3), Expanded(child: film)],
+            ),
+          ),
+        const SizedBox(height: Space.x3),
+        TertiaryButton(key: const Key('ob-wow-later'), label: l10n.obWowLater, color: NalviumColors.textSecondary, onPressed: onLater),
       ],
     );
   }

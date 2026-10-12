@@ -16,6 +16,9 @@ import 'package:nalvium/services/share_service.dart';
 import 'package:nalvium/features/share/share_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nalvium/services/video_recorder_service.dart';
+import 'package:nalvium/services/reminder_service.dart';
+import 'package:nalvium/features/house/maintenance_reminders.dart';
+import 'package:nalvium/features/session/after_photo.dart';
 
 import 'fakes.dart';
 import 'fake_home.dart';
@@ -76,6 +79,7 @@ Future<FakePhotoCaptureService> pumpApp(
   FakeTipsService? tips,
   CapturedPhoto? lostPhoto,
   FakeShareService? share,
+  FakeReminderService? reminders,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = dpr;
@@ -109,6 +113,9 @@ Future<FakePhotoCaptureService> pumpApp(
         return Uint8List.fromList(const [1, 2, 3]);
       }),
       vitalPhotoSaverProvider.overrideWithValue((path, _) async => path),
+      afterPhotoSaverProvider.overrideWithValue((path, _) async => path),
+      beforeAfterImagesProvider.overrideWithValue((_, _) async => (null, null)),
+      reminderServiceProvider.overrideWithValue(reminders ?? FakeReminderService()),
       photoCaptureServiceProvider.overrideWithValue(fake),
       sessionsRepositoryProvider.overrideWithValue(repo ?? FakeSessionsRepository()),
       homeRepositoryProvider.overrideWithValue(home ?? FakeHomeRepository()),
@@ -219,5 +226,40 @@ class FakeShareService implements ShareService {
   Future<void> shareImage(Uint8List png, {required String fileName, required String text, Rect? origin}) async {
     if (fail) throw StateError('share');
     shared.add((text: text, fileName: fileName, bytes: png.length));
+  }
+}
+
+
+/// Faux service de rappels de TEST : aucune notification réelle, on garde ce qui aurait été programmé.
+class FakeReminderService implements ReminderService {
+  FakeReminderService({this.grant = true, this.launchedFromReminder = false});
+  final bool grant;
+  final bool launchedFromReminder;
+  int permissionRequests = 0, inits = 0, cancels = 0;
+  List<ScheduledReminder> scheduled = const [];
+  VoidCallback? onOpen;
+
+  @override
+  Future<bool> init({required VoidCallback onOpen}) async {
+    inits++;
+    this.onOpen = onOpen;
+    return launchedFromReminder;
+  }
+
+  @override
+  Future<bool> requestPermission() async {
+    permissionRequests++;
+    return grant;
+  }
+
+  @override
+  Future<void> replaceAll(List<ScheduledReminder> reminders, {required String channelName, required String channelDescription}) async {
+    scheduled = List.of(reminders);
+  }
+
+  @override
+  Future<void> cancelAll() async {
+    cancels++;
+    scheduled = const [];
   }
 }

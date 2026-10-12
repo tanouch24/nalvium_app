@@ -344,3 +344,79 @@ class SavingsShareCard extends StatelessWidget {
     ),
   );
 }
+
+/// Variante « Avant / après » : les DEUX photos de l'utilisateur, seulement quand il touche lui-même
+/// « Partager l'avant / après ». Images déjà décodées (le rendu hors écran ne peut pas attendre un chargement).
+class BeforeAfterShareCard extends StatelessWidget {
+  const BeforeAfterShareCard({
+    super.key,
+    required this.lead,
+    required this.title,
+    required this.beforeLabel,
+    required this.afterLabel,
+    required this.disclaimer,
+    this.before,
+    this.after,
+  });
+  final String lead;
+  final String title;
+  final String beforeLabel;
+  final String afterLabel;
+  final String disclaimer;
+  final ui.Image? before;
+  final ui.Image? after;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget photo(ui.Image? image, String label, {bool accent = false}) => Expanded(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(Corner.medium),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (image == null)
+              const ColoredBox(color: NalviumColors.surfaceSubtle)
+            else
+              RawImage(image: image, fit: BoxFit.cover),
+            Positioned(
+              left: Space.x2,
+              bottom: Space.x2,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: Space.x3, vertical: Space.x1),
+                decoration: ShapeDecoration(color: accent ? NalviumColors.accent : NalviumColors.primary, shape: const StadiumBorder()),
+                child: Text(label, style: NalviumText.caption.copyWith(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 12.5)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    return _Frame(
+      footer: disclaimer,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const SizedBox(height: Space.x5),
+          Text(
+            lead.toUpperCase(),
+            style: NalviumText.caption.copyWith(color: NalviumColors.primaryText, fontWeight: FontWeight.w700, letterSpacing: 1.2, fontSize: 12),
+          ),
+          const SizedBox(height: Space.x1),
+          Text(title, maxLines: 2, overflow: TextOverflow.ellipsis, style: NalviumText.titleLarge.copyWith(fontSize: 24)),
+          const SizedBox(height: Space.x4),
+          Expanded(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                photo(before, beforeLabel),
+                const SizedBox(width: Space.x2),
+                photo(after, afterLabel, accent: true),
+              ],
+            ),
+          ),
+          const SizedBox(height: Space.x4),
+        ],
+      ),
+    );
+  }
+}

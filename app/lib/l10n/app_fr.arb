@@ -830,5 +830,48 @@
   },
   "tipBody": "Sans contrepartie : tout reste gratuit et sans publicité.",
   "tipCta": "Laisser un pourboire",
-  "tipLater": "Plus tard"
+  "tipLater": "Plus tard",
+  "obWowTitle": "Montrez-nous un problème maintenant",
+  "obWowBody": "Un premier avis en moins d'une minute. Vous compléterez votre carnet maison juste après.",
+  "obWowLater": "Plus tard",
+  "dashCompleteProfileTitle": "Complétez votre carnet maison (1 min)",
+  "dashCompleteProfileBody": "Quelques questions pour vous proposer les bons entretiens.",
+  "dashCompleteProfileDismiss": "Masquer",
+  "mtRemind": "Me le rappeler",
+  "mtReminderSet": "Rappel prévu le {date}, vers 10 h.",
+  "@mtReminderSet": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "mtReminderOn": "Rappel le {date}",
+  "@mtReminderOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "mtReminderDenied": "Les notifications sont désactivées pour Nalvium. Vous pouvez les autoriser dans les réglages du téléphone.",
+  "mtMarkedPlain": "Entretien noté.",
+  "notifChannelName": "Rappels d'entretien",
+  "notifChannelDescription": "Un rappel le jour prévu pour vos entretiens.",
+  "notifBody": "C'est le jour prévu. Touchez pour le retrouver dans Ma maison.",
+  "stSecReminders": "Rappels",
+  "stReminders": "Rappels d'entretien",
+  "stRemindersHint": "Une notification le jour prévu, vers 10 h. Programmée sur votre téléphone : rien n'est envoyé.",
+  "afterPhotoTitle": "Prenez une photo du résultat",
+  "afterPhotoBody": "Gardée sur votre téléphone, pour votre avant / après.",
+  "afterPhotoRetake": "Reprendre la photo",
+  "afterPhotoSaved": "Photo du résultat enregistrée sur votre téléphone.",
+  "afterPhotoSemantics": "Photo du résultat",
+  "beforeLabel": "Avant",
+  "afterLabel": "Après",
+  "beforeAfterTitle": "Avant / après",
+  "shareBeforeAfter": "Partager l'avant / après",
+  "shareBeforeAfterText": "Avant / après : réparé avec Nalvium.",
+  "shareBeforeAfterLead": "Réparé avec Nalvium",
+  "shareBeforeAfterDisclaimer": "Photos partagées par la personne qui a fait la réparation."
 }
